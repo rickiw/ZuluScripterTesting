@@ -30,6 +30,7 @@
 			}
 		],
 		"roblox-ts/no-private-identifier": "off",
+		"@typescript-eslint/no-explicit-any": "off",
 		"roblox-ts/lua-truthiness": "off"
 	}
 }

@@ -30,23 +30,25 @@
     "prettier": "^3.0.3",
     "prettier-plugin-organize-imports": "^3.2.3",
     "rbxts-transformer-flamework": "^1.0.1",
+    "roblox-ts": "^2.2.0-dev-5922946",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@flamework/components": "^1.0.0-beta.24",
+    "@flamework/core": "^1.0.0-beta.24",
+    "@flamework/networking": "^1.0.0-beta.24",
     "@rbxts/easing-functions": "^1.1.0",
     "@rbxts/flipper": "^2.0.1",
     "@rbxts/fusion": "^0.1.1-ts.beta.1",
     "@rbxts/log": "^0.6.3",
     "@rbxts/maid": "^1.1.0",
-    "@rbxts/matter": "^0.6.6",
-    "@rbxts/matter-hooks": "^0.1.2",
     "@rbxts/net": "^3.0.9",
     "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/octo-tree": "^0.3.1",
     "@rbxts/plasma": "^0.4.1-ts.1",
-    "@rbxts/pretty-react-hooks": "^0.2.1",
+    "@rbxts/pretty-react-hooks": "^0.3.3",
     "@rbxts/profileservice": "^1.4.2",
     "@rbxts/promise-character": "^1.0.3",
-    "@rbxts/proton": "^0.7.0",
     "@rbxts/rbx-react-spring": "^1.1.2",
     "@rbxts/react-reflex": "^0.2.0",
     "@rbxts/react-roblox": "^0.2.0",
@@ -57,9 +59,12 @@
     "@rbxts/rust-classes": "^0.12.0",
     "@rbxts/services": "^1.5.1",
     "@rbxts/set-timeout": "^1.1.2",
+    "@rbxts/signal": "^1.1.1",
     "@rbxts/stacks-and-queues": "^1.0.5",
     "@rbxts/t": "^3.1.0",
     "@rbxts/tween": "^1.0.5",
-    "@rbxts/variant": "^1.0.2"
+    "@rbxts/variant": "^1.0.2",
+    "@rbxts/zone-plus": "^3.2.0",
+    "rbxts-transform-env": "^2.2.0"
   }
 }

@@ -1,5 +1,6 @@
 interface Workspace extends Instance {
 	Doors: Folder & { [key in DoorType]: BaseDoor };
+	SCPs: Folder & { [key: string]: BaseSCP };
 }
 
 type BaseDoor = Model & {
@@ -8,6 +9,8 @@ type BaseDoor = Model & {
 
 type DoorType = "SingleDoor" | "SingleGlassDoor";
 
+type BaseSCP = Model & {};
+
 interface ReplicatedStorage extends Instance {
 	Shared: Folder & {
 		systems: Folder;
@@ -15,9 +18,16 @@ interface ReplicatedStorage extends Instance {
 	Client: Folder & {
 		systems: Folder;
 	};
+	Assets: Folder & {
+		SCPs: Folder & {
+			[key: string]: Model;
+		};
+	};
 }
 
-interface SoundService extends Instance {}
+interface SoundService extends Instance {
+	Effects: SoundGroup;
+}
 
 type BaseCharacter = Model & {
 	Humanoid: Humanoid;

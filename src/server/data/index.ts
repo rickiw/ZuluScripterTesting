@@ -1,11 +1,4 @@
-export interface PlayerProfile {
-	readonly logInTimes: number;
-	readonly dailyLoginTimes: number;
-	readonly lastLogin: number;
-	readonly experience: number;
-	readonly scrap: Map<string, number>;
-	readonly credits: number;
-}
+import { PlayerProfile } from "shared/data/slices/state/saves";
 
 export const defaultPlayerProfile: PlayerProfile = {
 	logInTimes: 0,

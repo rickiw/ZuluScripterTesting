@@ -1,17 +1,11 @@
 import { New } from "@rbxts/fusion";
-import { createBroadcaster } from "@rbxts/reflex";
 import { Players } from "@rbxts/services";
-import { store } from "server/store";
-import { Body, Client, Renderable } from "shared/components";
-import { Network } from "shared/network";
-import { slices } from "shared/slices";
-import { getBootstrapData } from ".";
+import { getBootstrapData } from "./state";
 
 export async function bootstrap() {
-	const { world, state, profileStore } = getBootstrapData();
+	const { state, profileStore } = getBootstrapData();
 
 	function playerRemoving(player: Player) {
-		state.clients.delete(player.UserId);
 		const profile = state.profiles.get(player);
 		if (profile) {
 			profile.Release();
@@ -41,24 +35,7 @@ export async function bootstrap() {
 			return profile.Release();
 		}
 
-		function characterAdded(character: Model) {
-			const model = character as BaseCharacter;
-
-			const playerEntity = world.spawn(
-				Client({
-					player,
-					document: {},
-				}),
-				Body({
-					model,
-				}),
-				Renderable({
-					model,
-				}),
-			);
-
-			state.clients.set(player.UserId, playerEntity);
-		}
+		function characterAdded(character: Model) {}
 
 		handleData();
 
@@ -71,17 +48,4 @@ export async function bootstrap() {
 	for (const player of Players.GetPlayers()) {
 		playerAdded(player);
 	}
-
-	const broadcaster = createBroadcaster({
-		producers: slices,
-		dispatch: (player, actions) => {
-			Network.dispatch.server.fire(player, actions);
-		},
-	});
-
-	Network.start.server.connect((player) => {
-		broadcaster.start(player);
-	});
-
-	store.applyMiddleware(broadcaster.middleware);
 }
