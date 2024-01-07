@@ -1,0 +1,35 @@
+owner: personal
+payments: owner
+environments:
+  - label: dev
+    targetOverrides:
+      icon: assets\marketing\beta-game-icon.png
+      places:
+        start:
+          configuration:
+            name: zulu-site DEV 🚧
+            description: A ShrouvEngine experience 🚧🚧 DEV 🚧🚧
+  - label: production
+    branches:
+      - main
+    targetAccess: public
+target:
+  experience:
+    configuration:
+      genre: all
+      playableDevices:
+        - computer
+        - phone
+        - tablet
+      playability: public
+      enableStudioAccessToApis: true
+    places:
+      start:
+        file: game.rbxlx
+        configuration:
+          name: zulu-site
+          description: A ShrouvEngine experience
+          maxPlayerCount: 10
+          serverFill: robloxOptimized
+    assets:
+      - assets/sounds/*
