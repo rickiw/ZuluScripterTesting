@@ -1,13 +1,15 @@
 import Log, { Logger } from "@rbxts/log";
 import { Proton } from "@rbxts/proton";
+import { createPortal, createRoot } from "@rbxts/react-roblox";
 import { createBroadcastReceiver } from "@rbxts/reflex";
-import Roact from "@rbxts/roact";
+import Roact, { StrictMode } from "@rbxts/roact";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { Network } from "shared/network";
 import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
 import { clientStore } from "./store";
 import { App } from "./ui/app";
+import { RootProvider } from "./ui/providers/root-provider";
 
 Proton.awaitStart();
 
@@ -23,7 +25,18 @@ async function bootstrap() {
 		task.wait(0.1);
 	}
 
-	Roact.mount(<App />, player.FindFirstChildWhichIsA("PlayerGui")!);
+	const root = createRoot(new Instance("Folder"));
+	const target = Players.LocalPlayer.WaitForChild("PlayerGui");
+
+	root.render(
+		createPortal(
+			<StrictMode>
+				<RootProvider key="root-provider">
+					<App key="app" />
+				</RootProvider>
+			</StrictMode>,
+		),
+	);
 
 	const receiver = createBroadcastReceiver({
 		start: () => {

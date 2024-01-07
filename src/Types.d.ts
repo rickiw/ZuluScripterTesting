@@ -1,4 +1,12 @@
-interface Workspace extends Instance {}
+interface Workspace extends Instance {
+	Doors: Folder & { [key in DoorType]: BaseDoor };
+}
+
+type BaseDoor = Model & {
+	Keypads: Model;
+};
+
+type DoorType = "SingleDoor" | "SingleGlassDoor";
 
 interface ReplicatedStorage extends Instance {
 	Shared: Folder & {

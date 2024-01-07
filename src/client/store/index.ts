@@ -1,6 +1,7 @@
 import { UseProducerHook, UseSelectorHook, useProducer, useSelector } from "@rbxts/react-reflex";
 import { InferState, combineProducers } from "@rbxts/reflex";
 import { slices } from "shared/slices";
+import { interactionSlice } from "./interaction/interaction-slice";
 
 type Store = typeof clientStore;
 
@@ -11,6 +12,7 @@ export const useRootSelector: UseSelectorHook<Store> = useSelector;
 
 export const clientStore = combineProducers({
 	...slices,
+	interaction: interactionSlice,
 });
 
 export type ClientStore = typeof clientStore;
