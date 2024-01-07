@@ -1,19 +1,24 @@
 {
 	"version": 1,
-	"flameworkVersion": "1.0.1",
+	"flameworkVersion": "1.0.0-beta.24",
 	"identifiers": {
-		"zulu-site:out/client/ui/library/error/error-boundary@ErrorBoundary": "N6",
-		"zulu-site:out/client/controllers/BaseController@BaseController": "YR",
-		"zulu-site:out/client/controllers/SimulationController@SimulationController": "7a",
-		"zulu-site:out/server/services/PlayerService@PlayerService": "JK",
-		"zulu-site:out/server/services/DataService@DataService": "10",
-		"zulu-site:out/server/services/TickService@TickService": "5o",
-		"zulu-site:out/shared/components/game/BaseInteraction@BaseInteraction": "Qd",
-		"zulu-site:out/shared/components/game/BasePresence@BasePresence": "a2",
-		"zulu-site:out/shared/components/game/door/DoorSound@DoorSound": "P6",
-		"zulu-site:out/shared/components/game/door/BaseDoor@BaseDoor": "B3",
-		"zulu-site:out/shared/components/game/door/DoorSingleSwing@SingleSwingDoor": "po"
+		"zulu-site:out/client/ui/library/error/error-boundary@ErrorBoundary": "client/ui/library/error/error-boundary@ErrorBoundary",
+		"zulu-site:out/client/controllers/BaseController@BaseController": "client/controllers/BaseController@BaseController",
+		"zulu-site:out/client/controllers/SimulationController@SimulationController": "client/controllers/SimulationController@SimulationController",
+		"zulu-site:out/server/services/PlayerService@PlayerService": "server/services/PlayerService@PlayerService",
+		"zulu-site:out/server/services/DataService@DataService": "server/services/DataService@DataService",
+		"zulu-site:out/server/services/TickService@TickService": "server/services/TickService@TickService",
+		"zulu-site:out/shared/components/game/BaseInteraction@BaseInteraction": "shared/components/game/BaseInteraction@BaseInteraction",
+		"zulu-site:out/shared/components/game/BasePresence@BasePresence": "shared/components/game/BasePresence@BasePresence",
+		"zulu-site:out/shared/components/game/door/DoorSound@DoorSound": "shared/components/game/door/DoorSound@DoorSound",
+		"zulu-site:out/shared/components/game/door/BaseDoor@BaseDoor": "shared/components/game/door/BaseDoor@BaseDoor",
+		"zulu-site:out/shared/components/game/door/DoorSingleSwing@SingleSwingDoor": "shared/components/game/door/DoorSingleSwing@SingleSwingDoor",
+		"zulu-site:out/client/controllers/BaseController@On1SecondInterval": "client/controllers/BaseController@On1SecondInterval",
+		"zulu-site:out/client/controllers/BaseController@On5SecondInterval": "client/controllers/BaseController@On5SecondInterval",
+		"zulu-site:out/server/services/PlayerService@PlayerAdded": "server/services/PlayerService@PlayerAdded",
+		"zulu-site:out/server/services/PlayerService@PlayerRemoving": "server/services/PlayerService@PlayerRemoving",
+		"zulu-site:out/server/services/TickService@On1SecondInterval": "server/services/TickService@On1SecondInterval",
+		"zulu-site:out/server/services/TickService@On5SecondInterval": "server/services/TickService@On5SecondInterval"
 	},
-	"metadata": {},
-	"salt": "64eb2c73baef8d580f98b2da0f842453f1115564ddbbc48e6b6d45c99b0956f304cc08d6a368fde1caa37f65b9a01a967b56c1604e138a0d882d58e42ddf35c0"
+	"metadata": {}
 }

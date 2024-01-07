@@ -18,6 +18,7 @@ export interface DoorInstance extends BaseDoorInstance {
 export class SingleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> implements OnStart, Door {
 	constructor() {
 		super();
+		Log.Warn("SingleSwingDoor constructor");
 	}
 
 	onMotorStep(value: number) {
