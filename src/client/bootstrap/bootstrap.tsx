@@ -5,7 +5,7 @@ import { Players } from "@rbxts/services";
 import { App } from "../ui/app";
 import { RootProvider } from "../ui/providers/root-provider";
 
-export async function bootstrap() {
+export function bootstrap() {
 	Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
 	const root = createRoot(new Instance("Folder"));

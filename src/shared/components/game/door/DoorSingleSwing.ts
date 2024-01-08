@@ -10,7 +10,7 @@ export interface DoorInstance extends BaseDoorInstance {
 
 @Component({
 	defaults: {
-		autoCloseDelay: 2,
+		autocloseDelay: 2,
 	},
 	tag: "singleSwingDoor",
 })
@@ -20,8 +20,8 @@ export class SingleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 	}
 
 	onMotorStep(value: number) {
-		const newCF = this.originCF.Lerp(this.originCF.mul(CFrame.Angles(0, math.pi / 1.5, 0)), value);
-		this.instance.Hinge.CFrame = newCF;
+		const newCFrame = this.originCFrame.Lerp(this.originCFrame.mul(CFrame.Angles(0, math.pi / 1.5, 0)), value);
+		this.instance.Hinge.CFrame = newCFrame;
 	}
 
 	onDoorInteract(player: Player) {
@@ -42,7 +42,7 @@ export class SingleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 		this.springSettings = springs.molasses;
 		this.weldDoor(this.instance.Door, this.instance.Hinge);
 		this.baseMotor.onStep((value) => this.onMotorStep(value));
-		this.originCF = this.instance.Hinge.CFrame;
+		this.originCFrame = this.instance.Hinge.CFrame;
 		this.interacted.Connect((player) => this.onDoorInteract(player));
 	}
 }

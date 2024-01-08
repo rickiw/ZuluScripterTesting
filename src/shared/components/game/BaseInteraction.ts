@@ -9,6 +9,10 @@ export interface InteractionAttributes {
 	studSize: number;
 }
 
+export interface OnInteract {
+	onInteract(player: Player, prompt?: ProximityPrompt): boolean;
+}
+
 @Component({
 	defaults: {
 		studSize: 1.5,

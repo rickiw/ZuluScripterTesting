@@ -24,8 +24,8 @@ export interface Door {
 export interface BaseDoorAttributes {
 	locked?: boolean;
 	broken?: boolean;
-	autoClose?: boolean;
-	autoCloseDelay?: number;
+	autoclose?: boolean;
+	autocloseDelay?: number;
 	open?: boolean;
 	moving?: boolean;
 }
@@ -44,17 +44,18 @@ export interface BaseDoorInstance extends Model {
 	defaults: {
 		locked: false,
 		broken: false,
-		autoCloseDelay: 2,
+		autoclose: true,
+		autocloseDelay: 2,
 		open: false,
 		moving: false,
 		canInterrupt: true,
 	},
 })
 export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends BaseComponent<A, I> implements OnStart {
-	maid = new Maid();
+	maid: Maid;
 	baseMotor: Motion;
 	validCards: string[];
-	originCF: CFrame;
+	originCFrame: CFrame;
 	interactComponents: BaseInteraction<any, any>[];
 	presenceComponents: BasePresence<any, any>[];
 	interacted: Signal<(player: Player) => void>;
@@ -65,15 +66,16 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 	closeMotor: number;
 	doorSound?: DoorSound<any, any>;
 	springSettings: SpringOptions;
-	simNode?: Octree.Node<SimNodeInfo>;
+	simulationNode?: Octree.Node<SimNodeInfo>;
 	isSimulated: boolean;
 
 	constructor() {
 		super();
 
+		this.maid = new Maid();
 		this.baseMotor = createMotion(0, { start: true });
 		this.validCards = [];
-		this.originCF = new CFrame();
+		this.originCFrame = new CFrame();
 		this.interactComponents = [];
 		this.presenceComponents = [];
 		this.interacted = new Signal();
@@ -156,7 +158,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		if (RunService.IsClient()) {
 			const [cf] = this.instance.GetBoundingBox();
 			const simulationController = Dependency<SimulationController>();
-			this.simNode = simulationController.registerSimulatedObject(cf.Position, {
+			this.simulationNode = simulationController.registerSimulatedObject(cf.Position, {
 				callback: (state) => this.simulationStateChange(state),
 				type: "door",
 			});
@@ -233,25 +235,26 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		}
 
 		if (this.attributes.moving && this.attributes.canInterrupt) {
-			if (this.attributes.autoClose && this.attributes.open) {
+			if (this.attributes.autoclose && this.attributes.open) {
 				this.attributes.open = false;
 				this.attributes.moving = false;
 			}
 			return;
 		}
 		this.attributes.moving = true;
-		if (!this.attributes.autoClose) {
+		if (!this.attributes.autoclose) {
 			this.attributes.open = !this.attributes.open;
 		} else {
 			this.attributes.open = true;
 			const openTick = tick();
-			while (math.abs(tick() - openTick) <= (this.attributes.autoCloseDelay ?? 5)) {
+			while (math.abs(tick() - openTick) <= (this.attributes.autocloseDelay ?? 5)) {
 				task.wait();
 				if (!this.attributes.moving) break;
 			}
-			task.wait(0.2);
-			this.attributes.moving = false;
+			this.attributes.open = false;
 		}
+		task.wait(0.2);
+		this.attributes.moving = false;
 	}
 
 	onStart() {
@@ -260,9 +263,9 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 
 	destroy() {
 		super.destroy();
-		if (RunService.IsClient() && this.simNode) {
+		if (RunService.IsClient() && this.simulationNode) {
 			const simulationController = Dependency<SimulationController>();
-			simulationController.unregisterSimulatedObject(this.simNode);
+			simulationController.unregisterSimulatedObject(this.simulationNode);
 		}
 	}
 }

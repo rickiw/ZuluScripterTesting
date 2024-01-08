@@ -54,23 +54,25 @@ export function InteractionProvider() {
 
 		if (id !== false) {
 			clientStore.setInteractionVisible(id, false);
-			Promise.delay(0.25).then(() => clientStore.removeInteraction(id));
+			Promise.delay(0.25).then(() => {
+				clientStore.removeInteraction(id);
+			});
 		}
 	});
 
 	return (
 		<>
-			{interactions.map((interaction) => {
+			{interactions.map((interaction) => (
 				<Interaction
 					key={interaction.id}
 					id={interaction.id}
-					keybind={interaction.keybind}
 					interactionComponent={interaction.interactionComponent}
-					adornee={interaction.adornee}
-					prompt={interaction.prompt}
 					visible={interaction.visible}
-				/>;
-			})}
+					adornee={interaction.adornee}
+					keybind={interaction.keybind}
+					prompt={interaction.prompt}
+				/>
+			))}
 		</>
 	);
 }
