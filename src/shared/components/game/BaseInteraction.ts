@@ -1,6 +1,6 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
-import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 import Signal from "@rbxts/signal";
 
 export interface InteractionInstance extends ProximityPrompt {}
@@ -26,11 +26,14 @@ export class BaseInteraction<A extends InteractionAttributes, I extends Interact
 
 	constructor() {
 		super();
+		Log.Warn("Instance: {@1} {@1}", this.instance.Name, "cheeese");
 
 		this.activated = new Signal();
 		this.interactBegin = new Signal();
 		this.interactEnd = new Signal();
 		this.messageReceived = new Signal();
+
+		Log.Warn("Instance: {@22} {@1}", this.instance.Name, this.instance.Parent?.Name);
 
 		this.maid.GiveTask(this.activated);
 		this.maid.GiveTask(this.interactBegin);

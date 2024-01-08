@@ -1,10 +1,14 @@
+import { Components } from "@flamework/components";
+import { Dependency } from "@flamework/core";
 import { New } from "@rbxts/fusion";
+import Log from "@rbxts/log";
 import { useEventListener } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { ProximityPromptService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectInteractionIdByPrompt, selectInteractions } from "client/store/interaction";
+import { BaseInteraction } from "shared/components/game/BaseInteraction";
 import { Interaction, InteractionProps } from "./interaction";
 
 export interface PromptStorage {
@@ -14,7 +18,13 @@ export interface PromptStorage {
 export function InteractionProvider() {
 	const interactions = useSelector(selectInteractions);
 	useEventListener(ProximityPromptService.PromptShown, (prompt) => {
-		if (!prompt.Parent) return;
+		if (!prompt.Parent || !prompt.HasTag("baseInteraction")) return;
+		Log.Warn("Prompt being shown");
+		const components = Dependency<Components>();
+		Log.Warn("Prompt being shown: Components:");
+		const interactionComponent = components.getComponent<BaseInteraction<any, any>>(prompt);
+		Log.Warn("Prompt being shown: Components ree: {@1}", interactionComponent);
+		if (!interactionComponent) return;
 		const promptSize = (prompt.GetAttribute("studSize") as number) ?? 1.5;
 		let targetCFrame = new CFrame();
 		if (prompt.Parent.FindFirstChildOfClass("Attachment")) {
@@ -53,7 +63,7 @@ export function InteractionProvider() {
 	});
 	return (
 		<>
-			{/* {interactions.map((interaction) => {
+			{interactions.map((interaction) => {
 				<Interaction
 					key={interaction.id}
 					id={interaction.id}
@@ -62,7 +72,7 @@ export function InteractionProvider() {
 					prompt={interaction.prompt}
 					visible={interaction.visible}
 				/>;
-			})} */}
+			})}
 		</>
 	);
 }
