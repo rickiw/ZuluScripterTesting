@@ -1,5 +1,6 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
+import Maid from "@rbxts/maid";
 import Signal from "@rbxts/signal";
 import { Zone } from "@rbxts/zone-plus";
 
@@ -17,6 +18,7 @@ export class BasePresence<A extends PresenceAttributes, I extends PresenceInstan
 	extends BaseComponent<A, I>
 	implements OnStart
 {
+	maid = new Maid();
 	presenceBegin: Signal<(plr: Player) => void>;
 	presenceEnd: Signal<(plr: Player) => void>;
 	zone: Zone;

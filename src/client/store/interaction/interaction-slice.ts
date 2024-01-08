@@ -1,11 +1,14 @@
 import { createProducer } from "@rbxts/reflex";
 import { InteractionProps } from "client/ui/library/interaction/interaction";
+import { BaseInteraction } from "shared/components/game/BaseInteraction";
 
 export interface InteractionState {
 	readonly interactions: readonly Interaction[];
 }
 
-export interface Interaction extends Readonly<InteractionProps> {}
+export interface Interaction extends Readonly<InteractionProps> {
+	readonly interactionComponent: BaseInteraction<any, any>;
+}
 
 const initialState: InteractionState = {
 	interactions: [],
@@ -14,7 +17,7 @@ const initialState: InteractionState = {
 export const interactionSlice = createProducer(initialState, {
 	addInteraction: (state, interaction: Interaction) => ({
 		...state,
-		interactions: [...state.interactions, interaction],
+		interactions: [interaction, ...state.interactions],
 	}),
 	removeInteraction: (state, id: string) => ({
 		...state,

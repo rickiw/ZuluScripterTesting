@@ -1,7 +1,8 @@
 import { lerpBinding, useEventListener, useUnmountEffect } from "@rbxts/pretty-react-hooks";
 import Roact, { useEffect, useState } from "@rbxts/roact";
-import { RunService } from "@rbxts/services";
+import { Players, RunService } from "@rbxts/services";
 import { useMotion } from "client/ui/hooks/use-motion";
+import { BaseInteraction } from "shared/components/game/BaseInteraction";
 import { springs } from "shared/constants/springs";
 import { round } from "shared/utils";
 import { Group } from "../group";
@@ -14,10 +15,11 @@ export interface InteractionProps {
 	keybind: Enum.KeyCode;
 	prompt: ProximityPrompt;
 	visible: boolean;
+	interactionComponent: BaseInteraction<any, any>;
 	id: string;
 }
 
-export function Interaction({ adornee, keybind, prompt, visible, id }: InteractionProps) {
+export function Interaction({ interactionComponent, adornee, keybind, prompt, visible, id }: InteractionProps) {
 	const [transition, transitionMotion] = useMotion(0);
 	const [progress, updateProgress] = useState(0);
 	const [bounce, bounceMotion] = useMotion(0);
@@ -29,6 +31,7 @@ export function Interaction({ adornee, keybind, prompt, visible, id }: Interacti
 		adornee.Destroy();
 		setHoldStart(0);
 	});
+
 	useEffect(() => {
 		transitionMotion.spring(visible ? 1 : 0, springs.gentle);
 	}, [visible]);
@@ -37,9 +40,11 @@ export function Interaction({ adornee, keybind, prompt, visible, id }: Interacti
 		setHoldStart(0);
 		updateProgress(0);
 	});
+
 	useEventListener(prompt.PromptButtonHoldBegan, () => {
 		setHoldStart(tick());
 	});
+
 	useEventListener(RunService.RenderStepped, () => {
 		if (holdStart !== 0) {
 			const totalTime = prompt.HoldDuration;
@@ -55,12 +60,27 @@ export function Interaction({ adornee, keybind, prompt, visible, id }: Interacti
 			updateProgress(0);
 		}
 	});
+
 	useEventListener(prompt.Triggered, () => {
 		updateProgress(0);
 		bounceMotion.spring(1, springs.bubbly);
 		task.wait(0.1);
 		bounceMotion.spring(0, springs.bubbly);
 	});
+
+	useEventListener(interactionComponent.messageReceived, (player, message) => {
+		if (player === Players.LocalPlayer) {
+			if (message === "interaction_accepted") {
+				responseMotion.spring(Color3.fromRGB(0, 255, 0), springs.bubbly);
+			} else if (message === "interaction_denied") {
+				responseMotion.spring(Color3.fromRGB(255, 0, 0), springs.bubbly);
+			}
+			task.delay(0.25, () => {
+				responseMotion.spring(Color3.fromRGB(255, 255, 255));
+			});
+		}
+	});
+
 	return (
 		<SurfaceLayer
 			alwaysOnTop={true}
@@ -75,7 +95,7 @@ export function Interaction({ adornee, keybind, prompt, visible, id }: Interacti
 				position={UDim2.fromScale(0.5, 0.5)}
 				size={UDim2.fromScale(0.75, 0.75)}
 			>
-				<uiscale Scale={lerpBinding(bounce, 0.9, 1)} />
+				<uiscale Scale={lerpBinding(bounce, 0.9, 1)}></uiscale>
 				<Image
 					key="background"
 					imageTransparency={lerpBinding(transition, 1, 0)}

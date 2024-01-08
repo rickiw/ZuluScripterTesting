@@ -1,7 +1,5 @@
 import { Components } from "@flamework/components";
 import { Dependency } from "@flamework/core";
-import { New } from "@rbxts/fusion";
-import Log from "@rbxts/log";
 import { useEventListener } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
@@ -17,42 +15,40 @@ export interface PromptStorage {
 
 export function InteractionProvider() {
 	const interactions = useSelector(selectInteractions);
+
 	useEventListener(ProximityPromptService.PromptShown, (prompt) => {
 		if (!prompt.Parent || !prompt.HasTag("baseInteraction")) return;
-		Log.Warn("Prompt being shown");
 		const components = Dependency<Components>();
-		Log.Warn("Prompt being shown: Components:");
 		const interactionComponent = components.getComponent<BaseInteraction<any, any>>(prompt);
-		Log.Warn("Prompt being shown: Components ree: {@1}", interactionComponent);
 		if (!interactionComponent) return;
-		const promptSize = (prompt.GetAttribute("studSize") as number) ?? 1.5;
+		const basePart = new Instance("Part");
+		basePart.CanCollide = false;
+		basePart.Anchored = true;
+		basePart.Transparency = 1;
+		basePart.CanQuery = false;
+		basePart.Parent = Workspace.CurrentCamera;
+		basePart.Size = new Vector3(interactionComponent.getStudSize(), interactionComponent.getStudSize(), 0.1);
 		let targetCFrame = new CFrame();
 		if (prompt.Parent.FindFirstChildOfClass("Attachment")) {
 			targetCFrame = prompt.Parent.FindFirstChildOfClass("Attachment")!.WorldCFrame;
 		} else if (prompt.Parent.IsA("BasePart")) {
 			targetCFrame = prompt.Parent.CFrame;
 		} else if (prompt.Parent.IsA("Model")) {
-			const [cf, size] = prompt.Parent.GetBoundingBox();
+			const [cf, _size] = prompt.Parent.GetBoundingBox();
 			targetCFrame = cf;
 		}
-		const basePart = New("Part")({
-			CanCollide: false,
-			Anchored: true,
-			Transparency: 1,
-			CanQuery: false,
-			Parent: Workspace.CurrentCamera,
-			Size: new Vector3(promptSize, promptSize, 0.1),
-			CFrame: targetCFrame,
-		});
 
+		basePart.CFrame = targetCFrame;
 		clientStore.addInteraction({
 			id: tostring(math.random(1000, 9999)),
+			interactionComponent,
 			keybind: prompt.KeyboardKeyCode,
 			adornee: basePart,
 			visible: true,
 			prompt,
 		});
 	});
+
 	useEventListener(ProximityPromptService.PromptHidden, (prompt) => {
 		const id = clientStore.getState(selectInteractionIdByPrompt(prompt));
 
@@ -61,6 +57,7 @@ export function InteractionProvider() {
 			Promise.delay(0.25).then(() => clientStore.removeInteraction(id));
 		}
 	});
+
 	return (
 		<>
 			{interactions.map((interaction) => {
@@ -68,6 +65,7 @@ export function InteractionProvider() {
 					key={interaction.id}
 					id={interaction.id}
 					keybind={interaction.keybind}
+					interactionComponent={interaction.interactionComponent}
 					adornee={interaction.adornee}
 					prompt={interaction.prompt}
 					visible={interaction.visible}

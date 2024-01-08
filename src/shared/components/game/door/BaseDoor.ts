@@ -1,6 +1,7 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
+import Maid from "@rbxts/maid";
 import Octree from "@rbxts/octo-tree";
 import { Motion, SpringOptions, createMotion } from "@rbxts/ripple";
 import { RunService } from "@rbxts/services";
@@ -23,7 +24,8 @@ export interface Door {
 export interface BaseDoorAttributes {
 	locked?: boolean;
 	broken?: boolean;
-	autoClose?: false | number;
+	autoClose?: boolean;
+	autoCloseDelay?: number;
 	open?: boolean;
 	moving?: boolean;
 }
@@ -42,13 +44,14 @@ export interface BaseDoorInstance extends Model {
 	defaults: {
 		locked: false,
 		broken: false,
-		autoClose: 2,
+		autoCloseDelay: 2,
 		open: false,
 		moving: false,
 		canInterrupt: true,
 	},
 })
 export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends BaseComponent<A, I> implements OnStart {
+	maid = new Maid();
 	baseMotor: Motion;
 	validCards: string[];
 	originCF: CFrame;
@@ -242,7 +245,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		} else {
 			this.attributes.open = true;
 			const openTick = tick();
-			while (math.abs(tick() - openTick) <= (this.attributes.autoClose ?? 5)) {
+			while (math.abs(tick() - openTick) <= (this.attributes.autoCloseDelay ?? 5)) {
 				task.wait();
 				if (!this.attributes.moving) break;
 			}
