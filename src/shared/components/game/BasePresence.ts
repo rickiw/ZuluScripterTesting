@@ -1,5 +1,6 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
+import Maid from "@rbxts/maid";
 import Signal from "@rbxts/signal";
 import { Zone } from "@rbxts/zone-plus";
 

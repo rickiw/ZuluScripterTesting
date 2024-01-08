@@ -1,5 +1,6 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
+import Maid from "@rbxts/maid";
 import Signal from "@rbxts/signal";
 
 export interface InteractionInstance extends ProximityPrompt {}

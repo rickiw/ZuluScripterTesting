@@ -1,6 +1,7 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
+import Maid from "@rbxts/maid";
 import Octree from "@rbxts/octo-tree";
 import { Motion, SpringOptions, createMotion } from "@rbxts/ripple";
 import { RunService } from "@rbxts/services";

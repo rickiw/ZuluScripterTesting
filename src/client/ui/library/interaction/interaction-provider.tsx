@@ -53,7 +53,7 @@ export function InteractionProvider() {
 	});
 	return (
 		<>
-			{interactions.map((interaction) => {
+			{/* {interactions.map((interaction) => {
 				<Interaction
 					key={interaction.id}
 					id={interaction.id}
@@ -62,7 +62,7 @@ export function InteractionProvider() {
 					prompt={interaction.prompt}
 					visible={interaction.visible}
 				/>;
-			})}
+			})} */}
 		</>
 	);
 }
