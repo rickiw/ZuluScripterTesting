@@ -60,6 +60,7 @@
 		"@rbxts/services": "^1.5.1",
 		"@rbxts/set-timeout": "^1.1.2",
 		"@rbxts/signal": "^1.1.1",
+		"@rbxts/simplepath": "^2.2.1-ts.2",
 		"@rbxts/stacks-and-queues": "^1.0.5",
 		"@rbxts/t": "^3.1.0",
 		"@rbxts/tween": "^1.0.5",

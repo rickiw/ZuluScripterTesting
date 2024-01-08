@@ -5,13 +5,15 @@ import { useMotion } from "client/ui/hooks/use-motion";
 import { BaseInteraction } from "shared/components/game/BaseInteraction";
 import { springs } from "shared/constants/springs";
 import { round } from "shared/utils";
+import { BillboardLayer } from "../billboard-layer";
 import { Group } from "../group";
 import { Image } from "../image";
 import { SurfaceLayer } from "../layer";
 import { Text } from "../text";
 
 export interface InteractionProps {
-	adornee: BasePart;
+	adornee: BasePart | Attachment;
+	surfaceType: "Billboard" | "Surface";
 	keybind: Enum.KeyCode;
 	prompt: ProximityPrompt;
 	visible: boolean;
@@ -19,7 +21,15 @@ export interface InteractionProps {
 	id: string;
 }
 
-export function Interaction({ interactionComponent, adornee, keybind, prompt, visible, id }: InteractionProps) {
+export function Interaction({
+	interactionComponent,
+	surfaceType,
+	adornee,
+	keybind,
+	prompt,
+	visible,
+	id,
+}: InteractionProps) {
 	const [transition, transitionMotion] = useMotion(0);
 	const [progress, updateProgress] = useState(0);
 	const [bounce, bounceMotion] = useMotion(0);
@@ -28,7 +38,7 @@ export function Interaction({ interactionComponent, adornee, keybind, prompt, vi
 	const [timeLeft, setTimeLeft] = useState(0);
 
 	useUnmountEffect(() => {
-		adornee.Destroy();
+		if (!adornee.IsA("Attachment")) adornee.Destroy();
 		setHoldStart(0);
 	});
 
@@ -81,14 +91,8 @@ export function Interaction({ interactionComponent, adornee, keybind, prompt, vi
 		}
 	});
 
-	return (
-		<SurfaceLayer
-			alwaysOnTop={true}
-			face={Enum.NormalId.Back}
-			adornee={adornee}
-			sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
-			pixelsPerStud={100}
-		>
+	function InteractionState() {
+		return (
 			<Group
 				key="group"
 				anchorPoint={new Vector2(0.5, 0.5)}
@@ -130,6 +134,26 @@ export function Interaction({ interactionComponent, adornee, keybind, prompt, vi
 					text={timeLeft + "s left."}
 				/>
 			</Group>
-		</SurfaceLayer>
+		);
+	}
+
+	return (
+		<>
+			{surfaceType === "Surface" ? (
+				<SurfaceLayer
+					alwaysOnTop={true}
+					face={Enum.NormalId.Back}
+					adornee={adornee as BasePart}
+					sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
+					pixelsPerStud={100}
+				>
+					<InteractionState />
+				</SurfaceLayer>
+			) : (
+				<BillboardLayer alwaysOnTop={true} adornee={adornee as Attachment}>
+					<InteractionState />
+				</BillboardLayer>
+			)}
+		</>
 	);
 }

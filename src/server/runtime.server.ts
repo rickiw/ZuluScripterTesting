@@ -1,7 +1,8 @@
 import { Flamework } from "@flamework/core";
-import Log from "@rbxts/log";
-import { bootstrap } from "./bootstrap/bootstrap";
+import Log, { Logger } from "@rbxts/log";
 import { store } from "./store";
+
+Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
 Flamework.addPaths("src/server/components");
 Flamework.addPaths("src/server/services");
@@ -10,7 +11,3 @@ Flamework.addPaths("src/shared/components/game");
 Flamework.ignite();
 
 store.getActions();
-
-bootstrap().done((status) => {
-	Log.Info("Bootstrap complete with status {@Status}", status);
-});

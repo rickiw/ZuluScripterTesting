@@ -6,7 +6,7 @@ import Roact from "@rbxts/roact";
 import { ProximityPromptService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectInteractionIdByPrompt, selectInteractions } from "client/store/interaction";
-import { BaseInteraction } from "shared/components/game/BaseInteraction";
+import { BaseInteraction, InteractionInstance } from "shared/components/game/BaseInteraction";
 import { Interaction, InteractionProps } from "./interaction";
 
 export interface PromptStorage {
@@ -21,6 +21,19 @@ export function InteractionProvider() {
 		const components = Dependency<Components>();
 		const interactionComponent = components.getComponent<BaseInteraction<any, any>>(prompt);
 		if (!interactionComponent) return;
+		const isBillboard = (interactionComponent.instance as InteractionInstance).GetAttribute("billboard") as Boolean;
+		if (isBillboard) {
+			clientStore.addInteraction({
+				id: tostring(math.random(1000, 9999)),
+				surfaceType: "Billboard",
+				interactionComponent,
+				keybind: prompt.KeyboardKeyCode,
+				adornee: prompt.Parent.FindFirstChildOfClass("Attachment")!,
+				visible: true,
+				prompt,
+			});
+			return;
+		}
 		const basePart = new Instance("Part");
 		basePart.CanCollide = false;
 		basePart.Anchored = true;
@@ -41,6 +54,7 @@ export function InteractionProvider() {
 		basePart.CFrame = targetCFrame;
 		clientStore.addInteraction({
 			id: tostring(math.random(1000, 9999)),
+			surfaceType: "Surface",
 			interactionComponent,
 			keybind: prompt.KeyboardKeyCode,
 			adornee: basePart,
@@ -66,6 +80,7 @@ export function InteractionProvider() {
 				<Interaction
 					key={interaction.id}
 					id={interaction.id}
+					surfaceType={interaction.surfaceType}
 					interactionComponent={interaction.interactionComponent}
 					visible={interaction.visible}
 					adornee={interaction.adornee}

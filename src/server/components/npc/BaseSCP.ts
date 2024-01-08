@@ -1,11 +1,21 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
-import { BaseInteraction, OnInteract } from "../BaseInteraction";
+import { BaseInteraction, OnInteract } from "shared/components/game/BaseInteraction";
 
 export interface BaseSCPInstance extends Model {}
 
 export interface SCPAttributes {}
+
+export interface OnWaypointReached {
+	waypointReached(): void;
+}
+
+export interface OnPathfind {
+	pathfindFinished(): void;
+	pathfindBlocked(): void;
+	pathfindError(): void;
+}
 
 @Component({
 	defaults: {},

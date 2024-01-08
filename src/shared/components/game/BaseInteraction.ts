@@ -7,6 +7,7 @@ export interface InteractionInstance extends ProximityPrompt {}
 
 export interface InteractionAttributes {
 	studSize: number;
+	billboard: true;
 }
 
 export interface OnInteract {
@@ -16,6 +17,7 @@ export interface OnInteract {
 @Component({
 	defaults: {
 		studSize: 1.5,
+		billboard: false,
 	},
 	tag: "baseInteraction",
 })
