@@ -45,8 +45,6 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	onStart() {
 		super.onStart();
 		this.status = "wandering";
-
-		Log.Warn("SCP131 started");
 	}
 
 	onInteract(player: Player, prompt?: ProximityPrompt | undefined): boolean {
@@ -80,11 +78,15 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 			case "following": {
 				if (!this.target) {
 					Log.Warn("SCP131 | Target is undefined but is following, probably left game");
+					if (this.path.Status === "Active") this.path.Stop();
+					this.status = "idle";
 					return;
 				}
 				const character = this.target.Character;
 				if (!character || !character.PrimaryPart) {
 					Log.Warn("SCP131 | Target character is undefined but is following, probably left game");
+					if (this.path.Status === "Active") this.path.Stop();
+					this.status = "idle";
 					return;
 				}
 				if (this.lastPos && this.lastPos.sub(character.PrimaryPart.Position).Magnitude < 1) {
