@@ -3,9 +3,9 @@ import Log from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
 import { Players } from "@rbxts/services";
+import { PLAYER_DATA_KEY } from "server/constants/core";
 import { defaultPlayerProfile } from "server/data";
 import { store } from "server/store";
-import { PLAYER_DATA_KEY } from "shared/constants/core";
 import { selectPlayerSave } from "shared/data/selectors/saves";
 import { PlayerProfile } from "shared/data/slices/state/saves";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
@@ -21,7 +21,6 @@ export class DataService implements PlayerAdded, PlayerRemoving {
 	private profileStore: ProfileStore<PlayerProfile>;
 
 	constructor() {
-		// FIXME: PLAYER_DATA_KEY should not be a shared constant
 		this.profileStore = ProfileService.GetProfileStore(PLAYER_DATA_KEY, defaultPlayerProfile);
 	}
 
@@ -65,8 +64,8 @@ export class DataService implements PlayerAdded, PlayerRemoving {
 		try {
 			await this.loadProfile(player);
 		} catch (err) {
-			Log.Warn("Failed to load profile for {name} ({id})", player.Name, player.UserId);
 			player.Kick("User data exception, please rejoin.");
+			Log.Warn("Failed to load data for {name} ({id}): {err}", player.Name, player.UserId, err);
 		}
 	}
 
