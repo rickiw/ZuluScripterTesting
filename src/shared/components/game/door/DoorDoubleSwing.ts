@@ -2,6 +2,7 @@ import { Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { springs } from "shared/constants/springs";
 import { BaseDoor, BaseDoorAttributes, BaseDoorInstance, Door } from "./BaseDoor";
+import { DoorService } from "./DoorService";
 
 export interface DoorInstance extends BaseDoorInstance {
 	LeftDoor: Model & {
@@ -22,7 +23,7 @@ export class DoubleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 	leftDoorOriginCFrame: CFrame;
 	rightDoorOriginCFrame: CFrame;
 
-	constructor() {
+	constructor(private doorService: DoorService) {
 		super();
 
 		this.leftDoorOriginCFrame = new CFrame();
@@ -30,16 +31,10 @@ export class DoubleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 	}
 
 	onMotorStep(value: number) {
-		const leftDoorCFrame = this.leftDoorOriginCFrame.Lerp(
-			this.leftDoorOriginCFrame.mul(CFrame.Angles(0, math.pi / 1.5, 0)),
-			value,
-		);
+		const leftDoorCFrame = this.doorService.getAngleCFrame(this.leftDoorOriginCFrame, 1.5, value);
 		this.instance.LeftDoor.Hinge.CFrame = leftDoorCFrame;
 
-		const rightDoorCFrame = this.rightDoorOriginCFrame.Lerp(
-			this.rightDoorOriginCFrame.mul(CFrame.Angles(0, -math.pi / 1.5, 0)),
-			value,
-		);
+		const rightDoorCFrame = this.doorService.getNegativeAngleCFrame(this.rightDoorOriginCFrame, 1.5, value);
 		this.instance.RightDoor.Hinge.CFrame = rightDoorCFrame;
 	}
 

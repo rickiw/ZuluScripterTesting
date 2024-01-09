@@ -2,6 +2,7 @@ import { Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { springs } from "shared/constants/springs";
 import { BaseDoor, BaseDoorAttributes, BaseDoorInstance, Door } from "./BaseDoor";
+import { DoorService } from "./DoorService";
 
 export interface DoorInstance extends BaseDoorInstance {
 	Door: Model & {
@@ -21,13 +22,13 @@ interface DoorAttributes extends BaseDoorAttributes {
 	tag: "chunkyDoor",
 })
 export class ChunkyDoor extends BaseDoor<DoorAttributes, DoorInstance> implements OnStart, Door {
-	constructor() {
+	constructor(private doorService: DoorService) {
 		super();
 	}
 
 	onMotorStep(value: number) {
-		const newCF = this.originCFrame.Lerp(this.originCFrame.mul(new CFrame(this.attributes.offset)), value);
-		this.instance.Door.Hinge.CFrame = newCF;
+		const newCFrame = this.doorService.getOffsetCFrame(this.originCFrame, this.attributes.offset, value);
+		this.instance.Door.Hinge.CFrame = newCFrame;
 	}
 
 	onDoorInteract(player: Player) {

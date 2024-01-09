@@ -11,10 +11,12 @@ export interface OnWaypointReached {
 	waypointReached(): void;
 }
 
+export type PathfindErrorType = "LimitReached" | "TargetUnreachable" | "ComputationError" | "AgentStuck";
+
 export interface OnPathfind {
 	pathfindFinished(): void;
 	pathfindBlocked(): void;
-	pathfindError(): void;
+	pathfindError(error: PathfindErrorType): void;
 }
 
 @Component({

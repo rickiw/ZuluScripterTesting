@@ -39,7 +39,8 @@
 		"zulu-site:out/server/services/PathfindService@PathfindService": "server/services/PathfindService@PathfindService",
 		"zulu-site:out/server/components/npc/BaseSCP@BaseSCP": "server/components/npc/BaseSCP@BaseSCP",
 		"zulu-site:out/server/components/npc/scp/SCP131@SCP131": "server/components/npc/scp/SCP131@SCP131",
-		"zulu-site:out/server/components/npc/BaseSCP@OnPathfind": "server/components/npc/BaseSCP@OnPathfind"
+		"zulu-site:out/server/components/npc/BaseSCP@OnPathfind": "server/components/npc/BaseSCP@OnPathfind",
+		"zulu-site:out/shared/components/game/door/DoorService@DoorService": "shared/components/game/door/DoorService@DoorService"
 	},
 	"metadata": {}
 }
