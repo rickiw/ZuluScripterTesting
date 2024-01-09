@@ -10,9 +10,13 @@ import { selectPlayerSave } from "shared/data/selectors/saves";
 import { PlayerProfile } from "shared/data/slices/state/saves";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
+// TODO: consider moving away from ProfileService
+
+type ProfileInstance = Profile<PlayerProfile>;
+
 @Service()
 export class DataService implements PlayerAdded, PlayerRemoving {
-	private profileStorage = new Map<number, Profile<PlayerProfile>>();
+	private profileStorage = new Map<Player["UserId"], ProfileInstance>();
 
 	private profileStore: ProfileStore<PlayerProfile>;
 
@@ -26,6 +30,7 @@ export class DataService implements PlayerAdded, PlayerRemoving {
 
 		Log.Verbose("{@Player} has joined and data is being requested.", player.Name);
 
+		// FIXME: don't use ForceLoad
 		const profile = this.profileStore.LoadProfileAsync("Player_" + player.UserId, "ForceLoad");
 		assert(profile, "profile is undefined!");
 
