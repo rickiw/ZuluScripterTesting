@@ -2,6 +2,7 @@ import { UseProducerHook, UseSelectorHook, useProducer, useSelector } from "@rbx
 import { InferState, combineProducers } from "@rbxts/reflex";
 import { slices } from "shared/data";
 import { interactionSlice } from "./interaction/interaction-slice";
+import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
 
 type Store = typeof clientStore;
@@ -15,6 +16,7 @@ function createStore() {
 	const clientStore = combineProducers({
 		...slices,
 		interaction: interactionSlice,
+		menu: menuSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

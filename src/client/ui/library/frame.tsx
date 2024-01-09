@@ -10,6 +10,8 @@ export interface FrameProps<T extends Instance = Frame> extends Roact.PropsWithC
 	rotation?: number | Roact.Binding<number>;
 	backgroundColor?: Color3 | Roact.Binding<Color3>;
 	backgroundTransparency?: number | Roact.Binding<number>;
+	borderColor?: Color3 | Roact.Binding<Color3>;
+	borderSize?: number | Roact.Binding<number>;
 	clipsDescendants?: boolean | Roact.Binding<boolean>;
 	visible?: boolean | Roact.Binding<boolean>;
 	zIndex?: number | Roact.Binding<number>;
@@ -27,11 +29,12 @@ export const Frame = forwardRef((props: FrameProps, ref: Ref<Frame>) => {
 			Rotation={props.rotation}
 			BackgroundColor3={props.backgroundColor}
 			BackgroundTransparency={props.backgroundTransparency}
+			BorderColor3={props.borderColor}
 			ClipsDescendants={props.clipsDescendants}
 			Visible={props.visible}
 			ZIndex={props.zIndex}
 			LayoutOrder={props.layoutOrder}
-			BorderSizePixel={0}
+			BorderSizePixel={props.borderSize || 0}
 			Event={props.event || {}}
 			Change={props.change || {}}
 		>

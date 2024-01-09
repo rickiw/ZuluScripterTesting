@@ -2,7 +2,12 @@ import Roact from "@rbxts/roact";
 import { FrameProps } from "../frame";
 
 export interface ButtonProps extends FrameProps<TextButton> {
+	text?: string;
 	active?: boolean | Roact.Binding<boolean>;
+	fontFace?: Font | Roact.Binding<Font>;
+	textColor?: Color3 | Roact.Binding<Color3>;
+	textSize?: number | Roact.Binding<number>;
+	textWrapped?: boolean | Roact.Binding<boolean>;
 	onClick?: () => void;
 	onMouseDown?: () => void;
 	onMouseUp?: () => void;
@@ -11,7 +16,7 @@ export interface ButtonProps extends FrameProps<TextButton> {
 }
 
 export function Button(props: ButtonProps) {
-	const { onClick, onMouseDown, onMouseEnter, onMouseLeave, onMouseUp } = props;
+	const { text, onClick, onMouseDown, onMouseEnter, onMouseLeave, onMouseUp } = props;
 	const event = {
 		Activated: onClick && (() => onClick()),
 		MouseButton1Down: onMouseDown && (() => onMouseDown()),
@@ -24,7 +29,7 @@ export function Button(props: ButtonProps) {
 	return (
 		<textbutton
 			Active={props.active}
-			Text=""
+			Text={text || ""}
 			AutoButtonColor={false}
 			Size={props.size}
 			Position={props.position}
@@ -35,7 +40,12 @@ export function Button(props: ButtonProps) {
 			Visible={props.visible}
 			ZIndex={props.zIndex}
 			LayoutOrder={props.layoutOrder}
-			BorderSizePixel={0}
+			BorderColor3={props.borderColor}
+			BorderSizePixel={props.borderSize || 0}
+			TextColor3={props.textColor}
+			TextSize={props.textSize}
+			FontFace={props.fontFace}
+			TextWrapped={props.textWrapped}
 			Event={event}
 			Change={props.change || {}}
 		>
