@@ -29,7 +29,7 @@ export function BillboardLayer({ adornee, maxDistance, alwaysOnTop, children }: 
 	) : (
 		<billboardgui
 			Adornee={adornee}
-			Size={UDim2.fromScale(1, 1)}
+			Size={UDim2.fromScale(2.5, 2.5)}
 			ResetOnSpawn={false}
 			ZIndexBehavior="Sibling"
 			MaxDistance={maxDistance || math.huge}
