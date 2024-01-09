@@ -64,6 +64,7 @@
 		"@rbxts/stacks-and-queues": "^1.0.5",
 		"@rbxts/t": "^3.1.0",
 		"@rbxts/tween": "^1.0.5",
+		"@rbxts/ui-labs": "^1.0.2",
 		"@rbxts/variant": "^1.0.2",
 		"@rbxts/zone-plus": "^3.2.0",
 		"rbxts-transform-env": "^2.2.0"

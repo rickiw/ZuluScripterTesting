@@ -16,6 +16,7 @@ interface ReactiveButtonProps extends Roact.PropsWithChildren {
 	onMouseLeave?: () => void;
 	onHover?: (hovered: boolean) => void;
 	onPress?: (pressed: boolean) => void;
+	stylized?: boolean;
 	enabled?: boolean;
 	size?: UDim2 | Roact.Binding<UDim2>;
 	position?: UDim2 | Roact.Binding<UDim2>;
@@ -43,6 +44,7 @@ export function ReactiveButton({
 	onMouseLeave,
 	onHover,
 	onPress,
+	stylized = true,
 	enabled = true,
 	size,
 	position,
@@ -115,43 +117,47 @@ export function ReactiveButton({
 			event={event}
 			change={change}
 		>
-			<Frame
-				key="button-box"
-				backgroundColor={composeBindings(
-					animation.hoverOnly,
-					animation.press,
-					backgroundColor,
-					(hover, press, color) => {
-						return color.Lerp(new Color3(1, 1, 1), hover * 0.15).Lerp(new Color3(), press * 0.1);
-					},
-				)}
-				backgroundTransparency={composeBindings(
-					animation.press,
-					backgroundTransparency,
-					(press, transparency) => {
-						return blend(-press * 0.2, transparency);
-					},
-				)}
-				cornerRadius={cornerRadius}
-				anchorPoint={new Vector2(0.5, 0.5)}
-				size={lerpBinding(
-					animateSize ? sizeAnimation : 0,
-					new UDim2(1, 0, 1, 0),
-					new UDim2(1, rem(2 * animateSizeStrength), 1, rem(2 * animateSizeStrength)),
-				)}
-				position={lerpBinding(
-					animatePosition ? animation.position : 0,
-					new UDim2(0.5, 0, 0.5, 0),
-					new UDim2(
-						0.5,
-						(3 + rem(0.1)) * animatePositionStrength * animatePositionDirection.X,
-						0.5,
-						(3 + rem(0.1)) * animatePositionStrength * animatePositionDirection.Y,
-					),
-				)}
-			>
-				{children}
-			</Frame>
+			{stylized ? (
+				<Frame
+					key="button-box"
+					backgroundColor={composeBindings(
+						animation.hoverOnly,
+						animation.press,
+						backgroundColor,
+						(hover, press, color) => {
+							return color.Lerp(new Color3(1, 1, 1), hover * 0.15).Lerp(new Color3(), press * 0.1);
+						},
+					)}
+					backgroundTransparency={composeBindings(
+						animation.press,
+						backgroundTransparency,
+						(press, transparency) => {
+							return blend(-press * 0.2, transparency);
+						},
+					)}
+					cornerRadius={cornerRadius}
+					anchorPoint={new Vector2(0.5, 0.5)}
+					size={lerpBinding(
+						animateSize ? sizeAnimation : 0,
+						new UDim2(1, 0, 1, 0),
+						new UDim2(1, rem(2 * animateSizeStrength), 1, rem(2 * animateSizeStrength)),
+					)}
+					position={lerpBinding(
+						animatePosition ? animation.position : 0,
+						new UDim2(0.5, 0, 0.5, 0),
+						new UDim2(
+							0.5,
+							(3 + rem(0.1)) * animatePositionStrength * animatePositionDirection.X,
+							0.5,
+							(3 + rem(0.1)) * animatePositionStrength * animatePositionDirection.Y,
+						),
+					)}
+				>
+					{children}
+				</Frame>
+			) : (
+				children
+			)}
 		</Button>
 	);
 }
