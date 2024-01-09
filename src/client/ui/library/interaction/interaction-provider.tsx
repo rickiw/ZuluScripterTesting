@@ -28,7 +28,7 @@ export function InteractionProvider() {
 				surfaceType: "Billboard",
 				interactionComponent,
 				keybind: prompt.KeyboardKeyCode,
-				adornee: prompt.Parent.FindFirstChildOfClass("Attachment")!,
+				adornee: prompt.Parent.FindFirstChild("ProximityAttachment")! as Attachment,
 				visible: true,
 				prompt,
 			});
@@ -42,8 +42,8 @@ export function InteractionProvider() {
 		basePart.Parent = Workspace.CurrentCamera;
 		basePart.Size = new Vector3(interactionComponent.getStudSize(), interactionComponent.getStudSize(), 0.1);
 		let targetCFrame = new CFrame();
-		if (prompt.Parent.FindFirstChildOfClass("Attachment")) {
-			targetCFrame = prompt.Parent.FindFirstChildOfClass("Attachment")!.WorldCFrame;
+		if (prompt.Parent.FindFirstChild("ProximityAttachment")) {
+			targetCFrame = (prompt.Parent.FindFirstChild("ProximityAttachment") as Attachment).WorldCFrame;
 		} else if (prompt.Parent.IsA("BasePart")) {
 			targetCFrame = prompt.Parent.CFrame;
 		} else if (prompt.Parent.IsA("Model")) {
