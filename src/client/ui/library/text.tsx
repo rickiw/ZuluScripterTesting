@@ -31,6 +31,8 @@ export function Text(props: TextProps) {
 			Text={props.text}
 			TextColor3={props.textColor}
 			TextSize={props.textSize ?? rem(1)}
+			BorderSizePixel={props.borderSize}
+			BorderColor3={props.borderColor}
 			TextTransparency={props.textTransparency}
 			TextWrapped={props.textWrapped}
 			TextXAlignment={props.textXAlignment}

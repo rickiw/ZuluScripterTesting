@@ -31,18 +31,21 @@ export function MenuProvider() {
 			<Frame
 				anchorPoint={new Vector2(0.5, 0.5)}
 				backgroundTransparency={0.7}
+				backgroundColor={Color3.fromRGB(0, 0, 0)}
 				position={UDim2.fromScale(0.5, 0.5)}
 				size={UDim2.fromScale(1, 1)}
 			>
-				<ButtonRow />
+				<uipadding PaddingTop={new UDim(0.01, 0)} />
 				<Text
 					font={fonts.gothic.regular}
 					text={player.Name.upper()}
+					textScaled={true}
 					anchorPoint={new Vector2(0.5, 0.5)}
-					position={UDim2.fromScale(0.1, 0.025)}
+					position={UDim2.fromScale(0.15, 0.04)}
 					size={UDim2.fromScale(0.2, 0.1)}
 					textColor={Color3.fromRGB(255, 255, 255)}
 				/>
+				<ButtonRow />
 				<MenuPage menuPage={currentPage} />
 			</Frame>
 		</SurfaceLayer>

@@ -1,15 +1,7 @@
 import { createProducer } from "@rbxts/reflex";
-import { BaseState } from "shared/state";
 
-export interface ClientState extends Readonly<BaseState> {}
+export interface ClientState {}
 
-const initialState: ClientState = {
-	debug: true,
-};
+const initialState: ClientState = {};
 
-export const clientSlice = createProducer(initialState, {
-	setClientState: (state, data: Partial<ClientState>) => ({
-		...state,
-		...data,
-	}),
-});
+export const clientSlice = createProducer(initialState, {});

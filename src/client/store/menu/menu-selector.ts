@@ -7,3 +7,15 @@ export const selectMenuPage = (state: RootState) => {
 export const selectMenuPanel = (state: RootState) => {
 	return state.menu.menuPanel!;
 };
+
+export const selectMenuObjective = (state: RootState) => {
+	return state.menu.selectedObjective;
+};
+
+export const selectMenuOpen = (state: RootState) => {
+	return state.menu.menuOpen;
+};
+
+export const selectObjectives = (state: RootState) => {
+	return state.menu.objectives;
+};
