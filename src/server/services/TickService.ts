@@ -1,6 +1,8 @@
 import { Modding, OnStart, Service } from "@flamework/core";
 import { setInterval } from "@rbxts/set-timeout";
 
+// TODO: consider using a decorator instead of an interface
+
 export interface On5SecondInterval {
 	on5SecondInterval(): void;
 }

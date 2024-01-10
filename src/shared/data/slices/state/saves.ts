@@ -3,8 +3,8 @@ import { mapProperty } from "shared/utils";
 
 export interface PlayerProfile {
 	readonly logInTimes: number;
-	readonly dailyLoginTimes: number;
-	readonly lastLogin: number;
+	readonly dailyLoginTimes: number; // TODO: rename to dailyLoginStreak
+	readonly lastLogin: number; // TODO: consider using a serialized DateTime string here
 	readonly experience: number;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;
@@ -15,6 +15,8 @@ export interface SaveState {
 }
 
 const initialState: SaveState = {};
+
+// TODO: consider using a per-player producer
 
 export const playerSaveSlice = createProducer(initialState, {
 	setPlayerSave: (state, userId: number, save: PlayerProfile) => ({
