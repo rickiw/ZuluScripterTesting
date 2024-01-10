@@ -23,7 +23,7 @@ export function MenuProvider() {
 	return (
 		<SurfaceLayer
 			alwaysOnTop={true}
-			face={Enum.NormalId.Back}
+			face={Enum.NormalId.Front}
 			adornee={adornee}
 			sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
 			pixelsPerStud={50}

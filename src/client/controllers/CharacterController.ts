@@ -3,6 +3,7 @@ import { Players, UserInputService } from "@rbxts/services";
 import { setInterval, setTimeout } from "@rbxts/set-timeout";
 import { clientStore } from "client/store";
 import { selectExhausted, selectRecovering, selectSprinting } from "client/store/character";
+import { selectMenuOpen } from "client/store/menu";
 import {
 	DEPLETE_PER_SECOND,
 	RECOVER_PER_SECOND,
@@ -87,7 +88,15 @@ export class CharacterController implements OnStart, OnTick {
 
 		if (!humanoid) return;
 
-		if (offset <= SPEED_CROUCH - SPEED_WALK && clientStore.getState(selectSprinting)) {
+		const sprinting = clientStore.getState(selectSprinting);
+		const inMenu = clientStore.getState(selectMenuOpen);
+
+		if (inMenu) {
+			humanoid.WalkSpeed = 0;
+			return;
+		}
+
+		if (offset <= SPEED_CROUCH - SPEED_WALK && sprinting) {
 			clientStore.setSprinting(false);
 		}
 
@@ -97,12 +106,15 @@ export class CharacterController implements OnStart, OnTick {
 	getSpeed() {
 		const sprinting = clientStore.getState(selectSprinting);
 		const exhausted = clientStore.getState(selectExhausted);
+		const inMenu = clientStore.getState(selectMenuOpen);
 
 		switch (true) {
 			case sprinting && !exhausted:
 				return SPEED_SPRINT;
 			case exhausted:
 				return SPEED_TIRED;
+			case inMenu:
+				return 0;
 			default:
 				return SPEED_WALK;
 		}
