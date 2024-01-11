@@ -29,11 +29,7 @@ interface SoundService extends Instance {
 	Effects: SoundGroup;
 }
 
-type BaseCharacter = Model & {
-	Humanoid: Humanoid;
-	Body: MeshPart;
-	HumanoidRootPart: BasePart;
-};
+export * from "./CharacterTypes";
 
 declare namespace JSX {
 	interface IntrinsicElements {

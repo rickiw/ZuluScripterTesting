@@ -39,7 +39,9 @@
 		"zulu-site:out/server/services/TickService@On1SecondInterval": "server/services/TickService@On1SecondInterval",
 		"zulu-site:out/server/services/TickService@On5SecondInterval": "server/services/TickService@On5SecondInterval",
 		"zulu-site:out/shared/network@GlobalEvents": "shared/network@GlobalEvents",
-		"zulu-site:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions"
+		"zulu-site:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions",
+		"zulu-site:out/shared/components/game/touchpad/BaseTouchpad@BaseTouchpad": "shared/components/game/touchpad/BaseTouchpad@BaseTouchpad",
+		"zulu-site:out/shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad": "shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad"
 	},
 	"metadata": {}
 }
