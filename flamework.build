@@ -5,6 +5,7 @@
 		"zulu-site:out/client/ui/library/error/error-boundary@ErrorBoundary": "client/ui/library/error/error-boundary@ErrorBoundary",
 		"zulu-site:out/shared/components/game/BaseInteraction@BaseInteraction": "shared/components/game/BaseInteraction@BaseInteraction",
 		"zulu-site:out/client/controllers/BaseController@BaseController": "client/controllers/BaseController@BaseController",
+		"zulu-site:out/client/controllers/CharacterController@CharacterController": "client/controllers/CharacterController@CharacterController",
 		"zulu-site:out/client/controllers/MenuController@MenuController": "client/controllers/MenuController@MenuController",
 		"zulu-site:out/client/controllers/SimulationController@SimulationController": "client/controllers/SimulationController@SimulationController",
 		"zulu-site:out/server/components/scp/BaseSCP@BaseSCP": "server/components/scp/BaseSCP@BaseSCP",
@@ -38,8 +39,7 @@
 		"zulu-site:out/server/services/TickService@On1SecondInterval": "server/services/TickService@On1SecondInterval",
 		"zulu-site:out/server/services/TickService@On5SecondInterval": "server/services/TickService@On5SecondInterval",
 		"zulu-site:out/shared/network@GlobalEvents": "shared/network@GlobalEvents",
-		"zulu-site:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions",
-		"zulu-site:out/client/controllers/CharacterController@CharacterController": "client/controllers/CharacterController@CharacterController"
+		"zulu-site:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions"
 	},
 	"metadata": {}
 }

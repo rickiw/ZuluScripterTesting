@@ -7,3 +7,7 @@ export const selectGamePasses = (state: RootState) => {
 export const selectDevProducts = (state: RootState) => {
 	return state.shop.devProducts;
 };
+
+export const selectActiveShopItem = (state: RootState) => {
+	return state.shop.selectedShopItem;
+};

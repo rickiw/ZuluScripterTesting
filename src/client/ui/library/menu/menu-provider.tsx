@@ -42,7 +42,7 @@ export function MenuProvider() {
 					textScaled={true}
 					anchorPoint={new Vector2(0.5, 0.5)}
 					position={UDim2.fromScale(0.15, 0.04)}
-					size={UDim2.fromScale(0.2, 0.1)}
+					size={UDim2.fromScale(0.125, 0.1)}
 					textColor={Color3.fromRGB(255, 255, 255)}
 				/>
 				<ButtonRow />
