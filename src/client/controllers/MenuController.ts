@@ -1,6 +1,6 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
-import { Players, UserInputService, Workspace } from "@rbxts/services";
+import { Players, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectMenuOpen } from "client/store/menu";
 
@@ -8,36 +8,34 @@ const INPUTS = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.H, Enum.KeyCode.Butto
 
 const player = Players.LocalPlayer;
 
+const mountPosition = new Vector3(-4.5, 11.5, 89.5);
+const mountOrientation = new Vector3(-9.994, 172.969, 0.353);
+
+const panelPosition = new Vector3(-8.5, 10, 97.5);
+const panelOrientation = new Vector3(0, -15, 0);
+
 @Controller()
 export class MenuController implements OnStart, OnRender {
 	menuPanel: BasePart;
+	openedCFrame?: CFrame;
 	cameraTween?: Tween;
-	camStartCf?: CFrame;
 
 	constructor() {
 		this.menuPanel = New("Part")({
 			Parent: Workspace.CurrentCamera,
 			Name: "MenuPanel",
 			Size: new Vector3(16.2, 8, 1),
-			Position: new Vector3(12.5, 4, -4.1),
-			Orientation: new Vector3(0, 90, 0),
+			Position: panelPosition,
+			Orientation: panelOrientation,
 			CanCollide: false,
+			CanQuery: false,
 			Anchored: true,
-			Transparency: 0,
+			Transparency: 1,
 			Material: Enum.Material.SmoothPlastic,
 			Reflectance: 0.05,
 			Color: Color3.fromRGB(0, 0, 0),
 		});
 		clientStore.setMenuPanel(this.menuPanel);
-
-		const mountPosition = new Vector3(-4.5, 11.5, 89.5);
-		const mountOrientation = new Vector3(-9.994, 172.969, 0.353);
-
-		const panelPosition = new Vector3(-8.5, 10, 97.5);
-		const panelOrientation = new Vector3(0, -15, 0);
-
-		const panelPositionDiff = panelPosition.sub(mountPosition);
-		const panelOrientationDiff = panelOrientation.sub(mountOrientation);
 	}
 
 	onStart() {
@@ -48,49 +46,75 @@ export class MenuController implements OnStart, OnRender {
 		});
 	}
 
-	getCameraOffsetPosition() {}
-
-	getMenuPanelPosition() {
+	getCameraOffsetCFrame() {
 		const camera = Workspace.CurrentCamera!;
-		const cameraLook = camera.CFrame.LookVector;
-		const cameraRight = camera.CFrame.RightVector;
-		const character = player.Character || player.CharacterAdded.Wait()[0];
-		const humanoidRootPart = character.FindFirstChild("HumanoidRootPart") as BasePart;
 
-		const offset = cameraRight.mul(8.5);
-		const offsetPosition = humanoidRootPart.Position.add(cameraLook.mul(offset.Z)).add(cameraRight.mul(offset.X));
-		return offsetPosition;
+		const offset = new Vector3(0, 0, 3);
+
+		return camera.CFrame.mul(new CFrame(offset));
+	}
+
+	getMenuPositionOffset() {
+		const offset = new CFrame(10, -1, -12.5);
+		return offset;
+	}
+
+	getMenuPanelCFrame() {
+		const camera = Workspace.CurrentCamera!;
+		const mouse = UserInputService.GetMouseLocation();
+
+		// add positioning offset
+		const posititionalOffset = this.getMenuPositionOffset();
+		const rotationalOffset = CFrame.Angles(0, math.rad(160), 0);
+
+		// add mouse offset from center screen
+		const menuPanelWorldSpace = this.menuPanel.Position;
+		const [viewportPoint, visible] = camera.WorldToViewportPoint(menuPanelWorldSpace);
+
+		const center = new Vector2(viewportPoint.X, viewportPoint.Y);
+		const tiltAngleX = ((mouse.X - center.X) / center.X) * 5;
+		const tiltAngleY = ((mouse.Y - center.Y) / center.Y) * 10;
+		const rotation = CFrame.Angles(math.rad(tiltAngleY), math.rad(tiltAngleX), 0);
+
+		const panelCFrame = camera.CFrame.mul(posititionalOffset).mul(rotationalOffset);
+		return visible ? panelCFrame.mul(rotation) : panelCFrame;
 	}
 
 	toggleMenu() {
 		const camera = Workspace.CurrentCamera!;
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
-		if (this.cameraTween) this.cameraTween.Cancel();
+
 		if (!currentlyOpen) {
-			const panelPosition = this.getMenuPanelPosition();
-			this.menuPanel.CFrame = new CFrame(panelPosition, camera.CFrame.Position);
-			this.camStartCf = camera.CFrame;
-			// this.cameraTween = TweenService.Create(camera, new TweenInfo(0.4, Enum.EasingStyle.Quad), {
-			// 	CFrame:
-			// });
+			this.openedCFrame = camera.CFrame;
+
+			if (this.cameraTween) this.cameraTween.Cancel();
+
+			const newCameraCFrame = this.getCameraOffsetCFrame();
+			const menuPanelCFrame = this.getMenuPanelCFrame();
+
+			this.cameraTween = TweenService.Create(camera, new TweenInfo(0.5), { CFrame: newCameraCFrame });
+			this.cameraTween.Play();
+			TweenService.Create(this.menuPanel, new TweenInfo(0.5), { CFrame: menuPanelCFrame }).Play();
+			this.menuPanel.Transparency = 0;
+		} else {
+			this.menuPanel.Position = new Vector3(0, -100, 0);
+			if (this.openedCFrame) {
+				TweenService.Create(camera, new TweenInfo(0.5), { CFrame: this.openedCFrame }).Play();
+				this.menuPanel.Transparency = 1;
+			}
 		}
 
 		clientStore.setMenuOpen(!currentlyOpen);
 	}
 
 	onRender(dt: number) {
-		const camera = Workspace.CurrentCamera!;
-		const menuOpen = clientStore.getState(selectMenuOpen);
-		if (!menuOpen) return;
-		camera.CFrame = this.camStartCf!;
-		// const basePosition = camera.CFrame.Position.add(camera.CFrame.RightVector.mul(6));
-		// const position = basePosition.add(camera.CFrame.LookVector.mul(8.5));
-		// const mouse = UserInputService.GetMouseLocation();
-		// const center = camera.ViewportSize.div(2);
-		// const tiltAngleX = ((mouse.X - center.X) / center.X) * 5;
-		// const tiltAngleY = ((mouse.Y - center.Y) / center.Y) * 10;
-		// // baseRotation should be the rotation for menuPanel to face the camera
-		// const rotation = CFrame.Angles(math.rad(tiltAngleY), math.rad(tiltAngleX), 0);
-		// this.menuPanel.CFrame = new CFrame(position, position.add(camera.CFrame.LookVector)).mul(rotation);
+		const currentlyOpen = clientStore.getState(selectMenuOpen);
+
+		if (currentlyOpen) {
+			const camera = Workspace.CurrentCamera!;
+			const menuPanelCFrame = this.getMenuPanelCFrame();
+
+			this.menuPanel.CFrame = menuPanelCFrame;
+		}
 	}
 }

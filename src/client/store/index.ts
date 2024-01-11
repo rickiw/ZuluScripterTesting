@@ -5,6 +5,7 @@ import { characterSlice } from "./character";
 import { interactionSlice } from "./interaction/interaction-slice";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
+import { shopSlice } from "./shop";
 
 type Store = typeof clientStore;
 
@@ -19,6 +20,7 @@ function createStore() {
 		interaction: interactionSlice,
 		menu: menuSlice,
 		character: characterSlice,
+		shop: shopSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;
