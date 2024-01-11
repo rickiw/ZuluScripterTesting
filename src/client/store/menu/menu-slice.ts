@@ -20,7 +20,7 @@ export interface MenuState {
 
 const initialState: MenuState = {
 	menuOpen: false,
-	menuPage: "Shop",
+	menuPage: "Perks",
 	menuPanel: undefined,
 	objectives: [
 		{
