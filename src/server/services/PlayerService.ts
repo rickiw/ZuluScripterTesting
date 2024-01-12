@@ -1,6 +1,6 @@
 import { Modding, OnStart, Service } from "@flamework/core";
-import Log from "@rbxts/log";
 import { Players } from "@rbxts/services";
+import { BaseCharacter } from "../../CharacterTypes";
 
 export interface PlayerRemoving {
 	playerRemoving(player: Player): void;

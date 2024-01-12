@@ -4,6 +4,11 @@ type BaseCharacter = Model & {
 	HumanoidRootPart: BasePart;
 };
 
+type RoombaCharacter = Model & {
+	Humanoid: Humanoid;
+	HumanoidRootPart: BasePart;
+};
+
 type PlayerCharacterR15 = Model & {
 	HumanoidRootPart: BasePart & {
 		RootRigAttachment: Attachment & { OriginalPosition: Vector3Value };

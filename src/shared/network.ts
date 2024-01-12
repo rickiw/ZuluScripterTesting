@@ -4,7 +4,10 @@ interface ClientToServerEvents {
 	ItemDrop(Tool: Tool): void;
 }
 
-interface ServerToClientEvents {}
+interface ServerToClientEvents {
+	RoombaActive(roomba: Model): void;
+	RoombaInactive(roomba: Model): void;
+}
 
 interface ClientToServerFunctions {}
 

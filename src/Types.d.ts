@@ -1,3 +1,5 @@
+import { RoombaCharacter } from "./CharacterTypes";
+
 interface Workspace extends Instance {
 	Doors: Folder & { [key in DoorType]: BaseDoor };
 	SCPs: Folder & { [key: string]: BaseSCP };
@@ -22,6 +24,7 @@ interface ReplicatedStorage extends Instance {
 		SCPs: Folder & {
 			[key: string]: Model;
 		};
+		Roomba: RoombaCharacter;
 	};
 }
 

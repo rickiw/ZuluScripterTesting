@@ -41,7 +41,10 @@
 		"zulu-site:out/shared/network@GlobalEvents": "shared/network@GlobalEvents",
 		"zulu-site:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions",
 		"zulu-site:out/shared/components/game/touchpad/BaseTouchpad@BaseTouchpad": "shared/components/game/touchpad/BaseTouchpad@BaseTouchpad",
-		"zulu-site:out/shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad": "shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad"
+		"zulu-site:out/shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad": "shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad",
+		"zulu-site:out/server/components/touchpad/BaseTouchpad@BaseTouchpad": "server/components/touchpad/BaseTouchpad@BaseTouchpad",
+		"zulu-site:out/server/components/touchpad/RoombaTouchpad@RoombaTouchpad": "server/components/touchpad/RoombaTouchpad@RoombaTouchpad",
+		"zulu-site:out/client/controllers/RoombaController@RoombaController": "client/controllers/RoombaController@RoombaController"
 	},
 	"metadata": {}
 }
