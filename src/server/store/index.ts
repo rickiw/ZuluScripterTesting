@@ -1,5 +1,5 @@
 import { InferState, combineProducers } from "@rbxts/reflex";
-import { slices } from "shared/data";
+import { slices } from "shared/store";
 import { broadcasterMiddleware } from "./middleware/broadcaster";
 
 type Store = typeof store;

@@ -9,7 +9,6 @@
 		"zulu-site:out/client/controllers/MenuController@MenuController": "client/controllers/MenuController@MenuController",
 		"zulu-site:out/client/controllers/SimulationController@SimulationController": "client/controllers/SimulationController@SimulationController",
 		"zulu-site:out/server/components/scp/BaseSCP@BaseSCP": "server/components/scp/BaseSCP@BaseSCP",
-		"zulu-site:out/server/services/PathfindService@PathfindService": "server/services/PathfindService@PathfindService",
 		"zulu-site:out/server/components/scp/SCP131@SCP131": "server/components/scp/SCP131@SCP131",
 		"zulu-site:out/server/services/PlayerService@PlayerService": "server/services/PlayerService@PlayerService",
 		"zulu-site:out/server/services/DataService@DataService": "server/services/DataService@DataService",

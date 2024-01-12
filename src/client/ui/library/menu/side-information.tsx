@@ -4,7 +4,7 @@ import { Players } from "@rbxts/services";
 import { selectHealth, selectStamina } from "client/store/character";
 import { selectMenuOpen } from "client/store/menu";
 import { fonts } from "shared/constants/fonts";
-import { selectPlayerSave } from "shared/data/selectors/saves";
+import { selectPlayerSave } from "shared/store/saves";
 import { Frame } from "../frame";
 import { Text } from "../text";
 

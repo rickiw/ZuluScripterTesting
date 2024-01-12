@@ -1,6 +1,6 @@
 import { createBroadcaster, ProducerMiddleware } from "@rbxts/reflex";
-import { slices } from "shared/data";
 import { server } from "shared/remotes";
+import { slices } from "shared/store";
 
 const broadcast = server.Get("broadcast");
 

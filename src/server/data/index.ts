@@ -1,4 +1,4 @@
-import { PlayerProfile } from "shared/data/slices/state/saves";
+import { PlayerProfile } from "shared/store/saves";
 
 export const defaultPlayerProfile: PlayerProfile = {
 	logInTimes: 0,
@@ -8,3 +8,5 @@ export const defaultPlayerProfile: PlayerProfile = {
 	scrap: new Map(),
 	credits: 0,
 };
+
+export * from "./constants";

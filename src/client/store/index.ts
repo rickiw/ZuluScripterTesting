@@ -1,6 +1,6 @@
 import { UseProducerHook, UseSelectorHook, useProducer, useSelector } from "@rbxts/react-reflex";
 import { InferState, combineProducers } from "@rbxts/reflex";
-import { slices } from "shared/data";
+import { slices } from "shared/store";
 import { characterSlice } from "./character";
 import { interactionSlice } from "./interaction/interaction-slice";
 import { menuSlice } from "./menu";

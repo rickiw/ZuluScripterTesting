@@ -2,7 +2,6 @@ import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
 import SimplePath from "@rbxts/simplepath";
-import { PathfindService } from "server/services/PathfindService";
 import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
 
 interface SCPInstance extends BaseSCPInstance {
@@ -31,7 +30,7 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	nextWanderPoint?: Vector3;
 	path: SimplePath;
 
-	constructor(private pathfindService: PathfindService) {
+	constructor() {
 		super();
 
 		this.path = new SimplePath(this.instance);

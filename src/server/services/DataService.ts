@@ -3,11 +3,9 @@ import Log from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
 import { Players } from "@rbxts/services";
-import { PLAYER_DATA_KEY } from "server/constants/core";
-import { defaultPlayerProfile } from "server/data";
+import { PLAYER_DATA_KEY, defaultPlayerProfile } from "server/data";
 import { store } from "server/store";
-import { selectPlayerSave } from "shared/data/selectors/saves";
-import { PlayerProfile } from "shared/data/slices/state/saves";
+import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
 // TODO: consider moving away from ProfileService

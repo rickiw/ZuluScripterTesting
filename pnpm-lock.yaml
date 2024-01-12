@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@flamework/components':
     specifier: ^1.0.1
@@ -288,6 +292,7 @@ packages:
     dependencies:
       '@rbxts/cubic-bezier': 1.1.0
     dev: false
+    bundledDependencies: []
 
   /@rbxts/flipper@2.0.1:
     resolution: {integrity: sha512-kxb5AZizP05XSmo3waS/QkcfNMD5b6HX4gGwyHOyBow260R5MIT4L/ZUPLvleXXyb9b67X4NVmHoac1tPXOLNA==}
@@ -525,6 +530,7 @@ packages:
       '@rbxts/easing-functions': 1.1.0(@rbxts/cubic-bezier@1.1.0)
       '@rbxts/lerp-functions': 1.0.2
     dev: false
+    bundledDependencies: []
 
   /@rbxts/types@1.0.714:
     resolution: {integrity: sha512-6voqpRotKWoMNpmD/PoXb0xA0CEUZmy1xZn/gD0bSQOI27WcgLk500eUG0jfBoTa+EOktvdk2Fv0oSgbgXVovQ==}
