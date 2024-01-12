@@ -7,7 +7,7 @@ export class DoorService {
 	}
 
 	getNegativeOffsetCFrame(originCFrame: CFrame, offset: Vector3, value: number) {
-		return originCFrame.Lerp(originCFrame.mul(new CFrame(offset)), value);
+		return originCFrame.Lerp(originCFrame.mul(new CFrame(offset.mul(-1))), value);
 	}
 
 	getAngleCFrame(originCFrame: CFrame, amount: number, value: number) {
