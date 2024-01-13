@@ -6,7 +6,9 @@ type BaseCharacter = Model & {
 
 type RoombaCharacter = Model & {
 	Humanoid: Humanoid;
-	HumanoidRootPart: BasePart;
+	HumanoidRootPart: BasePart & {
+		Dust: ParticleEmitter;
+	};
 };
 
 type PlayerCharacterR15 = Model & {

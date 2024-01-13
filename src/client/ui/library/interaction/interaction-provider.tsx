@@ -3,7 +3,7 @@ import { Dependency } from "@flamework/core";
 import { useEventListener } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
-import { ProximityPromptService, Workspace } from "@rbxts/services";
+import { Players, ProximityPromptService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectInteractionIdByPrompt, selectInteractions } from "client/store/interaction";
 import { BaseInteraction, InteractionInstance } from "shared/components/game/BaseInteraction";
@@ -17,7 +17,10 @@ export function InteractionProvider() {
 	const interactions = useSelector(selectInteractions);
 
 	useEventListener(ProximityPromptService.PromptShown, (prompt) => {
-		if (!prompt.Parent || !prompt.HasTag("baseInteraction")) return;
+		// HACK: Roombas are able to interact with doors, so just don't show the interact prompts :shrug:
+		if (!prompt.Parent || !prompt.HasTag("baseInteraction") || Players.LocalPlayer.Character?.Name === "Roomba")
+			return;
+
 		const components = Dependency<Components>();
 		const interactionComponent = components.getComponent<BaseInteraction<any, any>>(prompt);
 		if (!interactionComponent) return;
