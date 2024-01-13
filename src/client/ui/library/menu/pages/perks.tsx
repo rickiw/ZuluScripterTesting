@@ -1,13 +1,14 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { Perk, selectActivePerk, selectPerks } from "client/store/perks";
+import { selectActivePerk, selectPerks } from "client/store/perks";
 import { fonts } from "shared/constants/fonts";
+import { PerkInfo } from "shared/store/perks";
 import { Frame } from "../../frame";
 import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
-function Perk(props: { perk: Perk }) {
+function Perk(props: { perk: PerkInfo }) {
 	const { title, displayImage, color } = props.perk;
 	return (
 		<imagebutton

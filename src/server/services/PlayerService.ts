@@ -1,5 +1,4 @@
 import { Modding, OnStart, Service } from "@flamework/core";
-import Log from "@rbxts/log";
 import { Players } from "@rbxts/services";
 
 export interface PlayerRemoving {

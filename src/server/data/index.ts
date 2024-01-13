@@ -6,6 +6,7 @@ export const defaultPlayerProfile: PlayerProfile = {
 	lastLogin: 0,
 	experience: 0,
 	scrap: new Map(),
+	purchasedPerks: [],
 	credits: 0,
 };
 

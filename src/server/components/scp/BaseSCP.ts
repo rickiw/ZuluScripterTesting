@@ -1,7 +1,8 @@
-import { BaseComponent, Component, Components } from "@flamework/components";
+import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { BaseInteraction, OnInteract } from "shared/components/game/BaseInteraction";
+import { BaseNPC } from "../npc/BaseNPC";
 
 export interface BaseSCPInstance extends Model {}
 
@@ -24,7 +25,7 @@ export interface OnPathfind {
 	tag: "baseSCP",
 })
 export class BaseSCP<A extends SCPAttributes, I extends BaseSCPInstance>
-	extends BaseComponent<A, I>
+	extends BaseNPC<A, I>
 	implements OnStart, OnInteract
 {
 	maid: Maid;
