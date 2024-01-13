@@ -61,6 +61,11 @@ export class RoombaController implements OnStart {
 				while (this.cooldown > 0) {
 					// display time left like 04:00
 					CooldownDisp.Text = formatSeconds(this.cooldown);
+					CooldownDisp.TextColor3 = Color3.fromRGB(128, 128, 128);
+					TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
+						TextColor3: Color3.fromRGB(255, 255, 255),
+					}).Play();
+
 					this.cooldown--;
 					wait(1);
 				}

@@ -95,7 +95,6 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 
 	onStart() {
 		this.instance.Activated.Connect(() => {
-			print(this.getCd());
 			if (this.getCd()) return;
 			if (!this.roombaCharacter) return this.spawnRoomba();
 
