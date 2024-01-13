@@ -1,6 +1,6 @@
 import { createProducer } from "@rbxts/reflex";
 import { InteractionProps } from "client/ui/library/interaction/interaction";
-import { BaseInteraction } from "shared/components/game/BaseInteraction";
+import { BaseInteraction } from "shared/components/BaseInteraction";
 
 export interface InteractionState {
 	readonly interactions: readonly Interaction[];

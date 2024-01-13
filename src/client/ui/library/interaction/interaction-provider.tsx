@@ -6,7 +6,7 @@ import Roact from "@rbxts/roact";
 import { ProximityPromptService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectInteractionIdByPrompt, selectInteractions } from "client/store/interaction";
-import { BaseInteraction, InteractionInstance } from "shared/components/game/BaseInteraction";
+import { BaseInteraction, InteractionInstance } from "shared/components/BaseInteraction";
 import { Interaction, InteractionProps } from "./interaction";
 
 export interface PromptStorage {

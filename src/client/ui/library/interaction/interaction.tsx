@@ -2,7 +2,7 @@ import { lerpBinding, useEventListener, useUnmountEffect } from "@rbxts/pretty-r
 import Roact, { useEffect, useState } from "@rbxts/roact";
 import { Players, RunService } from "@rbxts/services";
 import { useMotion } from "client/ui/hooks/use-motion";
-import { BaseInteraction } from "shared/components/game/BaseInteraction";
+import { BaseInteraction } from "shared/components/BaseInteraction";
 import { springs } from "shared/constants/springs";
 import { round } from "shared/utils";
 import { BillboardLayer } from "../billboard-layer";

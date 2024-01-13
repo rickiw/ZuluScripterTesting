@@ -1,7 +1,7 @@
 import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
-import { BaseInteraction, OnInteract } from "shared/components/game/BaseInteraction";
+import { BaseInteraction, OnInteract } from "shared/components/BaseInteraction";
 import { BaseNPC } from "../npc/BaseNPC";
 
 export interface BaseSCPInstance extends Model {}
