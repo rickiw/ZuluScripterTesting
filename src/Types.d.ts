@@ -10,6 +10,9 @@ type BaseDoor = Model & {
 type DoorType = "SingleDoor" | "SingleGlassDoor";
 
 type BaseSCP = Model & {};
+type BaseHumanoidSCP = BaseSCP & {
+	Humanoid: Humanoid;
+};
 
 interface ReplicatedStorage extends Instance {
 	Shared: Folder & {
