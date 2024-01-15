@@ -2,16 +2,10 @@ import { Component } from "@flamework/components";
 import Log, { Logger } from "@rbxts/log";
 import { ReplicatedStorage, RunService, TweenService, Workspace } from "@rbxts/services";
 import { playSound } from "shared/assets/sounds/play-sound";
+import { ROOMBA_COOLDOWN, ROOMBA_JUMPPOWER, ROOMBA_WALKSPEED } from "shared/constants/roomba";
 import { GlobalEvents } from "shared/network";
 import { PlayerCharacterR15, RoombaCharacter } from "../../../Types";
 import { BaseTouchpad, TouchpadAttributes, TouchpadInstance } from "./BaseTouchpad";
-
-const ROOMBA_CONF = {
-	Speed: 10,
-	JumpPower: 24,
-};
-
-const COOLDOWN_TIME = 4 * 60;
 
 function castRayDown(fromCFrame: CFrame, distance: number, blacklist: Instance[]): RaycastResult | undefined {
 	// Create the Ray
@@ -84,9 +78,9 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 
 	enableCd() {
 		this.__cd.Value = true;
-		this.net.RoombaCooldown(this.wielder, COOLDOWN_TIME);
+		this.net.RoombaCooldown(this.wielder, ROOMBA_COOLDOWN);
 		// delay disableCd, so that it toggles back to false after COOLDOWN_TIME
-		task.delay(COOLDOWN_TIME, () => (this.__cd.Value = false));
+		task.delay(ROOMBA_COOLDOWN, () => (this.__cd.Value = false));
 	}
 
 	getCd() {
@@ -144,8 +138,8 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 		if (RoombaClone && this.wielder.Character) {
 			RoombaClone.Parent = Workspace;
 			this.roombaCharacter = RoombaClone;
-			this.roombaCharacter.Humanoid.WalkSpeed = ROOMBA_CONF.Speed;
-			this.roombaCharacter.Humanoid.JumpPower = ROOMBA_CONF.JumpPower;
+			this.roombaCharacter.Humanoid.WalkSpeed = ROOMBA_WALKSPEED;
+			this.roombaCharacter.Humanoid.JumpPower = ROOMBA_JUMPPOWER;
 			this.roombaCharacter.Humanoid.Health = 35;
 			this.roombaCharacter.Humanoid.MaxHealth = 35;
 

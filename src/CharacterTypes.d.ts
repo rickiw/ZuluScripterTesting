@@ -1,17 +1,15 @@
 type BaseCharacter = Model & {
 	Humanoid: Humanoid;
-	Body: MeshPart;
 	HumanoidRootPart: BasePart;
 };
 
-type RoombaCharacter = Model & {
-	Humanoid: Humanoid;
+type RoombaCharacter = BaseCharacter & {
 	HumanoidRootPart: BasePart & {
 		Dust: ParticleEmitter;
 	};
 };
 
-type PlayerCharacterR15 = Model & {
+type PlayerCharacterR15 = BaseCharacter & {
 	HumanoidRootPart: BasePart & {
 		RootRigAttachment: Attachment & { OriginalPosition: Vector3Value };
 		OriginalSize: Vector3Value;

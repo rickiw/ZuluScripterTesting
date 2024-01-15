@@ -1,6 +1,9 @@
 import { Flamework } from "@flamework/core";
 import Log, { Logger } from "@rbxts/log";
+import { DAMAGE_BALANCE_FACTORS } from "shared/constants/firearm";
 import { store } from "./store";
+
+print(DAMAGE_BALANCE_FACTORS);
 
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 

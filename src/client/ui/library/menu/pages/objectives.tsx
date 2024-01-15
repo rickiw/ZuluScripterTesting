@@ -35,8 +35,8 @@ function Objective({ objective }: ObjectiveProps) {
 					importance === "low"
 						? Color3.fromRGB(143, 143, 143)
 						: importance === "medium"
-						? Color3.fromRGB(171, 179, 0)
-						: Color3.fromRGB(245, 0, 0)
+							? Color3.fromRGB(171, 179, 0)
+							: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
@@ -162,7 +162,7 @@ export function ObjectivesPage() {
 							selectedObjective
 								? `${selectedObjective.title} (${selectedObjective.importance.upper()}): ${
 										selectedObjective.description
-								  }`
+									}`
 								: "Objective Description...."
 						}
 						textWrapped={true}

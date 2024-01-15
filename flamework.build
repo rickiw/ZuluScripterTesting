@@ -44,7 +44,20 @@
 		"zulu-site:out/shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad": "shared/components/game/touchpad/RoombaTouchpad@RoombaTouchpad",
 		"zulu-site:out/server/components/touchpad/BaseTouchpad@BaseTouchpad": "server/components/touchpad/BaseTouchpad@BaseTouchpad",
 		"zulu-site:out/server/components/touchpad/RoombaTouchpad@RoombaTouchpad": "server/components/touchpad/RoombaTouchpad@RoombaTouchpad",
-		"zulu-site:out/client/controllers/RoombaController@RoombaController": "client/controllers/RoombaController@RoombaController"
+		"zulu-site:out/client/controllers/RoombaController@RoombaController": "client/controllers/RoombaController@RoombaController",
+		"zulu-site:out/client/components/BaseIndicator@AerialIndicator": "client/components/BaseIndicator@AerialIndicator",
+		"zulu-site:out/client/components/AerialIndicator@AerialIndicator": "client/components/AerialIndicator@AerialIndicator",
+		"zulu-site:out/server/components/game/AerialIndicator@AerialIndicator": "server/components/game/AerialIndicator@AerialIndicator",
+		"zulu-site:out/client/ui/library/aerial/aerial-provider@AerialProvider": "client/ui/library/aerial/aerial-provider@AerialProvider",
+		"zulu-site:out/shared/types/combat/Weapon@Weapon": "shared/types/combat/Weapon@Weapon",
+		"zulu-site:out/shared/types/combat/MeleeWeapon@MeleeWeapon": "shared/types/combat/MeleeWeapon@MeleeWeapon",
+		"zulu-site:out/shared/types/combat/FirearmWeapon/init@FirearmWeapon": "shared/types/combat/FirearmWeapon/init@FirearmWeapon",
+		"zulu-site:out/shared/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm": "shared/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm",
+		"zulu-site:out/shared/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile": "shared/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile",
+		"zulu-site:out/client/controllers/combat/FirearmController@FirearmController": "client/controllers/combat/FirearmController@FirearmController",
+		"zulu-site:out/server/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm": "server/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm",
+		"zulu-site:out/server/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile": "server/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile",
+		"zulu-site:out/server/types/combat/MeleeWeapon@MeleeWeapon": "server/types/combat/MeleeWeapon@MeleeWeapon"
 	},
 	"metadata": {}
 }
