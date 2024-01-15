@@ -1,4 +1,4 @@
-import { Service } from "@flamework/core";
+import { Modding, Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
@@ -12,14 +12,22 @@ import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
 type ProfileInstance = Profile<PlayerProfile>;
 
+export interface PlayerDataLoaded {
+	playerDataLoaded(player: Player, data: PlayerProfile): void;
+}
+
 @Service()
 export class DataService implements PlayerAdded, PlayerRemoving {
 	private profileStorage = new Map<Player["UserId"], ProfileInstance>();
 
 	private profileStore: ProfileStore<PlayerProfile>;
+	private dataLoadedListeners = new Set<PlayerDataLoaded>();
 
 	constructor() {
 		this.profileStore = ProfileService.GetProfileStore(PLAYER_DATA_KEY, defaultPlayerProfile);
+
+		Modding.onListenerAdded<PlayerDataLoaded>((object) => this.dataLoadedListeners.add(object));
+		Modding.onListenerRemoved<PlayerDataLoaded>((object) => this.dataLoadedListeners.delete(object));
 	}
 
 	private async loadProfile(player: Player) {
@@ -43,6 +51,10 @@ export class DataService implements PlayerAdded, PlayerRemoving {
 		profile.Reconcile();
 
 		this.profileStorage.set(player.UserId, profile);
+
+		task.spawn(() =>
+			this.dataLoadedListeners.forEach((listener) => listener.playerDataLoaded(player, profile.Data)),
+		);
 
 		profile.ListenToRelease(() => {
 			this.profileStorage.delete(player.UserId);

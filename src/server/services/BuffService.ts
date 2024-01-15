@@ -2,6 +2,8 @@ import { OnStart, Service } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { Events } from "server/network";
 import { BuffEffect } from "shared/components/variants/buff";
+import { PlayerProfile } from "shared/store/saves";
+import { PlayerDataLoaded } from "./DataService";
 
 export interface BuffData {
 	strength: number;
@@ -19,7 +21,7 @@ export interface BuffData {
 */
 
 @Service()
-export class BuffService implements OnStart {
+export class BuffService implements OnStart, PlayerDataLoaded {
 	maid = new Maid();
 
 	onStart() {
@@ -31,5 +33,17 @@ export class BuffService implements OnStart {
 				break;
 		}
 		Events.StaminaBoostChanged.fire([], 2);
+	}
+
+	playerDataLoaded(player: Player, data: PlayerProfile) {
+		const { purchasedPerks } = data;
+
+		const hasStaminaPerk = purchasedPerks.some((perk) => perk.title === "Ghoul");
+
+		if (hasStaminaPerk) {
+			// +20% stamina if has stamina perk :)
+			// note: example. need to implement properly when on pc
+			Events.StaminaBoostChanged.fire([player], 1.2);
+		}
 	}
 }

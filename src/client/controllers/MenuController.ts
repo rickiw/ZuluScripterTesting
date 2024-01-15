@@ -18,7 +18,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	menuPanel: BasePart;
 	openedCFrame?: CFrame;
 	cameraTween?: Tween;
-	inputs = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
+	inputs = new ReadonlySet([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
 
 	constructor() {
 		super();
@@ -41,7 +41,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 
 	onStart() {
 		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && this.inputs.has(input.KeyCode)) {
+			if (!processed && this.hasInput(input.KeyCode)) {
 				this.toggleMenu();
 			}
 		});

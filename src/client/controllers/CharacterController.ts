@@ -22,19 +22,19 @@ const player = Players.LocalPlayer;
 @Controller()
 export class CharacterController extends HandlesInput implements OnStart, OnTick {
 	maid = new Maid();
-	inputs = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
+	inputs = new ReadonlySet([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
 
 	onStart() {
 		this.maid.GiveTask(
 			UserInputService.InputBegan.Connect((input, processed) => {
-				if (!processed && this.inputs.has(input.KeyCode)) {
+				if (!processed && this.hasInput(input.KeyCode)) {
 					clientStore.setSprinting(true);
 				}
 			}),
 		);
 		this.maid.GiveTask(
 			UserInputService.InputEnded.Connect((input) => {
-				if (this.inputs.has(input.KeyCode)) {
+				if (this.hasInput(input.KeyCode)) {
 					clientStore.setSprinting(false);
 				}
 			}),
