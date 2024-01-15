@@ -1,7 +1,8 @@
 import { Service } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Players } from "@rbxts/services";
 import { BaseSCPInstance, SCPAdded, SCPRemoving } from "server/components/scp/BaseSCP";
-import { PlayerAdded, PlayerRemoving } from "./PlayerService";
+import { CharacterAdded, PlayerRemoving } from "./PlayerService";
 
 export type HumanoidInfo = {
 	player: boolean;
@@ -11,13 +12,14 @@ export type HumanoidInfo = {
 export type EntityID = number;
 
 @Service()
-export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemoving {
+export class IDService implements CharacterAdded, PlayerRemoving, SCPAdded, SCPRemoving {
 	private idMap = new Map<EntityID, HumanoidInfo>();
 	private usedIds = 0;
 
-	playerAdded(player: Player) {
+	characterAdded(character: CharacterRigR15) {
 		const id = this.getNewID();
-		const character = player.Character || player.CharacterAdded.Wait()[0];
+		const player = Players.GetPlayerFromCharacter(character);
+		player?.SetAttribute("entityId", id);
 		character.SetAttribute("entityId", id);
 		this.idMap.set(id, { player: true, model: character as CharacterRigR15 });
 	}
@@ -31,8 +33,7 @@ export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemo
 	}
 
 	playerRemoving(player: Player) {
-		const character = player.Character || player.CharacterAdded.Wait()[0];
-		const id = character.GetAttribute("entityId") as number;
+		const id = player.GetAttribute("entityId") as number;
 		this.idMap.delete(id);
 	}
 
@@ -46,9 +47,8 @@ export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemo
 	}
 
 	private getNewID() {
-		const id = this.usedIds + 1;
 		this.usedIds++;
-		return id;
+		return this.usedIds;
 	}
 
 	isPlayer(id: EntityID) {

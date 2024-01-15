@@ -1,10 +1,5 @@
 import variantModule, { TypeNames, VariantOf } from "@rbxts/variant";
 
-export interface BuffData {
-	strength: number;
-	duration?: number;
-}
-
 export const BuffEffect = variantModule({
 	HealthIncrease: (health: number) => ({ health }),
 	StaminaMultiplier: (multiplier: number) => ({ multiplier }),

@@ -39,11 +39,17 @@ export class BuffService implements OnStart, PlayerDataLoaded {
 		const { purchasedPerks } = data;
 
 		const hasStaminaPerk = purchasedPerks.some((perk) => perk.title === "Ghoul");
+		const hasHealthPerk = purchasedPerks.some((perk) => perk.title === "Hex");
 
 		if (hasStaminaPerk) {
 			// +20% stamina if has stamina perk :)
 			// note: example. need to implement properly when on pc
 			Events.StaminaBoostChanged.fire([player], 1.2);
+		}
+		if (hasHealthPerk) {
+			const character = player.Character || player.CharacterAdded.Wait()[0];
+			const humanoid = character.FindFirstChildWhichIsA("Humanoid")!;
+			humanoid.MaxHealth *= 1.2;
 		}
 	}
 }

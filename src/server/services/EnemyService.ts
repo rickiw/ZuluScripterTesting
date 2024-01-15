@@ -78,8 +78,8 @@ export class EnemyService {
 			Log.Warn("Enemy ID {@Enemy} took a bullet hit but no model was found", enemy);
 			return;
 		}
-		const crit = enemyModel.Humanoid.Health <= 0;
 
+		const crit = enemyModel.Humanoid.Health <= 0;
 		const healthChange: HealthChange = {
 			amount: bullet.Damage,
 			by: Option.wrap(DamageContributor.Solo(shooterModel)),
