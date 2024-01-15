@@ -1,5 +1,4 @@
 import variantModule, { TypeNames, VariantOf } from "@rbxts/variant";
-import { BuffKind } from "./buff";
 
 export const DamageContributor = variantModule({
 	Solo: (uid: BaseSCP) => ({ uid }),
@@ -11,7 +10,6 @@ export type DamageContributor<T extends TypeNames<typeof DamageContributor> = un
 >;
 
 export const DamageSource = variantModule({
-	Buff: (buff: BuffKind) => ({ buff }),
 	Projectile: {},
 	Explosion: {},
 	Other: {},
