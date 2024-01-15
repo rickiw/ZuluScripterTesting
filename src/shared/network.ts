@@ -4,7 +4,9 @@ interface ClientToServerEvents {
 	ItemDrop(Tool: Tool): void;
 }
 
-interface ServerToClientEvents {}
+interface ServerToClientEvents {
+	StaminaBoostChanged(StaminaBoost: number): void;
+}
 
 interface ClientToServerFunctions {}
 

@@ -1,6 +1,8 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
+import Maid from "@rbxts/maid";
 import { Players, UserInputService } from "@rbxts/services";
 import { setInterval, setTimeout } from "@rbxts/set-timeout";
+import { Events } from "client/network";
 import { clientStore } from "client/store";
 import { selectExhausted, selectRecovering, selectSprinting } from "client/store/character";
 import { selectMenuOpen } from "client/store/menu";
@@ -20,17 +22,26 @@ const player = Players.LocalPlayer;
 
 @Controller()
 export class CharacterController implements OnStart, OnTick {
+	maid = new Maid();
+
 	onStart() {
-		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && INPUTS.has(input.KeyCode)) {
-				clientStore.setSprinting(true);
-			}
-		});
-		UserInputService.InputEnded.Connect((input) => {
-			if (INPUTS.has(input.KeyCode)) {
-				clientStore.setSprinting(false);
-			}
-		});
+		this.maid.GiveTask(
+			UserInputService.InputBegan.Connect((input, processed) => {
+				if (!processed && INPUTS.has(input.KeyCode)) {
+					clientStore.setSprinting(true);
+				}
+			}),
+		);
+		this.maid.GiveTask(
+			UserInputService.InputEnded.Connect((input) => {
+				if (INPUTS.has(input.KeyCode)) {
+					clientStore.setSprinting(false);
+				}
+			}),
+		);
+		this.maid.GiveTask(
+			Events.StaminaBoostChanged.connect((staminaBoost) => clientStore.setStaminaBoost(staminaBoost)),
+		);
 
 		this.startStaminaLoop();
 	}

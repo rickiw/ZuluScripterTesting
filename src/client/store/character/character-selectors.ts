@@ -2,7 +2,7 @@ import { RootState } from "../index";
 
 export const selectCharacter = (state: RootState) => state.character;
 
-export const selectStamina = (state: RootState) => state.character.stamina;
+export const selectStamina = (state: RootState) => state.character.stamina * state.character.staminaBoost;
 
 export const selectHealth = (state: RootState) => state.character.health;
 
