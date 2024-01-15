@@ -1,5 +1,4 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
-import Maid from "@rbxts/maid";
 import { Players, UserInputService } from "@rbxts/services";
 import { setInterval, setTimeout } from "@rbxts/set-timeout";
 import { Events } from "client/network";
@@ -21,27 +20,22 @@ const player = Players.LocalPlayer;
 
 @Controller()
 export class CharacterController extends HandlesInput implements OnStart, OnTick {
-	maid = new Maid();
-	inputs = new ReadonlySet([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
+	inputs = [Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3];
 
 	onStart() {
-		this.maid.GiveTask(
-			UserInputService.InputBegan.Connect((input, processed) => {
-				if (!processed && this.hasInput(input.KeyCode)) {
-					clientStore.setSprinting(true);
-				}
-			}),
-		);
-		this.maid.GiveTask(
-			UserInputService.InputEnded.Connect((input) => {
-				if (this.hasInput(input.KeyCode)) {
-					clientStore.setSprinting(false);
-				}
-			}),
-		);
-		this.maid.GiveTask(
-			Events.StaminaBoostChanged.connect((staminaBoost) => clientStore.setStaminaBoost(staminaBoost)),
-		);
+		UserInputService.InputBegan.Connect((input, processed) => {
+			if (!processed && this.hasInput(input.KeyCode)) {
+				clientStore.setSprinting(true);
+			}
+		});
+
+		UserInputService.InputEnded.Connect((input) => {
+			if (this.hasInput(input.KeyCode)) {
+				clientStore.setSprinting(false);
+			}
+		});
+
+		Events.StaminaBoostChanged.connect((staminaBoost) => clientStore.setStaminaBoost(staminaBoost));
 
 		this.startStaminaLoop();
 	}

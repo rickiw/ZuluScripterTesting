@@ -1,24 +1,16 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
-import { Players, TweenService, UserInputService, Workspace } from "@rbxts/services";
+import { TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectMenuOpen } from "client/store/menu";
 import { HandlesInput } from "./BaseInput";
-
-const player = Players.LocalPlayer;
-
-const mountPosition = new Vector3(-4.5, 11.5, 89.5);
-const mountOrientation = new Vector3(-9.994, 172.969, 0.353);
-
-const panelPosition = new Vector3(-8.5, 10, 97.5);
-const panelOrientation = new Vector3(0, -15, 0);
 
 @Controller()
 export class MenuController extends HandlesInput implements OnStart, OnRender {
 	menuPanel: BasePart;
 	openedCFrame?: CFrame;
 	cameraTween?: Tween;
-	inputs = new ReadonlySet([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
+	inputs = [Enum.KeyCode.H, Enum.KeyCode.ButtonX];
 
 	constructor() {
 		super();
@@ -26,8 +18,6 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			Parent: Workspace.CurrentCamera,
 			Name: "MenuPanel",
 			Size: new Vector3(15, 8, 1),
-			Position: panelPosition,
-			Orientation: panelOrientation,
 			CanCollide: false,
 			CanQuery: false,
 			Anchored: true,

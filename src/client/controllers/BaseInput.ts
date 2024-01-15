@@ -1,7 +1,9 @@
+// TODO: Use ContextActionUtility
+
 export abstract class HandlesInput {
-	abstract inputs: ReadonlySet<Enum.KeyCode>;
+	abstract inputs: ReadonlyArray<Enum.KeyCode>;
 
 	hasInput(input: Enum.KeyCode) {
-		return this.inputs.has(input);
+		return this.inputs.includes(input);
 	}
 }

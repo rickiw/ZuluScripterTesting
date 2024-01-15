@@ -1,4 +1,4 @@
-import { Modding, Service } from "@flamework/core";
+import { Modding, OnStart, Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
@@ -17,7 +17,7 @@ export interface PlayerDataLoaded {
 }
 
 @Service()
-export class DataService implements PlayerAdded, PlayerRemoving {
+export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 	private profileStorage = new Map<Player["UserId"], ProfileInstance>();
 
 	private profileStore: ProfileStore<PlayerProfile>;
@@ -25,7 +25,9 @@ export class DataService implements PlayerAdded, PlayerRemoving {
 
 	constructor() {
 		this.profileStore = ProfileService.GetProfileStore(PLAYER_DATA_KEY, defaultPlayerProfile);
+	}
 
+	onStart() {
 		Modding.onListenerAdded<PlayerDataLoaded>((object) => this.dataLoadedListeners.add(object));
 		Modding.onListenerRemoved<PlayerDataLoaded>((object) => this.dataLoadedListeners.delete(object));
 	}
