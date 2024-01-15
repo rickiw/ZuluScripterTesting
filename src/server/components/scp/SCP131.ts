@@ -2,7 +2,8 @@ import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
 import SimplePath from "@rbxts/simplepath";
-import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
+import { PathfindService } from "server/services/PathfindService";
+import { BaseSCP, BaseSCPInstance, OnPathfind, OnWaypointReached, PathfindErrorType } from "./BaseSCP";
 
 interface SCPInstance extends BaseSCPInstance {
 	Humanoid: Humanoid;
@@ -22,7 +23,7 @@ interface SCPAttributes {
 })
 export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	extends BaseSCP<A, I>
-	implements OnStart, OnTick, OnPathfind
+	implements OnStart, OnTick, OnPathfind, OnWaypointReached
 {
 	status: "idle" | "wandering" | "following" = "idle";
 	target?: Player;
@@ -30,13 +31,16 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	nextWanderPoint?: Vector3;
 	path: SimplePath;
 
-	constructor() {
+	constructor(private pathfindService: PathfindService) {
 		super();
 
 		this.path = new SimplePath(this.instance);
 		this.path.Reached.Connect(() => this.pathfindFinished());
 		this.path.Blocked.Connect(() => this.pathfindBlocked());
 		this.path.Error.Connect((errorType) => this.pathfindError(errorType));
+		this.path.WaypointReached.Connect((agent, lastWaypoint, nextWaypoint) =>
+			this.waypointReached(agent, lastWaypoint.Position, nextWaypoint.Position),
+		);
 
 		if (this.attributes.visualize) this.path.Visualize = true;
 	}
@@ -83,6 +87,7 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 				}
 				const character = this.target.Character;
 				if (!character || !character.PrimaryPart) {
+					this.target = undefined;
 					Log.Warn("SCP131 | Target character is undefined but is following, probably left game");
 					if (this.path.Status === "Active") this.path.Stop();
 					this.status = "idle";
@@ -139,5 +144,11 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 				this.status = "wandering";
 			});
 		}
+	}
+
+	waypointReached(agent: Model, lastWaypoint: Vector3, nextWaypoint: Vector3) {
+		const tween = this.pathfindService.tween(agent.PrimaryPart!, nextWaypoint);
+		tween.Play();
+		tween.Completed.Wait();
 	}
 }

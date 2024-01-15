@@ -1,7 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { Players } from "@rbxts/services";
-import { selectMenuPage, selectMenuPanel } from "client/store/menu";
+import { selectMenuOpen, selectMenuPage, selectMenuPanel } from "client/store/menu";
 import { fonts } from "shared/constants/fonts";
 import { Frame } from "../frame";
 import { SurfaceLayer } from "../layer";
@@ -19,6 +19,7 @@ const player = Players.LocalPlayer;
 export function MenuProvider() {
 	const currentPage = useSelector(selectMenuPage);
 	const adornee = useSelector(selectMenuPanel);
+	const menuOpen = useSelector(selectMenuOpen);
 
 	return (
 		<SurfaceLayer
@@ -27,6 +28,7 @@ export function MenuProvider() {
 			adornee={adornee}
 			sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
 			pixelsPerStud={50}
+			enabled={menuOpen}
 		>
 			<Frame
 				anchorPoint={new Vector2(0.5, 0.5)}

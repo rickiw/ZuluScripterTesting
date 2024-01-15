@@ -9,7 +9,7 @@ export interface BaseSCPInstance extends Model {}
 export interface SCPAttributes {}
 
 export interface OnWaypointReached {
-	waypointReached(): void;
+	waypointReached(agent: Model, lastWaypoint: Vector3, nextWaypoint: Vector3): void;
 }
 
 export type PathfindErrorType = "LimitReached" | "TargetUnreachable" | "ComputationError" | "AgentStuck";

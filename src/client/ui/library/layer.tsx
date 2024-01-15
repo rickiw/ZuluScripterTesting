@@ -13,6 +13,7 @@ export interface SurfaceLayerProps extends Roact.PropsWithChildren {
 	sizingMode?: Enum.SurfaceGuiSizingMode;
 	pixelsPerStud?: number;
 	canvasSize?: Vector2;
+	enabled?: boolean;
 	face?: Enum.NormalId;
 }
 
@@ -33,6 +34,7 @@ export function SurfaceLayer({
 	canvasSize,
 	adornee,
 	alwaysOnTop,
+	enabled,
 	children,
 }: SurfaceLayerProps) {
 	return IS_EDIT ? (
@@ -47,6 +49,7 @@ export function SurfaceLayer({
 			ResetOnSpawn={false}
 			ZIndexBehavior="Sibling"
 			AlwaysOnTop={alwaysOnTop || false}
+			Enabled={enabled}
 		>
 			{children}
 		</surfacegui>
