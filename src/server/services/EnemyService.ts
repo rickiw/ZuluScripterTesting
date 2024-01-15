@@ -2,6 +2,7 @@ import { Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import { Option } from "@rbxts/rust-classes";
 import { HttpService } from "@rbxts/services";
+import { EntityID, IDService } from "./IDService";
 import { DamageContributor, DamageSource, HealthChange } from "./variants";
 
 // FOR TESTING ONLY UNTIL GUN SYSTEM IS FINISHED
@@ -11,21 +12,47 @@ interface Bullet {
 
 @Service()
 export class EnemyService {
-	constructor() {}
+	constructor(private idService: IDService) {}
 
-	handleDamage(enemy: Player | BaseHumanoidSCP, healthChange: HealthChange) {
-		Log.Info("Enemy {@Enemy} took {@DamageSource}", enemy.Name, HttpService.JSONEncode(healthChange));
+	handleDamage(enemy: EntityID, healthChange: HealthChange) {
+		const model = this.idService.getModelFromID(enemy);
+		if (!model) {
+			Log.Warn(
+				"Enemy ID {@Enemy} took {@DamageSource} but no model was found",
+				enemy,
+				HttpService.JSONEncode(healthChange),
+			);
+			return;
+		}
+		Log.Info("Enemy {@Enemy} took {@DamageSource}", model.Name, HttpService.JSONEncode(healthChange));
 	}
 
-	handleDeath(enemy: Player | BaseHumanoidSCP, damageSource?: DamageSource) {
-		Log.Info("Enemy {@Enemy} died", enemy.Name);
+	handleDeath(enemy: EntityID, damageSource?: DamageSource) {
+		const model = this.idService.getModelFromID(enemy);
+		if (!model) {
+			Log.Warn(
+				"Enemy ID {@Enemy} took {@DamageSource} but no model was found",
+				enemy,
+				HttpService.JSONEncode(damageSource),
+			);
+			return;
+		}
+		Log.Info("Enemy {@Enemy} died", model.Name);
 	}
 
-	bulletHit(shooter: Player, enemy: Player | BaseHumanoidSCP, bullet: Bullet) {
-		const crit = enemy.IsA("Player")
-			? enemy.Character?.FindFirstChildOfClass("Humanoid")?.Health === 0
-			: enemy.Humanoid.Health === 0;
-		const shooterModel = shooter.Character!;
+	bulletHit(shooter: EntityID, enemy: EntityID, bullet: Bullet) {
+		const shooterModel = this.idService.getModelFromID(shooter);
+		if (!shooterModel) {
+			Log.Warn("Enemy ID {@Enemy} took a bullet hit but no model was found", enemy);
+			return;
+		}
+		const enemyModel = this.idService.getModelFromID(enemy);
+		if (!enemyModel) {
+			Log.Warn("Enemy ID {@Enemy} took a bullet hit but no model was found", enemy);
+			return;
+		}
+		const crit = enemyModel.Humanoid.Health <= 0;
+
 		const healthChange: HealthChange = {
 			amount: bullet.Damage,
 			by: Option.wrap(DamageContributor.Solo(shooterModel)),
@@ -33,6 +60,7 @@ export class EnemyService {
 			time: tick(),
 			crit,
 		};
+
 		this.handleDamage(enemy, healthChange);
 	}
 }
