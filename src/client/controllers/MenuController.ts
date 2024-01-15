@@ -3,8 +3,7 @@ import { New } from "@rbxts/fusion";
 import { Players, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectMenuOpen } from "client/store/menu";
-
-const INPUTS = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
+import { HandlesInput } from "./BaseInput";
 
 const player = Players.LocalPlayer;
 
@@ -15,12 +14,14 @@ const panelPosition = new Vector3(-8.5, 10, 97.5);
 const panelOrientation = new Vector3(0, -15, 0);
 
 @Controller()
-export class MenuController implements OnStart, OnRender {
+export class MenuController extends HandlesInput implements OnStart, OnRender {
 	menuPanel: BasePart;
 	openedCFrame?: CFrame;
 	cameraTween?: Tween;
+	inputs = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
 
 	constructor() {
+		super();
 		this.menuPanel = New("Part")({
 			Parent: Workspace.CurrentCamera,
 			Name: "MenuPanel",
@@ -40,7 +41,7 @@ export class MenuController implements OnStart, OnRender {
 
 	onStart() {
 		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && INPUTS.has(input.KeyCode)) {
+			if (!processed && this.inputs.has(input.KeyCode)) {
 				this.toggleMenu();
 			}
 		});

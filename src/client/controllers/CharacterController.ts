@@ -15,26 +15,26 @@ import {
 	SPEED_WALK,
 } from "shared/constants/character";
 import { damp, lerp } from "shared/utils";
-
-const INPUTS = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
+import { HandlesInput } from "./BaseInput";
 
 const player = Players.LocalPlayer;
 
 @Controller()
-export class CharacterController implements OnStart, OnTick {
+export class CharacterController extends HandlesInput implements OnStart, OnTick {
 	maid = new Maid();
+	inputs = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
 
 	onStart() {
 		this.maid.GiveTask(
 			UserInputService.InputBegan.Connect((input, processed) => {
-				if (!processed && INPUTS.has(input.KeyCode)) {
+				if (!processed && this.inputs.has(input.KeyCode)) {
 					clientStore.setSprinting(true);
 				}
 			}),
 		);
 		this.maid.GiveTask(
 			UserInputService.InputEnded.Connect((input) => {
-				if (INPUTS.has(input.KeyCode)) {
+				if (this.inputs.has(input.KeyCode)) {
 					clientStore.setSprinting(false);
 				}
 			}),
