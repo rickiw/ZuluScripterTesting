@@ -13,11 +13,13 @@ export type EntityID = number;
 @Service()
 export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemoving {
 	private idMap = new Map<EntityID, HumanoidInfo>();
+	private usedIds = 0;
 
 	playerAdded(player: Player) {
+		const id = this.getNewID();
 		const character = player.Character || player.CharacterAdded.Wait()[0];
-		character.SetAttribute("entityId", player.UserId);
-		this.idMap.set(player.UserId, { player: true, model: character as CharacterRigR15 });
+		character.SetAttribute("entityId", id);
+		this.idMap.set(id, { player: true, model: character as CharacterRigR15 });
 	}
 
 	scpAdded(scp: BaseSCPInstance) {
@@ -29,7 +31,9 @@ export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemo
 	}
 
 	playerRemoving(player: Player) {
-		this.idMap.delete(player.UserId);
+		const character = player.Character || player.CharacterAdded.Wait()[0];
+		const id = character.GetAttribute("entityId") as number;
+		this.idMap.delete(id);
 	}
 
 	scpRemoving(scp: BaseSCPInstance) {
@@ -42,10 +46,8 @@ export class IDService implements PlayerAdded, PlayerRemoving, SCPAdded, SCPRemo
 	}
 
 	private getNewID() {
-		let id = 0;
-		while (this.idMap.has(id)) {
-			id++;
-		}
+		const id = this.usedIds + 1;
+		this.usedIds++;
 		return id;
 	}
 
