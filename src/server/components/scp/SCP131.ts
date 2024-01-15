@@ -2,8 +2,7 @@ import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
 import SimplePath from "@rbxts/simplepath";
-import { PathfindService } from "server/services/PathfindService";
-import { BaseSCP, BaseSCPInstance, OnPathfind, OnWaypointReached, PathfindErrorType } from "./BaseSCP";
+import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
 
 interface SCPInstance extends BaseSCPInstance {
 	Humanoid: Humanoid;
@@ -23,7 +22,7 @@ interface SCPAttributes {
 })
 export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	extends BaseSCP<A, I>
-	implements OnStart, OnTick, OnPathfind, OnWaypointReached
+	implements OnStart, OnTick, OnPathfind
 {
 	status: "idle" | "wandering" | "following" = "idle";
 	target?: Player;
@@ -31,16 +30,13 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	nextWanderPoint?: Vector3;
 	path: SimplePath;
 
-	constructor(private pathfindService: PathfindService) {
+	constructor() {
 		super();
 
 		this.path = new SimplePath(this.instance);
 		this.path.Reached.Connect(() => this.pathfindFinished());
 		this.path.Blocked.Connect(() => this.pathfindBlocked());
 		this.path.Error.Connect((errorType) => this.pathfindError(errorType));
-		this.path.WaypointReached.Connect((agent, lastWaypoint, nextWaypoint) =>
-			this.waypointReached(agent, lastWaypoint.Position, nextWaypoint.Position),
-		);
 
 		if (this.attributes.visualize) this.path.Visualize = true;
 	}
@@ -80,7 +76,8 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 			}
 			case "following": {
 				if (!this.target) {
-					Log.Warn("SCP131 | Target is undefined but is following, probably left game");
+					if (this.attributes.visualize)
+						Log.Warn("SCP131 | Target is undefined but is following, probably left game");
 					if (this.path.Status === "Active") this.path.Stop();
 					this.status = "idle";
 					return;
@@ -88,7 +85,8 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 				const character = this.target.Character;
 				if (!character || !character.PrimaryPart) {
 					this.target = undefined;
-					Log.Warn("SCP131 | Target character is undefined but is following, probably left game");
+					if (this.attributes.visualize)
+						Log.Warn("SCP131 | Target character is undefined but is following, probably left game");
 					if (this.path.Status === "Active") this.path.Stop();
 					this.status = "idle";
 					return;
@@ -104,17 +102,30 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	}
 
 	pathfindBlocked() {
-		Log.Warn("SCP131 pathfinding was blocked...");
+		if (this.attributes.visualize) Log.Warn("SCP131 pathfinding was blocked...");
+		if (this.status === "wandering") {
+			this.nextWanderPoint = this.getNextWanderPoint();
+			this.path.Stop();
+			this.path.Run(this.nextWanderPoint);
+		}
+	}
+
+	fixPathfindError() {
+		if (this.status !== "wandering") return;
+		this.nextWanderPoint = this.getNextWanderPoint();
+		this.path.Run(this.nextWanderPoint);
 	}
 
 	pathfindError(errorType: PathfindErrorType) {
 		switch (errorType) {
 			case "ComputationError":
 			case "LimitReached":
+				this.fixPathfindError();
 				break;
 			case "AgentStuck":
 				break;
 			case "TargetUnreachable":
+				if (this.attributes.visualize) Log.Warn("SCP131 | Target unreachable");
 				break;
 		}
 	}
@@ -144,11 +155,5 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 				this.status = "wandering";
 			});
 		}
-	}
-
-	waypointReached(agent: Model, lastWaypoint: Vector3, nextWaypoint: Vector3) {
-		const tween = this.pathfindService.tween(agent.PrimaryPart!, nextWaypoint);
-		tween.Play();
-		tween.Completed.Wait();
 	}
 }
