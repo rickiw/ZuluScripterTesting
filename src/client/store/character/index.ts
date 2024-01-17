@@ -1,2 +1,2 @@
-export * from "./character-selectors";
+export * from "./character-selector";
 export * from "./character-slice";

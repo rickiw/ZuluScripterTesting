@@ -8,7 +8,11 @@ interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
 }
 
-interface ClientToServerFunctions {}
+export type ClanCreationStatus = "Success" | "Error" | "AlreadyExists" | "AlreadyInClan" | "NotAllowed";
+
+interface ClientToServerFunctions {
+	CreateClan(clanName: string): ClanCreationStatus;
+}
 
 interface ServerToClientFunctions {}
 
