@@ -1,15 +1,16 @@
 import { createProducer } from "@rbxts/reflex";
+import { ClanMember } from "server/services/ClanService";
 import { clanMiddleware } from "../middleware/clan";
 
 export enum ClanRank {
-	"Owner" = 2,
-	"Admin" = 1,
-	"Member" = 0,
+	Owner = "OWNER",
+	Admin = "ADMIN",
+	Member = "MEMBER",
 }
 
 export interface Clan {
 	title: string;
-	members: Map<Player["UserId"], ClanRank>;
+	members: ClanMember[];
 	owner: Player["UserId"];
 	bank: number;
 }

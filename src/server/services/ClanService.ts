@@ -6,6 +6,11 @@ import { Functions } from "server/network";
 import { Clan, ClanRank } from "server/store/clan/clan-slice";
 import { ClanCreationStatus } from "shared/network";
 
+export interface ClanMember {
+	userId: Player["UserId"];
+	rank: ClanRank;
+}
+
 @Service()
 export class ClanService implements OnStart {
 	private store: DataStore;
@@ -36,7 +41,10 @@ export class ClanService implements OnStart {
 	getPlayerClan(player: Player) {
 		const clans = this.getAllClans();
 		return $tuple(
-			clans.find((clan) => clan.members.has(player.UserId)),
+			clans.find(
+				(clan) =>
+					clan.members.some((member) => member.userId === player.UserId) || clan.owner === player.UserId,
+			),
 			clans,
 		);
 	}
@@ -52,8 +60,7 @@ export class ClanService implements OnStart {
 			return "AlreadyExists";
 		}
 
-		const members = new Map<number, ClanRank>();
-		members.set(owner.UserId, ClanRank.Owner);
+		const members = [{ userId: owner.UserId, rank: ClanRank.Owner }];
 		const clan: Clan = {
 			title,
 			members,
