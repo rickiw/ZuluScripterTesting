@@ -9,7 +9,12 @@ export type HumanoidInfo = {
 	model: Model & { Humanoid: Humanoid };
 };
 
-export type EntityID = number;
+export type EntityID = number & {
+	/**
+	 * @hidden
+	 */
+	readonly __nominal_id: unique symbol;
+};
 
 @Service()
 export class IDService implements CharacterAdded, PlayerRemoving, SCPAdded, SCPRemoving {
@@ -33,12 +38,12 @@ export class IDService implements CharacterAdded, PlayerRemoving, SCPAdded, SCPR
 	}
 
 	playerRemoving(player: Player) {
-		const id = player.GetAttribute("entityId") as number;
+		const id = player.GetAttribute("entityId") as EntityID;
 		this.idMap.delete(id);
 	}
 
 	scpRemoving(scp: BaseSCPInstance) {
-		const id = scp.GetAttribute("entityId") as number;
+		const id = scp.GetAttribute("entityId") as EntityID;
 		this.idMap.delete(id);
 	}
 
@@ -48,7 +53,7 @@ export class IDService implements CharacterAdded, PlayerRemoving, SCPAdded, SCPR
 
 	private getNewID() {
 		this.usedIds++;
-		return this.usedIds;
+		return this.usedIds as EntityID;
 	}
 
 	isPlayer(id: EntityID) {
