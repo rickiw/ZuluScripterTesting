@@ -24,7 +24,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			Transparency: 1,
 			Material: Enum.Material.SmoothPlastic,
 			Reflectance: 0.05,
-			Color: Color3.fromRGB(0, 0, 0),
+			Color: Color3.fromRGB(43, 43, 43),
 		});
 		clientStore.setMenuPanel(this.menuPanel);
 	}
