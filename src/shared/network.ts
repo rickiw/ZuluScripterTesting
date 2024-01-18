@@ -1,8 +1,6 @@
 import { Networking } from "@flamework/networking";
 
-interface ClientToServerEvents {
-	ItemDrop(Tool: Tool): void;
-}
+interface ClientToServerEvents {}
 
 interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
