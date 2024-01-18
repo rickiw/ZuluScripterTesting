@@ -20,6 +20,8 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@commitlint/cli": "^18.4.4",
+		"@commitlint/config-conventional": "^18.4.4",
 		"@rbxts/compiler-types": "^2.2.0-types.0",
 		"@rbxts/types": "^1.0.714",
 		"@typescript-eslint/eslint-plugin": "^6.7.0",
