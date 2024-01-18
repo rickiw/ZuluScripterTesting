@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "rbxtsc",
+		"lint": "commitlint --from HEAD~1 --to HEAD --verbose",
 		"compile": "rbxtsc --verbose",
 		"watch": "rbxtsc -w",
 		"tarmac": "tarmac sync --target roblox",
