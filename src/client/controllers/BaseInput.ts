@@ -8,6 +8,14 @@ export abstract class HandlesInput {
 	}
 }
 
+export type MultipleInput = ReadonlyArray<{ input: ReadonlyArray<Enum.KeyCode>; action: string }>;
+export type BaseActions<T extends MultipleInput> = T extends ReadonlyArray<{
+	input: ReadonlyArray<Enum.KeyCode>;
+	action: infer A;
+}>
+	? A[]
+	: never;
+
 export abstract class HandlesMultipleInputs<T extends readonly string[]> {
 	abstract inputs: ReadonlyArray<{ input: ReadonlyArray<Enum.KeyCode>; action: T[number] }>;
 

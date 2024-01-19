@@ -2,13 +2,13 @@ import { Controller, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
 import { UserInputService } from "@rbxts/services";
 import { Functions } from "client/network";
-import { HandlesMultipleInputs } from "./BaseInput";
+import { BaseActions, HandlesMultipleInputs, MultipleInput } from "./BaseInput";
 
-const actions = [
+const actions: MultipleInput = [
 	{ input: [Enum.KeyCode.O, Enum.KeyCode.ButtonA], action: "CreateClan" },
 	{ input: [Enum.KeyCode.Z], action: "ViewAllClans" },
-] as const;
-type ClanActions = typeof actions extends ReadonlyArray<{ input: any; action: infer A }> ? A[] : never;
+];
+type ClanActions = BaseActions<typeof actions>;
 
 @Controller()
 export class ClanController extends HandlesMultipleInputs<ClanActions> implements OnStart {
