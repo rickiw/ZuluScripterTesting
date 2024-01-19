@@ -3,6 +3,7 @@ import Log from "@rbxts/log";
 import { DataStoreService } from "@rbxts/services";
 import { CLANS_DATA_KEY, GLOBAL_SERVER_DATA_KEY } from "server/data";
 import { Functions } from "server/network";
+import { serverStore } from "server/store";
 import { Clan, ClanRank } from "server/store/clan/clan-slice";
 import { ClanCreationStatus } from "shared/network";
 
@@ -25,6 +26,8 @@ export class ClanService implements OnStart {
 			Log.Warn("Clans data store is empty, creating empty array");
 			this.createClansStore();
 		}
+
+		serverStore.setClans(clans);
 
 		Functions.CreateClan.setCallback(async (player, clanName) => {
 			Log.Warn("Creating clan {@ClanName}", clanName);

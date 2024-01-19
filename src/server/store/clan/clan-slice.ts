@@ -28,6 +28,10 @@ const clanSliceActions = {
 		...state,
 		clans: [...state.clans, clan],
 	}),
+	setClans: (state: ClanState, clans: Clan[]) => ({
+		...state,
+		clans,
+	}),
 };
 export type ClanActions = typeof clanSliceActions;
 

@@ -4,7 +4,7 @@ import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
 import { Players } from "@rbxts/services";
 import { PLAYER_DATA_KEY, defaultPlayerProfile } from "server/data";
-import { store } from "server/store";
+import { serverStore } from "server/store";
 import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
@@ -63,10 +63,10 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 			player.Kick("Session was terminated");
 		});
 
-		store.setPlayerSave(player.UserId, profile.Data);
+		serverStore.setPlayerSave(player.UserId, profile.Data);
 
 		const selectPlayerData = selectPlayerSave(player.UserId);
-		store.subscribe(selectPlayerData, (data, oldData) => {
+		serverStore.subscribe(selectPlayerData, (data, oldData) => {
 			if (!data || !oldData) return;
 			profile.Data = data;
 		});
