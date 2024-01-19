@@ -4,13 +4,9 @@ import { DataStoreService } from "@rbxts/services";
 import { CLANS_DATA_KEY, GLOBAL_SERVER_DATA_KEY } from "server/data";
 import { Functions } from "server/network";
 import { serverStore } from "server/store";
-import { Clan, ClanRank } from "server/store/clan/clan-slice";
+import { selectClans } from "server/store/clan";
+import { Clan, ClanRank } from "shared/constants/clans";
 import { ClanCreationStatus } from "shared/network";
-
-export interface ClanMember {
-	userId: Player["UserId"];
-	rank: ClanRank;
-}
 
 @Service()
 export class ClanService implements OnStart {
@@ -29,9 +25,14 @@ export class ClanService implements OnStart {
 
 		serverStore.setClans(clans);
 
-		Functions.CreateClan.setCallback(async (player, clanName) => {
+		Functions.CreateClan.setCallback((player, clanName) => {
 			Log.Warn("Creating clan {@ClanName}", clanName);
 			return this.createClan(player, clanName);
+		});
+
+		Functions.GetClans.setCallback((player) => {
+			Log.Warn("Player {@Player} requested clans", player);
+			return serverStore.getState(selectClans);
 		});
 	}
 

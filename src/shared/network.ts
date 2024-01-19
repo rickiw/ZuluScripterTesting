@@ -1,4 +1,5 @@
 import { Networking } from "@flamework/networking";
+import { Clan } from "./constants/clans";
 
 interface ClientToServerEvents {}
 
@@ -10,6 +11,7 @@ export type ClanCreationStatus = "Success" | "Error" | "AlreadyExists" | "Alread
 
 interface ClientToServerFunctions {
 	CreateClan(clanName: string): ClanCreationStatus;
+	GetClans(): readonly Clan[];
 }
 
 interface ServerToClientFunctions {}
