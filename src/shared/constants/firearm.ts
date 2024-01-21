@@ -1,8 +1,10 @@
 import PartCacheModule from "@rbxts/partcache";
-import { ReplicatedStorage } from "@rbxts/services";
+import { ReplicatedStorage, Workspace } from "@rbxts/services";
+import { LimbType } from "shared/utils/character";
 
 export const BULLET_TEMPLATE = ReplicatedStorage.WaitForChild("Bullet", 1) as BasePart;
 export const BULLET_PROVIDER = new PartCacheModule(BULLET_TEMPLATE, 1);
+BULLET_PROVIDER.SetCacheParent(Workspace.FindFirstChild("Bullets") as Folder);
 
 export const DAMAGE_BALANCE_FACTORS = [
 	// 9x19mm does 12 dmg
@@ -26,3 +28,10 @@ export const DAMAGE_BALANCE_FACTORS = [
 	// No way
 	[20 * 138, 250],
 ].sort((a, b) => a[0] < b[0]);
+
+export const DAMAGE_MULTIPLIERS: Record<LimbType, number> = {
+	Leg: 0.65,
+	Arm: 0.65,
+	Head: 1.5,
+	Torso: 1,
+};

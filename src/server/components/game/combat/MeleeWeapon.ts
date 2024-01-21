@@ -1,6 +1,6 @@
-import { AnimationDict } from "shared/types/animation/AnimationUtil";
 import { WeaponLike, WeaponType } from "shared/types/combat/Weapon";
-
+import { AnimationDict } from "shared/utils/animation";
+import { SoundDict } from "shared/utils/sound";
 export interface MeleeLike extends WeaponLike {
 	damage: number;
 	critDamage: number;
@@ -13,7 +13,7 @@ export class MeleeWeapon implements MeleeLike {
 	name: string;
 	tool: Tool;
 	type: WeaponType;
-	wielder: Player;
+	sounds: SoundDict<number | string>;
 
 	constructor(props: MeleeLike) {
 		this.animations = props.animations;
@@ -22,6 +22,6 @@ export class MeleeWeapon implements MeleeLike {
 		this.name = props.name;
 		this.tool = props.tool;
 		this.type = props.type;
-		this.wielder = props.wielder;
+		this.sounds = props.sounds;
 	}
 }

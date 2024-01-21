@@ -9,12 +9,12 @@ export interface FirearmProjectileLike {
 	caliber?: string;
 	pellets?: number;
 	arrowLength?: number;
+	velocity: number;
 }
 
 export interface FirearmProjectile extends FirearmProjectileLike {
 	from: Vector3;
 	direction: Vector3;
-	velocity: number;
 }
 
 export const getCaliberData = (caliberDescriptor: string) => {
@@ -55,10 +55,10 @@ export const balancedDamageFunction = (volume: number) => {
 
 	print(formula); // Print the formula
 
-	return math.round(result * 10) / 10;
+	return math.clamp(math.round(result * 10) / 10, 0, 100);
 };
 
-export const getGunDamage = (projectile: FirearmProjectile) => {
+export const getGunDamage = (projectile: FirearmProjectile): number => {
 	if (projectile.type === "Bullet" && projectile.caliber) {
 		const data = getCaliberData(projectile.caliber);
 		const volume = data.diameter * data.length;
@@ -73,15 +73,15 @@ export const getGunDamage = (projectile: FirearmProjectile) => {
 
 		// Cap total Damage at 150
 		return math.min(totalDamage, 150);
-	} else if (projectile.type === "Arrow" && projectile.caliber) {
-		// get Arrow specifics, a 10x508mm arrow would be 45 damage
-		const data = getCaliberData(projectile.caliber);
-
-		// calculate damage the same way as for the bullets
-		const volume = math.pi * math.pow(data.diameter / 2, 2) * data.length;
-		const damage = (45 / (10 * 508)) * volume; // using 10*508mm arrow info
-
-		// you can cap the damage at a specific value to prevent overkill
-		return math.min(damage, 100); // assuming cap to be 100
 	}
+
+	// get Arrow specifics, a 10x508mm arrow would be 45 damage
+	const data = getCaliberData(projectile.caliber as string);
+
+	// calculate damage the same way as for the bullets
+	const volume = math.pi * math.pow(data.diameter / 2, 2) * data.length;
+	const damage = (45 / (10 * 508)) * volume; // using 10*508mm arrow info
+
+	// you can cap the damage at a specific value to prevent overkill
+	return math.min(damage, 100); // assuming cap to be 100
 };

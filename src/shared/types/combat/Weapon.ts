@@ -1,4 +1,5 @@
-import { AnimationDict } from "shared/types/animation/AnimationUtil";
+import { AnimationDict } from "shared/utils/animation";
+import { SoundDict } from "shared/utils/sound";
 
 export type WeaponType = "Firearm" | "Melee";
 
@@ -6,7 +7,10 @@ export interface WeaponLike {
 	name: string;
 	type: WeaponType;
 	animations: AnimationDict<string | number>;
-
-	wielder: Player;
+	sounds: SoundDict<string | number>;
 	tool: Tool;
+}
+
+export interface WeaponState {
+	configuration: WeaponLike;
 }

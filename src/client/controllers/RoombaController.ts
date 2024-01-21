@@ -18,7 +18,7 @@ function formatSeconds(totalSeconds: number): string {
 export class RoombaController implements OnStart {
 	net = GlobalEvents.createClient({});
 	staticFx: Sound;
-	cooldown = 0;
+	equipped = false;
 
 	constructor() {
 		this.staticFx = playSound("rbxassetid://6648328129", {
@@ -49,41 +49,45 @@ export class RoombaController implements OnStart {
 		});
 	}
 
-	countdown(from: number) {
-		this.cooldown = from;
+	initCooldownWatch() {
+		const Player = Players.LocalPlayer;
+		const RCD = Player.FindFirstChild("RoombaCD") as NumberValue;
 
-		coroutine.resume(
-			coroutine.create(() => {
-				const PlayerGui = Players.LocalPlayer.FindFirstChildOfClass("PlayerGui") as PlayerGui;
-				const RFX = PlayerGui.FindFirstChild("RFX") as ScreenGui;
-				const CooldownDisp = RFX.FindFirstChild("Cooldown") as TextLabel;
+		const PlayerGui = Players.LocalPlayer.FindFirstChildOfClass("PlayerGui") as PlayerGui;
+		const RFX = PlayerGui.FindFirstChild("RFX") as ScreenGui;
+		const CooldownDisp = RFX.FindFirstChild("Cooldown") as TextLabel;
 
-				while (this.cooldown > 0) {
-					// display time left like 04:00
-					CooldownDisp.Text = formatSeconds(this.cooldown);
-					CooldownDisp.TextColor3 = Color3.fromRGB(128, 128, 128);
-					TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
-						TextColor3: Color3.fromRGB(255, 255, 255),
-					}).Play();
-
-					this.cooldown--;
-					wait(1);
-				}
-
-				// fade out the text only
+		RCD.Changed.Connect((time) => {
+			if (CooldownDisp.Text === "READY" && time !== 0) {
+				// fade the cooldown out
 				TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
 					TextTransparency: 1,
 				}).Play();
-
-				task.delay(0.5, () => {
-					CooldownDisp.Text = "READY";
-					// fade back in
+				wait(0.5);
+				CooldownDisp.Text = formatSeconds(time);
+				// fade the cooldown in
+				if (this.equipped) {
 					TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
 						TextTransparency: 0,
 					}).Play();
-				});
-			}),
-		);
+				}
+			} else if (time !== 0) {
+				CooldownDisp.Text = formatSeconds(time);
+			} else if (time === 0) {
+				// fade the cooldown out
+				TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
+					TextTransparency: 1,
+				}).Play();
+				wait(0.5);
+				CooldownDisp.Text = "READY";
+				// fade the cooldown in
+				if (this.equipped) {
+					TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
+						TextTransparency: 0,
+					}).Play();
+				}
+			}
+		});
 	}
 
 	onStart() {
@@ -106,12 +110,13 @@ export class RoombaController implements OnStart {
 			RoombaActive = false;
 		});
 
-		this.net.RoombaCooldown.connect((time) => this.countdown(time));
-
 		this.net.RoombaLoaded.connect(() => {
 			const PlayerGui = Players.LocalPlayer.FindFirstChildOfClass("PlayerGui") as PlayerGui;
 			const RFX = PlayerGui.FindFirstChild("RFX") as ScreenGui;
 			const CooldownDisp = RFX.FindFirstChild("Cooldown") as TextLabel;
+
+			this.initCooldownWatch();
+			this.equipped = true;
 
 			// fade the cooldown in
 			TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
@@ -124,6 +129,8 @@ export class RoombaController implements OnStart {
 			const PlayerGui = Players.LocalPlayer.FindFirstChildOfClass("PlayerGui") as PlayerGui;
 			const RFX = PlayerGui.FindFirstChild("RFX") as ScreenGui;
 			const CooldownDisp = RFX.FindFirstChild("Cooldown") as TextLabel;
+
+			this.equipped = false;
 
 			// fade the cooldown in
 			TweenService.Create(CooldownDisp, new TweenInfo(0.2), {

@@ -61,7 +61,7 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	oldChr: PlayerCharacterR15 | RoombaCharacter | undefined;
 
 	hummingSfx: Sound;
-	__cd: BoolValue;
+	__cd: NumberValue;
 
 	constructor() {
 		super();
@@ -72,19 +72,26 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 			volume: 0,
 		}) as Sound;
 
-		this.__cd = (this.wielder.FindFirstChild("RoombaCD") as BoolValue) || new Instance("BoolValue", this.wielder);
+		this.__cd =
+			(this.wielder.FindFirstChild("RoombaCD") as NumberValue) || new Instance("NumberValue", this.wielder);
 		this.__cd.Name = "RoombaCD";
 	}
 
 	enableCd() {
-		this.__cd.Value = true;
-		this.net.RoombaCooldown(this.wielder, ROOMBA_COOLDOWN);
+		if (this.getCd()) return;
 		// delay disableCd, so that it toggles back to false after COOLDOWN_TIME
-		task.delay(ROOMBA_COOLDOWN, () => (this.__cd.Value = false));
+		task.spawn(() => {
+			let Left = ROOMBA_COOLDOWN;
+			while (Left > 0) {
+				Left--;
+				this.__cd.Value = Left;
+				wait(1);
+			}
+		});
 	}
 
 	getCd() {
-		return this.__cd.Value;
+		return this.__cd.Value !== 0;
 	}
 
 	onStart() {

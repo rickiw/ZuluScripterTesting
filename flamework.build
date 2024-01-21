@@ -57,7 +57,13 @@
 		"zulu-site:out/client/controllers/combat/FirearmController@FirearmController": "client/controllers/combat/FirearmController@FirearmController",
 		"zulu-site:out/server/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm": "server/types/combat/FirearmWeapon/BaseFirearm@BaseFirearm",
 		"zulu-site:out/server/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile": "server/types/combat/FirearmWeapon/FirearmProjectile@FirearmProjectile",
-		"zulu-site:out/server/types/combat/MeleeWeapon@MeleeWeapon": "server/types/combat/MeleeWeapon@MeleeWeapon"
+		"zulu-site:out/server/types/combat/MeleeWeapon@MeleeWeapon": "server/types/combat/MeleeWeapon@MeleeWeapon",
+		"zulu-site:out/server/components/game/combat/MeleeWeapon@MeleeWeapon": "server/components/game/combat/MeleeWeapon@MeleeWeapon",
+		"zulu-site:out/server/components/game/combat/FirearmWeapon/BaseFirearm@BaseFirearm": "server/components/game/combat/FirearmWeapon/BaseFirearm@BaseFirearm",
+		"zulu-site:out/shared/types/combat/FirearmWeapon/FirearmLike@FirearmLike": "shared/types/combat/FirearmWeapon/FirearmLike@FirearmLike",
+		"zulu-site:out/client/components/game/combat/BaseFirearm@BaseFirearm": "client/components/game/combat/BaseFirearm@BaseFirearm",
+		"zulu-site:out/shared/types/combat/FirearmWeapon/FirearmMagazine@FirearmMagazine": "shared/types/combat/FirearmWeapon/FirearmMagazine@FirearmMagazine",
+		"zulu-site:out/shared/utils/sound@SoundCache": "shared/utils/sound@SoundCache"
 	},
 	"metadata": {}
 }

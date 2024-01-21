@@ -1,6 +1,8 @@
 import { FirearmAttachment } from "shared/types/combat/FirearmWeapon/FirearmAttachment";
 import { FirearmProjectileLike } from "shared/types/combat/FirearmWeapon/FirearmProjectile";
 import { WeaponLike } from "shared/types/combat/Weapon";
+import { AnimationDict } from "shared/utils/animation";
+import { SoundCache, SoundDict } from "shared/utils/sound";
 
 export interface BarrelConfig {
 	velocity: number;
@@ -26,4 +28,18 @@ export interface FirearmLike extends WeaponLike {
 	Barrel: BarrelConfig;
 	Magazine: MagazineConfig;
 	Sight: SightConfig;
+	animations: FirearmAnimations<number | string>;
+}
+
+export interface FirearmAnimations<T extends number | string | AnimationTrack | Animation> extends AnimationDict<T> {
+	Idle: T;
+	Reload: T;
+	Aim: T;
+	Fire: T;
+}
+
+export interface FirearmSounds<T extends number | string | Sound | SoundCache> extends SoundDict<T> {
+	Fire: T;
+	Reload: T;
+	ChamberEmpty: T;
 }
