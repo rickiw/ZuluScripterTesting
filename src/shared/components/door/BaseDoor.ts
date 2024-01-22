@@ -154,6 +154,18 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		}
 	}
 
+	setCollision(collidable: boolean) {
+		for (const value of this.instance.GetDescendants()) {
+			if (value.IsA("Model") && value.Name.lower().match("door")[0]) {
+				for (const part of value.GetDescendants()) {
+					if (part.IsA("BasePart")) {
+						part.CanCollide = collidable;
+					}
+				}
+			}
+		}
+	}
+
 	bootstrap() {
 		if (RunService.IsClient()) {
 			const [cf] = this.instance.GetBoundingBox();
@@ -202,12 +214,16 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 					if (this.doorSound) this.doorSound.doorOpen();
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.openMotor, this.getSpringSettings());
+					} else {
+						this.setCollision(false);
 					}
 				} else {
 					this.stateChanged.Fire(false);
 					if (this.doorSound) this.doorSound.doorClose();
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.closeMotor, this.getSpringSettings());
+					} else {
+						this.setCollision(true);
 					}
 				}
 			}
