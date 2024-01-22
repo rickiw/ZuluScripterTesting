@@ -6,7 +6,8 @@ import { Functions } from "server/network";
 import { serverStore } from "server/store";
 import { selectClans } from "server/store/clan";
 import { Clan, ClanRank } from "shared/constants/clans";
-import { ClanCreationStatus } from "shared/network";
+import { ClanCreationStatus, ClanDepositStatus, ClanWithdrawStatus } from "shared/network";
+import { selectPlayerSave } from "shared/store/saves";
 
 @Service()
 export class ClanService implements OnStart {
@@ -34,6 +35,14 @@ export class ClanService implements OnStart {
 			Log.Warn("Player {@Player} requested clans", player);
 			return serverStore.getState(selectClans);
 		});
+
+		Functions.DepositClanFunds.setCallback((player, amount) => {
+			return this.depositClanFunds(player, amount);
+		});
+
+		Functions.WithdrawClanFunds.setCallback((player, amount) => {
+			return this.withdrawClanFunds(player, amount);
+		});
 	}
 
 	clanExists(name: string, cachedClans?: Clan[]) {
@@ -51,6 +60,44 @@ export class ClanService implements OnStart {
 			),
 			clans,
 		);
+	}
+
+	depositClanFunds(player: Player, amount: number): ClanDepositStatus {
+		const [playerClan, allClans] = this.getPlayerClan(player);
+		if (!playerClan) {
+			return "Error";
+		}
+		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!playerProfile) {
+			return "Error";
+		}
+		if (playerProfile.credits < amount) {
+			return "InsufficientBalance";
+		}
+		const newCredits = playerProfile.credits - amount;
+		serverStore.updatePlayerSave(player.UserId, {
+			credits: newCredits,
+		});
+		// TODO: use store and middleware instead of hacky way
+		Log.Warn("Clan Bank Before: {@Bank}", playerClan.bank);
+		const newAllClans = allClans.map((clan) => {
+			if (clan.title === playerClan.title) {
+				clan.bank += amount;
+			}
+			return clan;
+		});
+		this.store.SetAsync(CLANS_DATA_KEY, newAllClans);
+		const [newPlayerClan] = this.getPlayerClan(player);
+		Log.Warn("Clan Bank After: {@Bank}", newPlayerClan?.bank);
+		return "Success";
+	}
+
+	withdrawClanFunds(player: Player, amount: number): ClanWithdrawStatus {
+		const [playerClan, allClans] = this.getPlayerClan(player);
+		if (!playerClan) {
+			return "Error";
+		}
+		return "Success";
 	}
 
 	createClan(owner: Player, title: string): ClanCreationStatus {

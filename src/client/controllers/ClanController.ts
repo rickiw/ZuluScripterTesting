@@ -7,7 +7,8 @@ import { BaseActions, HandlesMultipleInputs, MultipleInput } from "./BaseInput";
 const actions: MultipleInput = [
 	{ input: [Enum.KeyCode.O, Enum.KeyCode.ButtonA], action: "CreateClan" },
 	{ input: [Enum.KeyCode.Z], action: "ViewAllClans" },
-];
+	{ input: [Enum.KeyCode.X], action: "DepositFunds" },
+] as const;
 type ClanActions = BaseActions<typeof actions>;
 
 @Controller()
@@ -27,6 +28,10 @@ export class ClanController extends HandlesMultipleInputs<ClanActions> implement
 			} else if (this.hasInput(input.KeyCode) === "ViewAllClans") {
 				const [success, clans] = Functions.GetClans().await();
 				Log.Warn("Clans: {@Clans}", clans);
+			} else if (this.hasInput(input.KeyCode) === "DepositFunds") {
+				Log.Warn("Depositing funds");
+				const [success, status] = Functions.DepositClanFunds(100).await();
+				Log.Warn("Deposited funds: {@Status} {@Success}", status, success);
 			}
 		});
 	}
