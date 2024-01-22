@@ -214,6 +214,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 					if (this.doorSound) this.doorSound.doorOpen();
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.openMotor, this.getSpringSettings());
+						task.delay(0.1, () => this.setCollision(true));
 					} else {
 						this.setCollision(false);
 					}
@@ -222,6 +223,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 					if (this.doorSound) this.doorSound.doorClose();
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.closeMotor, this.getSpringSettings());
+						this.setCollision(false);
 					} else {
 						this.setCollision(true);
 					}
