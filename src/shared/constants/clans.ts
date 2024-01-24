@@ -1,5 +1,5 @@
 export interface ClanMember {
-	userId: Player["UserId"];
+	userId: PlayerId;
 	rank: ClanRank;
 }
 
@@ -10,8 +10,11 @@ export enum ClanRank {
 }
 
 export interface Clan {
-	title: string;
+	groupId: GroupId;
 	members: ClanMember[];
-	owner: Player["UserId"];
+	owner: PlayerId;
 	bank: number;
 }
+
+export type GroupId = GroupInfo["Id"];
+export type PlayerId = Player["UserId"];

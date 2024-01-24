@@ -1,5 +1,5 @@
 import { Networking } from "@flamework/networking";
-import { Clan } from "./constants/clans";
+import { Clan, GroupId } from "./constants/clans";
 
 interface ClientToServerEvents {}
 
@@ -9,11 +9,11 @@ interface ServerToClientEvents {
 
 export type BaseResponseStatus = "Success" | "Error";
 export type ClanCreationStatus = BaseResponseStatus | "AlreadyExists" | "AlreadyInClan" | "NotAllowed";
-export type ClanDepositStatus = BaseResponseStatus | "InsufficientBalance" | "NotAllowed";
-export type ClanWithdrawStatus = BaseResponseStatus | "NotAllowed";
+export type ClanDepositStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance";
+export type ClanWithdrawStatus = BaseResponseStatus | "NotInClan" | "NotAllowed";
 
 interface ClientToServerFunctions {
-	CreateClan(clanName: string): ClanCreationStatus;
+	CreateClan(groupId: GroupId): ClanCreationStatus;
 	DepositClanFunds(amount: number): ClanDepositStatus;
 	WithdrawClanFunds(amount: number): ClanWithdrawStatus;
 	GetClans(): readonly Clan[];

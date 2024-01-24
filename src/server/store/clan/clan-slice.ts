@@ -1,27 +1,33 @@
 import { createProducer } from "@rbxts/reflex";
 import { Clan } from "shared/constants/clans";
-import { clanMiddleware } from "../middleware/clan";
 
 export interface ClanState {
-	clans: ReadonlyArray<Clan>;
+	readonly clans: Clan[];
 }
 
 const initialState: ClanState = {
 	clans: [],
 };
 
-const clanSliceActions = {
-	createClan: (state: ClanState, clan: Clan) => ({
-		...state,
-		clans: [...state.clans, clan],
-	}),
-	setClans: (state: ClanState, clans: Clan[]) => ({
+export const clanSlice = createProducer(initialState, {
+	setClans: (state, clans: Clan[]) => ({
 		...state,
 		clans,
 	}),
-};
-export type ClanActions = typeof clanSliceActions;
-
-export const clanSlice = createProducer(initialState, clanSliceActions);
-
-clanSlice.applyMiddleware(clanMiddleware);
+	setClanFunds: (state, clanId: number, amount: number) => {
+		const clan = state.clans.find((clan) => clan.groupId === clanId);
+		if (!clan) return state;
+		return {
+			...state,
+			clans: state.clans.map((clan) => {
+				if (clan.groupId === clanId) {
+					return {
+						...clan,
+						bank: amount,
+					};
+				}
+				return clan;
+			}),
+		};
+	},
+});
