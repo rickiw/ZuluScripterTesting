@@ -33,6 +33,9 @@ export class ClanService implements OnStart {
 		Functions.DepositClanFunds.setCallback((player, amount) => {
 			return this.depositClanFunds(player, amount);
 		});
+		Functions.WithdrawClanFunds.setCallback((player, amount) => {
+			return this.withdrawClanFunds(player, amount);
+		});
 
 		MessagingService.SubscribeAsync("UpdateClans", (data) => {
 			const clanData = data.Data as ClanUpdate;
@@ -82,13 +85,41 @@ export class ClanService implements OnStart {
 	}
 
 	withdrawClanFunds(player: Player, amount: number): ClanWithdrawStatus {
+		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!playerProfile) return "Error";
+		const clanGroupId = playerProfile.clan;
+		if (!clanGroupId) return "NotInClan";
+		const clan = serverStore.getState(selectClan(clanGroupId));
+		if (!clan) return "Error";
+		const groupInfo = GroupService.GetGroupsAsync(player.UserId).find((group) => group.Id === clanGroupId);
+		if (!groupInfo) return "Error";
+		if (groupInfo.Rank < clan.minimumWithdrawalRank) return "NotAllowed";
+		if (clan.bank < amount) return "InsufficientBalance";
+		const newFunds = clan.bank - amount;
+		const newClan: Clan = {
+			...clan,
+			bank: newFunds,
+		};
+		const clans = this.getAllClans();
+		const newClans = clans.map((clan) => {
+			if (clan.groupId === clanGroupId) {
+				return newClan;
+			}
+			return clan;
+		});
+		this.store.SetAsync(CLANS_DATA_KEY, newClans);
+		serverStore.setClanFunds(clanGroupId, newFunds);
+		serverStore.updatePlayerSave(player.UserId, {
+			credits: playerProfile.credits + amount,
+		});
+		this.sendGlobalUpdate();
 		return "Success";
 	}
 
 	createClan(owner: Player, groupId: GroupId): ClanCreationStatus {
 		const playerProfile = serverStore.getState(selectPlayerSave(owner.UserId));
 		if (!playerProfile) return "Error";
-		if (playerProfile.clan) return "AlreadyInClan";
+		if (playerProfile.clan && playerProfile.clan !== 0) return "AlreadyInClan";
 		const groupInfo = GroupService.GetGroupInfoAsync(groupId);
 		if (groupInfo.Owner.Id !== owner.UserId) {
 			return "NotAllowed";
@@ -106,6 +137,7 @@ export class ClanService implements OnStart {
 					userId: owner.UserId,
 				},
 			],
+			minimumWithdrawalRank: 100,
 			owner: owner.UserId,
 		};
 		serverStore.updatePlayerSave(owner.UserId, {

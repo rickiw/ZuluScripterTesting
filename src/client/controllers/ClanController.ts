@@ -8,6 +8,7 @@ const actions = [
 	{ input: [Enum.KeyCode.O, Enum.KeyCode.ButtonA], action: "CreateClan" },
 	{ input: [Enum.KeyCode.Z], action: "ViewAllClans" },
 	{ input: [Enum.KeyCode.P], action: "DepositFunds" },
+	{ input: [Enum.KeyCode.LeftBracket], action: "WithdrawFunds" },
 ] as const satisfies MultipleInput;
 type ClanActions = BaseActions<typeof actions>;
 
@@ -32,8 +33,36 @@ export class ClanController extends HandlesMultipleInputs<ClanActions> implement
 				case "DepositFunds":
 					this.depositFunds(1);
 					break;
+				case "WithdrawFunds":
+					this.withdrawFunds(1);
+					break;
 			}
 		});
+	}
+
+	withdrawFunds(amount: number) {
+		const result = Functions.WithdrawClanFunds.invoke(amount).expect();
+		switch (result) {
+			case "Error":
+				Log.Warn("An error occurred while withdrawing funds");
+				break;
+			case "InsufficientBalance":
+				Log.Warn(
+					"Player {@Player} tried to withdraw {@Amount} but the clan has insufficient balance",
+					player.Name,
+					amount,
+				);
+				break;
+			case "NotAllowed":
+				Log.Warn("Player {@Player} tried to withdraw {@Amount} but isn't allowed", player.Name, amount);
+				break;
+			case "NotInClan":
+				Log.Warn("Player {@Player} tried to withdraw {@Amount} but isn't in a clan", player.Name, amount);
+				break;
+			case "Success":
+				Log.Warn("Player {@Player} successfully withdrew {@Amount}", player.Name, amount);
+				break;
+		}
 	}
 
 	depositFunds(amount: number) {

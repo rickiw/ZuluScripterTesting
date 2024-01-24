@@ -10,7 +10,7 @@ interface ServerToClientEvents {
 export type BaseResponseStatus = "Success" | "Error";
 export type ClanCreationStatus = BaseResponseStatus | "AlreadyExists" | "AlreadyInClan" | "NotAllowed";
 export type ClanDepositStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance";
-export type ClanWithdrawStatus = BaseResponseStatus | "NotInClan" | "NotAllowed";
+export type ClanWithdrawStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance" | "NotAllowed";
 
 interface ClientToServerFunctions {
 	CreateClan(groupId: GroupId): ClanCreationStatus;

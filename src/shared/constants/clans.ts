@@ -12,6 +12,7 @@ export enum ClanRank {
 export interface Clan {
 	groupId: GroupId;
 	members: ClanMember[];
+	minimumWithdrawalRank: number;
 	owner: PlayerId;
 	bank: number;
 }

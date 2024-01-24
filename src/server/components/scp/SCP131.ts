@@ -105,7 +105,7 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 		if (this.attributes.visualize) Log.Warn("SCP131 pathfinding was blocked...");
 		if (this.status === "wandering") {
 			this.nextWanderPoint = this.getNextWanderPoint();
-			this.path.Stop();
+			if (this.path.Status === "Active") this.path.Stop();
 			this.path.Run(this.nextWanderPoint);
 		}
 	}
