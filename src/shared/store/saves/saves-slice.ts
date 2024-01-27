@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { GroupId } from "shared/constants/clans";
+import { GroupID } from "shared/constants/clans";
 import { mapProperty } from "shared/utils";
 import { PerkInfo } from "../perks";
 
@@ -8,7 +8,7 @@ export interface PlayerProfile {
 	readonly dailyLoginStreak: number;
 	readonly lastLogin: number; // TODO: consider using a serialized DateTime string here
 	readonly experience: number;
-	readonly clan: GroupId | undefined;
+	readonly clan: GroupID | undefined;
 	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;

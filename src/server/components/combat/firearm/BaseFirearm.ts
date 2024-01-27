@@ -4,8 +4,12 @@ import FastCast, { Caster, FastCastBehavior } from "@rbxts/fastcast";
 import Log from "@rbxts/log";
 import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Option } from "@rbxts/rust-classes";
 import { Players, Workspace } from "@rbxts/services";
 import { Events } from "server/network";
+import { EnemyService } from "server/services/EnemyService";
+import { EntityID } from "server/services/IDService";
+import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
 import { BULLET_PROVIDER } from "shared/constants/firearm";
 import { FirearmLike, FirearmMagazine, FirearmProjectile, FirearmSounds } from "shared/constants/weapons";
@@ -48,7 +52,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	connections: Indexable<string, RBXScriptConnection> = {};
 	state: FirearmState;
 
-	constructor() {
+	constructor(private enemyService: EnemyService) {
 		super();
 		this.configuration = this.getConfiguration();
 		this.wielder = this.getWielder();
@@ -199,6 +203,20 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const damage = getLimbProjectileDamage(result.Instance, projectileData);
 
 			humanoid.TakeDamage(damage);
+			const characterEntityId = character.GetAttribute("entityId") as EntityID;
+			assert(characterEntityId, "Character entity ID not found");
+
+			const shooter = this.wielder.Character!;
+			const crit = humanoid.Health - damage <= 0;
+			const healthChange: HealthChange = {
+				amount: damage,
+				by: Option.wrap(DamageContributor.Solo(shooter)),
+				cause: Option.wrap(DamageSource.Projectile()),
+				time: tick(),
+				crit,
+			};
+
+			this.enemyService.handleDamage(characterEntityId, healthChange);
 		}
 	}
 

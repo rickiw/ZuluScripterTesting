@@ -1,6 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Clan, GroupId } from "./constants/clans";
+import { Clan, GroupID } from "./constants/clans";
 
 interface ClientToServerEvents {
 	// RoombaTouchpad
@@ -24,12 +24,14 @@ interface ServerToClientEvents {
 }
 
 export type BaseResponseStatus = "Success" | "Error";
+export type ClanJoinStatus = BaseResponseStatus | "AlreadyInClan" | "NotInGroup";
 export type ClanCreationStatus = BaseResponseStatus | "AlreadyExists" | "AlreadyInClan" | "NotAllowed";
 export type ClanDepositStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance";
 export type ClanWithdrawStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance" | "NotAllowed";
 
 interface ClientToServerFunctions {
-	CreateClan(groupId: GroupId): ClanCreationStatus;
+	CreateClan(groupId: GroupID): ClanCreationStatus;
+	JoinClan(groupId: GroupID): ClanJoinStatus;
 	DepositClanFunds(amount: number): ClanDepositStatus;
 	WithdrawClanFunds(amount: number): ClanWithdrawStatus;
 	GetClans(): readonly Clan[];

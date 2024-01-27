@@ -5,7 +5,7 @@ import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
 import { Players } from "@rbxts/services";
 import { PLAYER_DATA_KEY, defaultPlayerProfile } from "server/data";
 import { serverStore } from "server/store";
-import { PlayerId } from "shared/constants/clans";
+import { PlayerID } from "shared/constants/clans";
 import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
@@ -19,7 +19,7 @@ export interface PlayerDataLoaded {
 
 @Service()
 export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
-	private profileStorage = new Map<PlayerId, ProfileInstance>();
+	private profileStorage = new Map<PlayerID, ProfileInstance>();
 
 	private profileStore: ProfileStore<PlayerProfile>;
 	private dataLoadedListeners = new Set<PlayerDataLoaded>();

@@ -1,19 +1,21 @@
 import { OnStart, Service } from "@flamework/core";
+import Log from "@rbxts/log";
 import { DataStoreService, GroupService, MessagingService } from "@rbxts/services";
 import { CLANS_DATA_KEY, GLOBAL_SERVER_DATA_KEY } from "server/data";
 import { Functions } from "server/network";
 import { serverStore } from "server/store";
 import { selectClan, selectClans } from "server/store/clan";
-import { Clan, ClanRank, GroupId } from "shared/constants/clans";
-import { ClanCreationStatus, ClanDepositStatus, ClanWithdrawStatus } from "shared/network";
-import { selectPlayerSave } from "shared/store/saves";
+import { Clan, ClanRank, GroupID } from "shared/constants/clans";
+import { ClanCreationStatus, ClanDepositStatus, ClanJoinStatus, ClanWithdrawStatus } from "shared/network";
+import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
+import { PlayerDataLoaded } from "./DataService";
 
 interface ClanUpdate {
 	clans: Clan[];
 }
 
 @Service()
-export class ClanService implements OnStart {
+export class ClanService implements OnStart, PlayerDataLoaded {
 	private store: DataStore;
 
 	constructor() {
@@ -49,7 +51,7 @@ export class ClanService implements OnStart {
 		});
 	}
 
-	getPlayerClan(player: Player): GroupId | undefined {
+	getPlayerClan(player: Player): GroupID | undefined {
 		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
 		assert(playerProfile, "Player profile not found");
 		return playerProfile.clan;
@@ -116,7 +118,7 @@ export class ClanService implements OnStart {
 		return "Success";
 	}
 
-	createClan(owner: Player, groupId: GroupId): ClanCreationStatus {
+	createClan(owner: Player, groupId: GroupID): ClanCreationStatus {
 		const playerProfile = serverStore.getState(selectPlayerSave(owner.UserId));
 		if (!playerProfile) return "Error";
 		if (playerProfile.clan && playerProfile.clan !== 0) return "AlreadyInClan";
@@ -160,5 +162,83 @@ export class ClanService implements OnStart {
 
 	private createClansStore() {
 		this.store.SetAsync(CLANS_DATA_KEY, []);
+	}
+
+	private addPlayerToClan(player: Player, clanId: GroupID) {
+		const clans = this.getAllClans();
+		const newClans = clans.map((clan) => {
+			if (clan.groupId === clanId) {
+				const newClan = {
+					...clan,
+					members: [...clan.members, { rank: ClanRank.Member, userId: player.UserId }],
+				};
+				return newClan;
+			}
+			return clan;
+		});
+		this.store.SetAsync(CLANS_DATA_KEY, newClans);
+		serverStore.setClans(newClans);
+		this.sendGlobalUpdate();
+	}
+
+	private removePlayerFromClan(player: Player, clanId: GroupID) {
+		const clans = this.getAllClans();
+		const newClans = clans.map((clan) => {
+			if (clan.groupId === clanId) {
+				const newClan = {
+					...clan,
+					members: clan.members.filter((member) => member.userId !== player.UserId),
+				};
+				return newClan;
+			}
+			return clan;
+		});
+		this.store.SetAsync(CLANS_DATA_KEY, newClans);
+		serverStore.setClans(newClans);
+		this.sendGlobalUpdate();
+	}
+
+	joinClan(player: Player, clanId: GroupID): ClanJoinStatus {
+		const clan = serverStore.getState(selectClan(clanId));
+		if (!clan) return "Error";
+		const isPlayerInClanGroup = GroupService.GetGroupsAsync(player.UserId).some((group) => group.Id === clanId);
+		if (!isPlayerInClanGroup) return "NotInGroup";
+		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!playerProfile) return "Error";
+		if (playerProfile.clan && playerProfile.clan !== 0) return "AlreadyInClan";
+		this.addPlayerToClan(player, clanId);
+		serverStore.updatePlayerSave(player.UserId, {
+			clan: clanId,
+		});
+		return "Success";
+	}
+
+	playerDataLoaded(player: Player, data: PlayerProfile) {
+		if (!data.clan) return;
+		const clan = serverStore.getState(selectClan(data.clan));
+		if (!clan) {
+			Log.Warn(
+				"Player {@Player} has clan {@Clan} but clan does not exist, removing players clan",
+				player.Name,
+				data.clan,
+			);
+			serverStore.updatePlayerSave(player.UserId, {
+				clan: 0,
+			});
+			return;
+		}
+		const isPlayerStillInClan = GroupService.GetGroupsAsync(player.UserId).some((group) => group.Id === data.clan);
+		if (!isPlayerStillInClan) {
+			Log.Warn(
+				"Player {@Player} has clan {@Clan} but is no longer a member of the clan group",
+				player.Name,
+				data.clan,
+			);
+			serverStore.updatePlayerSave(player.UserId, {
+				clan: 0,
+			});
+			this.removePlayerFromClan(player, data.clan);
+			return;
+		}
 	}
 }

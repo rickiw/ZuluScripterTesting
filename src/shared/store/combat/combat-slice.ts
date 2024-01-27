@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { PlayerId } from "shared/constants/clans";
+import { PlayerID } from "shared/constants/clans";
 import { WeaponState } from "shared/constants/weapons";
 
 export interface ICombatState {
@@ -14,7 +14,7 @@ export interface CombatState {
 const initialState: CombatState = {};
 
 export const combatSlice = createProducer(initialState, {
-	setWeapon: (state, userId: PlayerId, weapon?: WeaponState) => ({
+	setWeapon: (state, userId: PlayerID, weapon?: WeaponState) => ({
 		...state,
 		[userId]: {
 			weapon,
