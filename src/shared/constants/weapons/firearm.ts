@@ -1,0 +1,43 @@
+import { AnimationDict, SoundCache, SoundDict } from "shared/utils";
+import { FirearmAttachment, WeaponLike } from ".";
+import { FirearmProjectileLike } from "./projectile";
+
+export interface BarrelConfig {
+	velocity: number;
+	chambered: FirearmProjectileLike;
+
+	firePoint: Attachment;
+	chamberPoint: Attachment;
+	muzzlePoint: Attachment;
+}
+
+export interface MagazineConfig {
+	capacity: number;
+	holds: FirearmProjectileLike;
+	magazine: BasePart;
+}
+
+export interface SightConfig {
+	aimPoint: Attachment;
+}
+
+export interface FirearmLike extends WeaponLike {
+	Attachments: FirearmAttachment[];
+	Barrel: BarrelConfig;
+	Magazine: MagazineConfig;
+	Sight: SightConfig;
+	animations: FirearmAnimations<number | string>;
+}
+
+export interface FirearmAnimations<T extends number | string | AnimationTrack | Animation> extends AnimationDict<T> {
+	Idle: T;
+	Reload: T;
+	Aim: T;
+	Fire: T;
+}
+
+export interface FirearmSounds<T extends number | string | Sound | SoundCache> extends SoundDict<T> {
+	Fire: T;
+	Reload: T;
+	ChamberEmpty: T;
+}

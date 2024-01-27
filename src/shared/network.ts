@@ -1,10 +1,26 @@
 import { Networking } from "@flamework/networking";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Clan, GroupId } from "./constants/clans";
 
-interface ClientToServerEvents {}
+interface ClientToServerEvents {
+	// RoombaTouchpad
+	RoombaExplode(): void;
+
+	// BaseFirearm
+	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
+}
 
 interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
+
+	// RoombaTouchpad
+	RoombaActive(old: CharacterRigR15): void;
+	RoombaInactive(): void;
+	RoombaLoaded(): void;
+	RoombaUnloaded(): void;
+
+	// AerialIndicator
+	AreaEntered(title: string, description: string): void;
 }
 
 export type BaseResponseStatus = "Success" | "Error";

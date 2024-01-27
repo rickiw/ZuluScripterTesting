@@ -5,7 +5,6 @@ export interface ClanMember {
 
 export enum ClanRank {
 	Owner = "OWNER",
-	Admin = "ADMIN",
 	Member = "MEMBER",
 }
 

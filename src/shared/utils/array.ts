@@ -31,3 +31,5 @@ export function weightedRandomIndex<T extends object>(array: Array<{ weight: num
 export function randomIndex<T>(array: Array<T>) {
 	return array[math.random(1, array.size()) - 1];
 }
+
+export type Indexable<K extends string | number | symbol, V> = { [P in K]: V };

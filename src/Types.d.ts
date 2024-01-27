@@ -1,6 +1,7 @@
 interface Workspace extends Instance {
 	Doors: Folder & { [key in DoorType]: BaseDoor };
 	SCPs: Folder & { [key: string]: BaseSCP };
+	Bullets: Folder;
 }
 
 type BaseDoor = Model & {
@@ -22,9 +23,7 @@ interface ReplicatedStorage extends Instance {
 		systems: Folder;
 	};
 	Assets: Folder & {
-		SCPs: Folder & {
-			[key: string]: Model;
-		};
+		Bullet: BasePart;
 	};
 }
 
