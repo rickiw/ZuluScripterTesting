@@ -1,8 +1,9 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
-import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { Players } from "@rbxts/services";
+import { ROOMBA_ANIMATIONS } from "shared/constants/roomba";
+import { AnimationDict, AnimationUtil } from "shared/utils/animation";
 import { PlayerCharacterR15, RoombaCharacter } from "../../../CharacterTypes";
 
 export interface TouchpadInstance extends Tool {}
@@ -18,6 +19,8 @@ export class BaseTouchpad<A extends TouchpadAttributes, I extends TouchpadInstan
 		Character: PlayerCharacterR15 | RoombaCharacter;
 	};
 
+	loadedAnimations!: AnimationDict<AnimationTrack>;
+
 	constructor() {
 		super();
 
@@ -25,7 +28,28 @@ export class BaseTouchpad<A extends TouchpadAttributes, I extends TouchpadInstan
 	}
 
 	onStart(): void {
-		Log.Error("Not implemented");
+		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
+			ROOMBA_ANIMATIONS,
+			this.wielder.Character.Humanoid,
+		);
+
+		let m6d: Motor6D | undefined;
+
+		this.instance.Equipped.Connect(() => {
+			m6d = AnimationUtil.rigToChar(
+				this.instance.FindFirstChild("Handle") as BasePart,
+				"RightHand",
+				this.wielder.Character as PlayerCharacterR15,
+			);
+
+			this.loadedAnimations.equip.Play();
+			this.loadedAnimations.idle.Play();
+		});
+
+		this.instance.Unequipped.Connect(() => {
+			AnimationUtil.stopAll(this.loadedAnimations);
+			m6d?.Destroy();
+		});
 	}
 
 	getWielder() {

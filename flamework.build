@@ -63,7 +63,10 @@
 		"zulu-site:out/shared/types/combat/FirearmWeapon/FirearmLike@FirearmLike": "shared/types/combat/FirearmWeapon/FirearmLike@FirearmLike",
 		"zulu-site:out/client/components/game/combat/BaseFirearm@BaseFirearm": "client/components/game/combat/BaseFirearm@BaseFirearm",
 		"zulu-site:out/shared/types/combat/FirearmWeapon/FirearmMagazine@FirearmMagazine": "shared/types/combat/FirearmWeapon/FirearmMagazine@FirearmMagazine",
-		"zulu-site:out/shared/utils/sound@SoundCache": "shared/utils/sound@SoundCache"
+		"zulu-site:out/shared/utils/sound@SoundCache": "shared/utils/sound@SoundCache",
+		"zulu-site:out/client/types/init@ControlSet": "client/types/init@ControlSet",
+		"zulu-site:out/client/types/ControlSet/init@ControlSet": "client/types/ControlSet/init@ControlSet",
+		"zulu-site:out/client/ui/library/weapon/weapon-provider@WeaponProvider": "client/ui/library/weapon/weapon-provider@WeaponProvider"
 	},
 	"metadata": {}
 }

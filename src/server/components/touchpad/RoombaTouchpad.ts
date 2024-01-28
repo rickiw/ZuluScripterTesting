@@ -4,8 +4,10 @@ import { ReplicatedStorage, RunService, TweenService, Workspace } from "@rbxts/s
 import { playSound } from "shared/assets/sounds/play-sound";
 import { ROOMBA_COOLDOWN, ROOMBA_JUMPPOWER, ROOMBA_WALKSPEED } from "shared/constants/roomba";
 import { GlobalEvents } from "shared/network";
-import { PlayerCharacterR15, RoombaCharacter } from "../../../Types";
+import { BaseCharacter, PlayerCharacterR15, RoombaCharacter } from "../../../Types";
 import { BaseTouchpad, TouchpadAttributes, TouchpadInstance } from "./BaseTouchpad";
+import Bool = Enum.StudioScriptEditorColorCategories.Bool;
+import Room = Enum.ReverbType.Room;
 
 function castRayDown(fromCFrame: CFrame, distance: number, blacklist: Instance[]): RaycastResult | undefined {
 	// Create the Ray
@@ -62,6 +64,7 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 
 	hummingSfx: Sound;
 	__cd: NumberValue;
+	__canUse: BoolValue;
 
 	constructor() {
 		super();
@@ -75,6 +78,10 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 		this.__cd =
 			(this.wielder.FindFirstChild("RoombaCD") as NumberValue) || new Instance("NumberValue", this.wielder);
 		this.__cd.Name = "RoombaCD";
+
+		this.__canUse =
+			(this.wielder.FindFirstChild("RoombaCanUse") as BoolValue) || new Instance("BoolValue", this.wielder);
+		this.__canUse.Name = "RoombaCanUse";
 	}
 
 	enableCd() {
@@ -95,6 +102,7 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	}
 
 	onStart() {
+		super.onStart();
 		this.instance.Activated.Connect(() => {
 			if (this.getCd()) return;
 			if (!this.roombaCharacter) return this.spawnRoomba();
@@ -173,43 +181,25 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	}
 
 	explode() {
-		if (!this.roombaCharacter) return;
 		this.enableCd();
 
 		this.roombaActive = false;
-		if (this.wielder.Character.Name === "Roomba") this.transferCharacters();
-		playSound("rbxassetid://7818577205", { parent: this.roombaCharacter, volume: 2 });
+		this.transferCharacters();
+		playSound("rbxassetid://7818577205", { parent: this.roombaCharacter, volume: 2, lifetime: 3 });
 
 		wait(0.5);
-		triggerExplosion(this.roombaCharacter.HumanoidRootPart.Position, 15, 100);
+		triggerExplosion((this.roombaCharacter as RoombaCharacter).HumanoidRootPart.Position, 15, 100);
 		this.hummingSfx.Parent = undefined;
-		this.roombaCharacter.Destroy();
+		(this.roombaCharacter as RoombaCharacter).Destroy();
 		this.roombaCharacter = undefined;
 	}
 
 	transferCharacters() {
-		if (!this.wielder.Character && this.oldChr) this.wielder.Character = this.oldChr;
-		else if (!this.wielder.Character && !this.oldChr)
-			this.wielder.Character = Workspace.FindFirstChild(this.wielder.Name) as PlayerCharacterR15;
-		if (!this.roombaCharacter) return;
-		// set chr to roomba
 		if (this.roombaActive) {
-			const OldChr = this.wielder.Character;
-			OldChr.Humanoid.UnequipTools();
-			this.wielder.Character = this.roombaCharacter;
-			OldChr.Parent = Workspace;
-			this.oldChr = OldChr;
+			this.roombaCharacter?.HumanoidRootPart.SetNetworkOwner(this.wielder);
+			this.net.RoombaActive(this.wielder, this.roombaCharacter as BaseCharacter);
+		} else {
+			task.delay(1, () => this.net.RoombaInactive(this.wielder, this.wielder.Character));
 		}
-
-		// set chr to plrchr
-		if (!this.roombaActive && this.oldChr) {
-			const OldChr = this.wielder.Character;
-			this.wielder.Character = this.oldChr;
-			OldChr.Parent = Workspace;
-			this.oldChr = OldChr;
-		}
-
-		if (this.roombaActive) this.net.RoombaActive(this.wielder, this.oldChr as PlayerCharacterR15);
-		else task.delay(1, () => this.net.RoombaInactive(this.wielder));
 	}
 }

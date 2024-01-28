@@ -53,7 +53,7 @@ export const balancedDamageFunction = (volume: number) => {
 	terms.push(tostring(string.format("%.16f", solutions[solutions.size() - 1]))); // The constant term
 	const formula = terms.join(" + ");
 
-	print(formula); // Print the formula
+	// print(formula); // Print the formula
 
 	return math.clamp(math.round(result * 10) / 10, 0, 100);
 };

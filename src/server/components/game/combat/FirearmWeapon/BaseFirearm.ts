@@ -1,15 +1,23 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import FastCast, { Caster, FastCastBehavior } from "@rbxts/fastcast";
-import { Players, Workspace } from "@rbxts/services";
+import { deepCopy } from "@rbxts/object-utils";
+import { Players, RunService, Workspace } from "@rbxts/services";
 import { ObjectUtils } from "@rbxts/variant/out/ObjectUtils";
 import { store } from "server/store";
 import { BULLET_PROVIDER } from "shared/constants/firearm";
 import { GlobalEvents } from "shared/network";
-import { FirearmMagazine, FirearmProjectile, FirearmSounds } from "shared/types/combat/FirearmWeapon";
+import {
+	FirearmAnimations,
+	FirearmMagazine,
+	FirearmProjectile,
+	FirearmSounds,
+} from "shared/types/combat/FirearmWeapon";
 import { FirearmLike } from "shared/types/combat/FirearmWeapon/FirearmLike";
 import { FirearmState } from "shared/types/combat/FirearmWeapon/FirearmState";
 import { Indexable } from "shared/types/util";
+import { deepMerge } from "shared/utils";
+import { AnimationUtil } from "shared/utils/animation";
 import { getCharacterFromHit, getLimbProjectileDamage, isLimb } from "shared/utils/character";
 import { SoundCache, SoundDict, SoundUtil } from "shared/utils/sound";
 import { BaseCharacter, PlayerCharacterR15 } from "../../../../../CharacterTypes";
@@ -30,7 +38,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	wielder: Player;
 	char: PlayerCharacterR15 | undefined;
 
+	equipped: boolean;
+
 	loaded: boolean;
+	loadedAnimations!: FirearmAnimations<AnimationTrack>;
 
 	caster: Caster;
 	behaviour!: FastCastBehavior;
@@ -45,9 +56,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	constructor() {
 		super();
-		this.configuration = this.getConfiguration();
+		this.configuration = this.getConfiguration(this.getRawConfiguration());
 		this.wielder = this.getWielder();
 		this.tool = this.instance;
+		this.equipped = false;
 
 		this.caster = new FastCast();
 		this.loaded = false;
@@ -62,11 +74,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			magazine: new FirearmMagazine(this.configuration.Magazine),
 			cooldown: false,
 			reloading: false,
+			bullets: 500,
+			mode: this.configuration.Barrel.fireModes[0],
 		};
-
-		this.state.magazine?.onChanged.Connect(() => {
-			store.setWeapon(this.wielder.UserId, this.state);
-		});
 
 		this.char = this.wielder.Character as PlayerCharacterR15;
 	}
@@ -81,8 +91,15 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				});
 	}
 
-	getConfiguration(): FirearmLike {
+	getRawConfiguration(): FirearmLike {
 		return require(this.instance.FindFirstChildOfClass("ModuleScript") as ModuleScript) as FirearmLike;
+	}
+
+	getConfiguration(raw: FirearmLike): FirearmLike {
+		let fmtConfig = raw;
+
+		for (const attachment of raw.Attachments) fmtConfig = deepMerge(raw, attachment.modifiers) as FirearmLike;
+		return fmtConfig;
 	}
 
 	onStart() {
@@ -101,25 +118,39 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			}
 		});
 
-		this.connections.equipped = this.instance.Equipped.Connect(() => {
-			store.setWeapon(this.wielder.UserId, this.state);
+		const configurationModule =
+			(this.tool.FindFirstChild("Configuration") as ModuleScript) ||
+			(this.tool.FindFirstChildOfClass("ModuleScript") as ModuleScript);
+
+		(configurationModule.Changed as RBXScriptSignal).Connect(() => {
+			this.configuration = this.getConfiguration(require(configurationModule) as FirearmLike);
+			this.state.configuration = this.configuration;
 		});
+	}
+
+	loadAnimations() {
+		if (!this.char) return;
+		this.char.WaitForChild("Humanoid");
+		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
+			this.configuration.animations,
+			this.char.Humanoid,
+		) as FirearmAnimations<AnimationTrack>;
 	}
 
 	load() {
 		this.initBehaviour();
 		this.initRemotes();
+		this.loadAnimations();
 		this.loaded = true;
 	}
 
 	unload() {
-		print("unloading");
 		for (const k of ObjectUtils.keys(this.connections)) this.connections[k].Disconnect();
 		this.loaded = false;
 	}
 
 	isAbleToFire() {
-		return !this.state.magazine.isEmpty();
+		return !this.state.magazine.isEmpty() && !this.state.reloading;
 	}
 
 	initBehaviour() {
@@ -141,7 +172,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		);
 
 		this.connections.rayHit = this.caster.RayHit.Connect((cast, result, segmentVelocity) => {
-			print("HI");
 			this.onHit(result, segmentVelocity);
 		});
 
@@ -152,17 +182,35 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	initRemotes() {
 		this.connections.fireRemote = this.net.FireFirearm.connect((player, weapon, mousePoint) => {
-			print(player, weapon, mousePoint);
 			if (player === this.wielder && weapon === this.tool) {
-				print("firing");
-
 				const dir = mousePoint.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
 				this.fire(dir);
 			}
 		});
 
-		this.connections.equipped = this.tool.Equipped.Connect(() => store.setWeapon(this.wielder.UserId, this.state));
-		this.connections.unequipped = this.tool.Unequipped.Connect(() => store.setWeapon(this.wielder.UserId));
+		this.connections.reloadRemote = this.net.ReloadFirearm.connect((player, weapon) => {
+			if (player === this.wielder && weapon === this.tool) {
+				this.reload();
+			}
+		});
+
+		const oldState = deepCopy(this.state);
+		this.connections.update = RunService.Heartbeat.Connect(() => {
+			this.state.configuration = this.configuration;
+		});
+
+		this.connections.magUpdate = this.state.magazine.onChanged.Connect(() => {
+			store.setWeapon(this.wielder.UserId, this.state);
+		});
+
+		this.connections.equipped = this.tool.Equipped.Connect(() => {
+			store.setWeapon(this.wielder.UserId, this.state);
+			this.equipped = true;
+		});
+		this.connections.unequipped = this.tool.Unequipped.Connect(() => {
+			store.setWeapon(this.wielder.UserId);
+			this.equipped = false;
+		});
 	}
 
 	getVelocity(): number {
@@ -172,7 +220,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	fire(direction: Vector3) {
 		if (this.state.magazine === undefined) this.loadedSounds.ChamberEmpty.play();
 		if (!this.isAbleToFire()) return;
-		print(this.state.magazine?.getRemaining());
 		this.caster.Fire(
 			this.configuration.Barrel.firePoint.WorldPosition,
 			direction,
@@ -180,8 +227,48 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.behaviour,
 		);
 
+		this.state.cooldown = true;
+		store.setWeapon(this.wielder.UserId, this.state);
+		task.delay(60 / this.configuration.Barrel.rpm, () => {
+			this.state.cooldown = false;
+			store.setWeapon(this.wielder.UserId, this.state);
+		});
+
 		this.loadedSounds.Fire.play();
 		this.state.magazine?.take();
+	}
+
+	reload() {
+		if (this.state.reloading || this.state.bullets <= 0) return;
+
+		this.state.reloading = true;
+		store.setWeapon(this.wielder.UserId, this.state);
+		this.loadedSounds.Reload.play();
+		this.loadedAnimations.Reload.Play();
+
+		// Calculate bullets needed for a full mag
+		const bulletsNeeded = this.state.magazine.getCapacity() - this.state.magazine.getRemaining();
+		// Store how many bullets we will actually move from reserve to mag (either the bulletsNeeded, or the total bullets we have if they are less than bulletsNeeded)
+		const bulletsToMove = math.min(bulletsNeeded, this.state.bullets);
+
+		// Subtract needed bullets from bullet state and add it to the magBullets state
+		this.state.bullets -= bulletsToMove;
+		this.state.magazine.holding += bulletsToMove;
+
+		this.loadedAnimations.Reload.Stopped.Wait();
+		this.state.reloading = false;
+		store.setWeapon(this.wielder.UserId, this.state);
+	}
+
+	cycleFireModes() {
+		// mode is a string
+		this.state.mode =
+			this.configuration.Barrel.fireModes[
+				(this.configuration.Barrel.fireModes.indexOf(this.state.mode) + 1) %
+					this.configuration.Barrel.fireModes.size()
+			];
+
+		store.setWeapon(this.wielder.UserId, this.state);
 	}
 
 	makeProjectile(result: RaycastResult): FirearmProjectile {
@@ -193,7 +280,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	onHit(result: RaycastResult, velocity: Vector3) {
-		print(result);
 		if (isLimb(result.Instance)) {
 			const Char = getCharacterFromHit(result.Instance) as BaseCharacter;
 			const Humanoid = Char.Humanoid;

@@ -1,5 +1,5 @@
 import { Networking } from "@flamework/networking";
-import { PlayerCharacterR15 } from "../CharacterTypes";
+import { BaseCharacter } from "../CharacterTypes";
 
 interface ClientToServerEvents {
 	ItemDrop(Tool: Tool): void;
@@ -9,12 +9,13 @@ interface ClientToServerEvents {
 
 	// BaseFirearm
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
+	ReloadFirearm(weapon: Tool): void;
 }
 
 interface ServerToClientEvents {
 	// RoombaTouchpad
-	RoombaActive(old: PlayerCharacterR15): void;
-	RoombaInactive(): void;
+	RoombaActive(chr: BaseCharacter): void;
+	RoombaInactive(chr: BaseCharacter): void;
 	RoombaLoaded(): void;
 	RoombaUnloaded(): void;
 

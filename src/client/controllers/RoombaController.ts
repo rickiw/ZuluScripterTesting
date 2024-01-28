@@ -3,6 +3,7 @@ import Log, { Logger } from "@rbxts/log";
 import { Players, StarterGui, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { playSound } from "shared/assets/sounds/play-sound";
 import { GlobalEvents } from "shared/network";
+import { PlayerCharacterR15, RoombaCharacter } from "../../CharacterTypes";
 
 function formatSeconds(totalSeconds: number): string {
 	const seconds = totalSeconds % 60;
@@ -20,11 +21,16 @@ export class RoombaController implements OnStart {
 	staticFx: Sound;
 	equipped = false;
 
+	roombaActive = false;
+	roomba?: RoombaCharacter;
+
 	constructor() {
 		this.staticFx = playSound("rbxassetid://6648328129", {
 			looped: true,
 			volume: 0,
 		}) as Sound;
+
+		Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 	}
 
 	screenStatic() {
@@ -33,6 +39,7 @@ export class RoombaController implements OnStart {
 		const Static = RFX.FindFirstChild("Static") as ImageLabel;
 
 		Static.ImageTransparency = 0;
+		Static.Size = UDim2.fromScale(5, 5);
 		this.staticFx.Volume = 1;
 
 		const jumbleThread = task.spawn(() => {
@@ -52,6 +59,7 @@ export class RoombaController implements OnStart {
 	initCooldownWatch() {
 		const Player = Players.LocalPlayer;
 		const RCD = Player.FindFirstChild("RoombaCD") as NumberValue;
+		const RCU = Player.FindFirstChild("RoombaCanUse") as BoolValue;
 
 		const PlayerGui = Players.LocalPlayer.FindFirstChildOfClass("PlayerGui") as PlayerGui;
 		const RFX = PlayerGui.FindFirstChild("RFX") as ScreenGui;
@@ -88,26 +96,66 @@ export class RoombaController implements OnStart {
 				}
 			}
 		});
+
+		RCU.Changed.Connect((canUse) => {
+			// fade the cooldown out
+			TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
+				TextTransparency: 1,
+			}).Play();
+			wait(0.5);
+			CooldownDisp.Text = "IN USE";
+			// fade the cooldown in
+			if (this.equipped) {
+				TweenService.Create(CooldownDisp, new TweenInfo(0.2), {
+					TextTransparency: 0,
+				}).Play();
+			}
+		});
+	}
+
+	getHumanoid() {
+		return (
+			(Players.LocalPlayer.Character as PlayerCharacterR15) ||
+			(Players.LocalPlayer.CharacterAdded.Wait() as unknown as PlayerCharacterR15)
+		).WaitForChild("Humanoid") as Humanoid;
+	}
+
+	startController() {
+		(this.getHumanoid().Changed as RBXScriptSignal).Connect(() => {
+			const Dir = this.getHumanoid().MoveDirection;
+			if (this.roomba && this.roombaActive && this.roomba.Humanoid) {
+				this.roomba.Humanoid.Move(Dir);
+				this.roomba.Humanoid.Jump = this.getHumanoid().Jump;
+			}
+		});
 	}
 
 	onStart() {
 		const Player = Players.LocalPlayer;
+		const OGChr = Player.Character as PlayerCharacterR15;
 		const Camera = Workspace.CurrentCamera as Camera;
-		Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
+		this.startController();
 
-		let RoombaActive = false;
-
-		this.net.RoombaActive.connect((old) => {
+		this.net.RoombaActive.connect((chr) => {
 			this.screenStatic();
 			StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
 
-			RoombaActive = true;
+			Camera.CameraSubject = chr.Humanoid;
+			OGChr.Humanoid.WalkSpeed = 0;
+			OGChr.Humanoid.JumpHeight = 0;
+			this.roomba = chr as RoombaCharacter;
+			this.roombaActive = true;
 		});
 
-		this.net.RoombaInactive.connect(() => {
+		this.net.RoombaInactive.connect((chr) => {
 			this.screenStatic();
 			StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
-			RoombaActive = false;
+
+			Camera.CameraSubject = chr.Humanoid;
+			OGChr.Humanoid.WalkSpeed = 16;
+			OGChr.Humanoid.JumpHeight = 7.3;
+			this.roomba = undefined;
+			this.roombaActive = false;
 		});
 
 		this.net.RoombaLoaded.connect(() => {
@@ -140,13 +188,13 @@ export class RoombaController implements OnStart {
 		});
 
 		UserInputService.InputBegan.Connect((io, gpe) => {
-			if (!gpe && io.UserInputType === Enum.UserInputType.MouseButton1 && RoombaActive) {
+			if (!gpe && io.UserInputType === Enum.UserInputType.MouseButton1 && this.roombaActive) {
 				this.net.RoombaExplode();
 			}
 		});
 
 		UserInputService.TouchTap.Connect((_, gpe) => {
-			if (!gpe && RoombaActive) {
+			if (!gpe && this.roombaActive) {
 				this.net.RoombaExplode();
 			}
 		});

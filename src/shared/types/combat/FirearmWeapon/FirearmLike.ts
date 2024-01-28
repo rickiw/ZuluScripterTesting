@@ -4,9 +4,15 @@ import { WeaponLike } from "shared/types/combat/Weapon";
 import { AnimationDict } from "shared/utils/animation";
 import { SoundCache, SoundDict } from "shared/utils/sound";
 
+export type FireMode = "Automatic" | "Semi-Automatic" | "Single" | "Burst" | "Safety";
+
 export interface BarrelConfig {
 	velocity: number;
 	chambered: FirearmProjectileLike;
+	fireModes: FireMode[];
+	rpm: number;
+
+	burstCount: number;
 
 	firePoint: Attachment;
 	chamberPoint: Attachment;

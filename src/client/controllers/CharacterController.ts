@@ -77,7 +77,7 @@ export class CharacterController implements OnStart, OnTick {
 
 	getSpeedOffset() {
 		const humanoid = this.getHumanoid();
-		if (!humanoid) return 0;
+		if (!humanoid || humanoid.WalkSpeed === 0) return 0;
 		const offset = humanoid.GetAttribute("SpeedOffset");
 		return typeIs(offset, "number") ? offset : 0;
 	}
@@ -107,6 +107,7 @@ export class CharacterController implements OnStart, OnTick {
 		const sprinting = clientStore.getState(selectSprinting);
 		const exhausted = clientStore.getState(selectExhausted);
 		const inMenu = clientStore.getState(selectMenuOpen);
+		if (this.getHumanoid().WalkSpeed === 0) return 0;
 
 		switch (true) {
 			case sprinting && !exhausted:

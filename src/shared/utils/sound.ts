@@ -24,7 +24,8 @@ export class SoundCache {
 			this.playing[idx] = this.cache.pop() as Sound;
 			this.playing[idx].Play();
 			this.playing[idx].Ended.Connect(() => {
-				this.cache.push(this.playing[idx]);
+				const sound = this.playing[idx];
+				sound.Destroy();
 				this.playing.remove(idx);
 			});
 		} else {
