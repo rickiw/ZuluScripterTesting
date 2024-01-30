@@ -68,6 +68,27 @@ export const buildMatrixFromFactors = (factors: number[][]) => {
 	});
 };
 
+export const solveGaussianSolutions = (solutions: number[], input: number, printFormula?: boolean) => {
+	let result = 0;
+	for (let i = 0; i < solutions.size() - 1; i++) {
+		result += solutions[i] * math.pow(input, solutions.size() - 1 - i);
+	}
+	result += solutions[solutions.size() - 1];
+
+	if (printFormula) {
+		// Building formula string
+		const terms = [];
+		for (let i = 0; i < solutions.size() - 1; i++) {
+			terms.push(`${string.format("%.16f", solutions[i])} * x^${solutions.size() - 1 - i}`);
+		}
+		terms.push(tostring(string.format("%.16f", solutions[solutions.size() - 1]))); // The constant term
+		const formula = terms.join(" + ");
+		print(formula);
+	}
+
+	return math.round(result * 10) / 10;
+};
+
 export const toScientific = (number: number): string => {
 	if (number === 0) return "0";
 	const coefficient = tostring(number / math.pow(10, math.floor(math.log10(math.abs(number)))));

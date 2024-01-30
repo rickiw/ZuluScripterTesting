@@ -66,7 +66,8 @@
 		"zulu-site:out/shared/utils/sound@SoundCache": "shared/utils/sound@SoundCache",
 		"zulu-site:out/client/types/init@ControlSet": "client/types/init@ControlSet",
 		"zulu-site:out/client/types/ControlSet/init@ControlSet": "client/types/ControlSet/init@ControlSet",
-		"zulu-site:out/client/ui/library/weapon/weapon-provider@WeaponProvider": "client/ui/library/weapon/weapon-provider@WeaponProvider"
+		"zulu-site:out/client/ui/library/weapon/weapon-provider@WeaponProvider": "client/ui/library/weapon/weapon-provider@WeaponProvider",
+		"zulu-site:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController"
 	},
 	"metadata": {}
 }

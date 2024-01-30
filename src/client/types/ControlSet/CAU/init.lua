@@ -343,7 +343,7 @@ function ContextActionUtility:BindAction(actionName, functionToBind, createTouch
 end
 
 function ContextActionUtility:BindActionAtPriority(actionName, functionToBind, createTouchButton, priorityLevel, ...)
-	ContextActionService:BindAction(actionName, functionToBind, false, priorityLevel, ...)
+	ContextActionService:BindActionAtPriority(actionName, functionToBind, false, priorityLevel, ...)
 	if createTouchButton and isMobile then
 		BindButton(actionName, functionToBind)
 	end

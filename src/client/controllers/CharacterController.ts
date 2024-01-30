@@ -1,9 +1,10 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
-import { Players, UserInputService } from "@rbxts/services";
+import { Players } from "@rbxts/services";
 import { setInterval, setTimeout } from "@rbxts/set-timeout";
 import { clientStore } from "client/store";
 import { selectExhausted, selectRecovering, selectSprinting } from "client/store/character";
 import { selectMenuOpen } from "client/store/menu";
+import { ControlSet } from "client/types/ControlSet";
 import {
 	DEPLETE_PER_SECOND,
 	RECOVER_PER_SECOND,
@@ -14,22 +15,35 @@ import {
 } from "shared/constants/character";
 import { damp, lerp } from "shared/utils";
 
-const INPUTS = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3]);
+const INPUTS = [Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3];
 
 const player = Players.LocalPlayer;
 
 @Controller()
 export class CharacterController implements OnStart, OnTick {
+	controlSet = new ControlSet();
 	onStart() {
-		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && INPUTS.has(input.KeyCode)) {
-				clientStore.setSprinting(true);
-			}
-		});
-		UserInputService.InputEnded.Connect((input) => {
-			if (INPUTS.has(input.KeyCode)) {
-				clientStore.setSprinting(false);
-			}
+		// UserInputService.InputBegan.Connect((input, processed) => {
+		// 	if (!processed && INPUTS.has(input.KeyCode)) {
+		// 		clientStore.setSprinting(true);
+		// 	}
+		// });
+		// UserInputService.InputEnded.Connect((input) => {
+		// 	if (INPUTS.has(input.KeyCode)) {
+		// 		clientStore.setSprinting(false);
+		// 	}
+		// });
+
+		this.controlSet.add({
+			ID: "sprint",
+			Name: "Sprint",
+			Enabled: true,
+			Mobile: true,
+
+			onBegin: () => clientStore.setSprinting(true),
+			onEnd: () => clientStore.setSprinting(false),
+
+			controls: INPUTS,
 		});
 
 		this.startStaminaLoop();

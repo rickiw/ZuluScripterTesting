@@ -1,5 +1,7 @@
 import CAU from "./CAU";
 
+export type Key = Enum.KeyCode | Enum.UserInputType;
+
 export interface Bind {
 	ID: string;
 	Name: string;
@@ -11,7 +13,8 @@ export interface Bind {
 	onEnd?: () => void;
 	once?: (state: Enum.UserInputState) => void;
 
-	controls: (Enum.KeyCode | Enum.UserInputType)[];
+	priority?: number;
+	controls: Key[];
 }
 
 export class ControlSet {
@@ -23,7 +26,7 @@ export class ControlSet {
 	add(data: Bind) {
 		this.binds.push(data);
 
-		CAU.BindAction(
+		CAU.BindActionAtPriority(
 			data.ID,
 			(_, state: Enum.UserInputState) => {
 				if (state === Enum.UserInputState.Begin && data.onBegin) {
@@ -37,10 +40,11 @@ export class ControlSet {
 				if (data.once) data.once(state);
 			},
 			data.Mobile,
+			data.priority === undefined ? Enum.ContextActionPriority.Low.Value : data.priority,
 			...data.controls,
 		);
 
-		CAU.SetTitle(data.ID, data.Name);
+		if (data.Mobile) CAU.SetTitle(data.ID, data.Name);
 	}
 
 	remove(id: string) {

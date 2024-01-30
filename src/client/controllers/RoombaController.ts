@@ -132,7 +132,8 @@ export class RoombaController implements OnStart {
 
 	onStart() {
 		const Player = Players.LocalPlayer;
-		const OGChr = Player.Character as PlayerCharacterR15;
+		const OGChr =
+			(Player.Character as PlayerCharacterR15) || (Player.CharacterAdded.Wait()[0] as PlayerCharacterR15);
 		const Camera = Workspace.CurrentCamera as Camera;
 		this.startController();
 

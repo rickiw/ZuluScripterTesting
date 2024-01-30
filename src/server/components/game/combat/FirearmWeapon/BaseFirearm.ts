@@ -209,6 +209,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 		this.connections.unequipped = this.tool.Unequipped.Connect(() => {
 			store.setWeapon(this.wielder.UserId);
+			AnimationUtil.stopAll(this.loadedAnimations);
 			this.equipped = false;
 		});
 	}

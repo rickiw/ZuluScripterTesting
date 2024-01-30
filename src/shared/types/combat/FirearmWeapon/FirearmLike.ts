@@ -48,4 +48,6 @@ export interface FirearmSounds<T extends number | string | Sound | SoundCache> e
 	Fire: T;
 	Reload: T;
 	ChamberEmpty: T;
+	AimIn: T;
+	AimOut: T;
 }

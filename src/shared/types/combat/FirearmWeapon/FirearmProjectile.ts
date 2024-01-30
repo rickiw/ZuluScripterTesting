@@ -1,5 +1,5 @@
 import { DAMAGE_BALANCE_FACTORS } from "shared/constants/firearm";
-import { buildMatrixFromFactors, gaussianElimination } from "shared/utils";
+import { buildMatrixFromFactors, gaussianElimination, solveGaussianSolutions } from "shared/utils";
 
 export type FirearmProjectileType = "Shell" | "Bullet" | "Arrow";
 
@@ -38,24 +38,7 @@ export const getCaliberData = (caliberDescriptor: string) => {
 export const balancedDamageFunction = (volume: number) => {
 	const factorMatrix = buildMatrixFromFactors(DAMAGE_BALANCE_FACTORS);
 	const solutions = gaussianElimination(factorMatrix);
-
-	let result = 0;
-	for (let i = 0; i < solutions.size() - 1; i++) {
-		result += solutions[i] * math.pow(volume, solutions.size() - 1 - i);
-	}
-	result += solutions[solutions.size() - 1];
-
-	// Building formula string
-	const terms = [];
-	for (let i = 0; i < solutions.size() - 1; i++) {
-		terms.push(`${string.format("%.16f", solutions[i])} * x^${solutions.size() - 1 - i}`);
-	}
-	terms.push(tostring(string.format("%.16f", solutions[solutions.size() - 1]))); // The constant term
-	const formula = terms.join(" + ");
-
-	// print(formula); // Print the formula
-
-	return math.clamp(math.round(result * 10) / 10, 0, 100);
+	return math.clamp(solveGaussianSolutions(solutions, volume, false), 0, 100);
 };
 
 export const getGunDamage = (projectile: FirearmProjectile): number => {
