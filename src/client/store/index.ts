@@ -1,6 +1,7 @@
 import { UseProducerHook, UseSelectorHook, useProducer, useSelector } from "@rbxts/react-reflex";
 import { InferState, combineProducers } from "@rbxts/reflex";
 import { cameraSlice } from "client/store/camera";
+import { customizationSlice } from "client/store/customization/customization-slice";
 import { interactionSlice } from "client/store/interaction";
 import { slices } from "shared/data";
 import { characterSlice } from "./character";
@@ -21,6 +22,7 @@ function createStore() {
 		menu: menuSlice,
 		character: characterSlice,
 		camera: cameraSlice,
+		customization: customizationSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

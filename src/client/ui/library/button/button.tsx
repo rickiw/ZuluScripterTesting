@@ -1,7 +1,7 @@
 import Roact from "@rbxts/roact";
-import { FrameProps } from "../frame";
+import { TextProps } from "client/ui/library/text";
 
-export interface ButtonProps extends FrameProps<TextButton> {
+export interface ButtonProps extends TextProps<TextButton> {
 	text?: string;
 	active?: boolean | Roact.Binding<boolean>;
 	fontFace?: Font | Roact.Binding<Font>;
@@ -46,6 +46,13 @@ export function Button(props: ButtonProps) {
 			TextSize={props.textSize}
 			FontFace={props.fontFace}
 			TextWrapped={props.textWrapped}
+			Font={Enum.Font.Unknown}
+			TextTransparency={props.textTransparency}
+			TextXAlignment={props.textXAlignment}
+			TextYAlignment={props.textYAlignment}
+			TextTruncate={props.textTruncate}
+			TextScaled={props.textScaled}
+			LineHeight={props.textHeight}
 			Event={event}
 			Change={props.change || {}}
 		>

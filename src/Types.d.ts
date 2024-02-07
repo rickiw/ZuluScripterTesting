@@ -1,4 +1,4 @@
-import { RoombaCharacter } from "./CharacterTypes";
+import { PlayerCharacterR15, RoombaCharacter } from "./CharacterTypes";
 
 interface Workspace extends Instance {
 	Doors: Folder & { [key in DoorType]: BaseDoor };
@@ -26,6 +26,11 @@ interface ReplicatedStorage extends Instance {
 		};
 		Roomba: RoombaCharacter;
 	};
+}
+
+export interface RBXPlayer extends Player {
+	Backpack: Backpack;
+	Character: PlayerCharacterR15;
 }
 
 interface SoundService extends Instance {

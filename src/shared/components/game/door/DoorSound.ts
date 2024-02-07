@@ -25,7 +25,7 @@ export class DoorSound<A extends DoorSoundAttributes, I extends DoorSoundInstanc
 	constructor() {
 		super();
 
-		if (!SoundService.Effects) {
+		if (!SoundService.FindFirstChild("Effects")) {
 			New("SoundGroup")({
 				Name: "Effects",
 				Parent: SoundService,
@@ -34,22 +34,22 @@ export class DoorSound<A extends DoorSoundAttributes, I extends DoorSoundInstanc
 	}
 
 	doorOpen() {
-		this.instance.Center.Open.SoundGroup = SoundService.Effects;
+		this.instance.Center.Open.SoundGroup = SoundService.FindFirstChild("Effects") as SoundGroup;
 		this.instance.Center.Open.Play();
 	}
 
 	doorClose() {
-		this.instance.Center.Close.SoundGroup = SoundService.Effects;
+		this.instance.Center.Close.SoundGroup = SoundService.FindFirstChild("Effects") as SoundGroup;
 		this.instance.Center.Close.Play();
 	}
 
 	doorAccept() {
-		this.instance.Center.Found.SoundGroup = SoundService.Effects;
+		this.instance.Center.Found.SoundGroup = SoundService.FindFirstChild("Effects") as SoundGroup;
 		this.instance.Center.Found.Play();
 	}
 
 	doorDeny() {
-		this.instance.Center.NotFound.SoundGroup = SoundService.Effects;
+		this.instance.Center.NotFound.SoundGroup = SoundService.FindFirstChild("Effects") as SoundGroup;
 		this.instance.Center.NotFound.Play();
 	}
 

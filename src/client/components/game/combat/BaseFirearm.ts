@@ -17,6 +17,8 @@ import { PlayerCharacterR15 } from "../../../../CharacterTypes";
 export interface FirearmInstance extends Tool {}
 export interface FirearmAttributes {}
 
+const Player = Players.LocalPlayer;
+
 @Component({ tag: "baseFirearm", refreshAttributes: false })
 export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	extends BaseComponent<A, I>
@@ -24,7 +26,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 {
 	configuration: FirearmLike;
 	wielder = Players.LocalPlayer;
-	char = (this.wielder.Character || this.wielder.CharacterAdded.Wait()[0]) as PlayerCharacterR15;
+	char = (Player.Character || Player.CharacterAdded.Wait()[0]) as PlayerCharacterR15;
 
 	net = GlobalEvents.createClient({});
 	controls = new ControlSet();
@@ -96,7 +98,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	load() {
 		this.loadAnimations();
 
-		clientStore.subscribe(selectWeapon(this.wielder.UserId), (weapon) => {
+		clientStore.subscribe(selectWeapon(Player.UserId), (weapon) => {
 			this.state = weapon as FirearmState | undefined;
 		});
 		this.loaded = true;
@@ -147,7 +149,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			UserInputService.TouchTap.Connect((touchPositions, gameProcessedEvent) => {
 				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) return;
 				this.loadedAnimations.Fire.Play();
-				this.net.FireFirearm.fire(this.instance, this.wielder.GetMouse().Hit.Position);
+				this.net.FireFirearm.fire(this.instance, Player.GetMouse().Hit.Position);
 			});
 		}
 
@@ -223,7 +225,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	fire() {
 		// if (this.state?.magazine.holding === 0) return;
 		this.loadedAnimations.Fire.Play();
-		this.net.FireFirearm.fire(this.instance, this.wielder.GetMouse().Hit.Position);
+		this.net.FireFirearm.fire(this.instance, Player.GetMouse().Hit.Position);
 	}
 
 	unloadBinds() {

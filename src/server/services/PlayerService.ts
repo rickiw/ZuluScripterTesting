@@ -38,6 +38,7 @@ export class PlayerService implements OnStart, PlayerAdded {
 				task.spawn(() => listener.playerAdded(player));
 			}
 		});
+
 		for (const player of Players.GetPlayers()) {
 			for (const listener of playerAddedListeners) {
 				task.spawn(() => listener.playerAdded(player));
@@ -52,6 +53,7 @@ export class PlayerService implements OnStart, PlayerAdded {
 				task.spawn(() => listener.playerRemoving(player));
 			}
 		});
+
 		for (const player of Players.GetPlayers()) {
 			for (const listener of playerRemovingListeners) {
 				task.spawn(() => listener.playerRemoving(player));

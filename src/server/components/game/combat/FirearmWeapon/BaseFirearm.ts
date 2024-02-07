@@ -96,10 +96,15 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	getConfiguration(raw: FirearmLike): FirearmLike {
-		let fmtConfig = raw;
+		const fmtConfig: Indexable<string, any> = { ...raw };
 
-		for (const attachment of raw.Attachments) fmtConfig = deepMerge(raw, attachment.modifiers) as FirearmLike;
-		return fmtConfig;
+		for (const attachment of raw.Attachments)
+			fmtConfig[attachment.type] = deepMerge(
+				fmtConfig[attachment.type],
+				attachment.modifiers as Indexable<string, any>,
+			);
+
+		return fmtConfig as FirearmLike;
 	}
 
 	onStart() {

@@ -1,13 +1,12 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useBinding } from "@rbxts/roact";
 import { Players } from "@rbxts/services";
-import { clientStore } from "client/store";
 import { useMotion } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
 import { springs } from "shared/constants/springs";
 import { selectWeapon } from "shared/data/selectors/combat";
-import { FirearmState, isFirearmState } from "shared/types/combat/FirearmWeapon/FirearmState";
+import { FirearmState } from "shared/types/combat/FirearmWeapon/FirearmState";
 
 export function WeaponProvider() {
 	const weapon = useSelector(selectWeapon(Players.LocalPlayer.UserId));
@@ -20,12 +19,12 @@ export function WeaponProvider() {
 	let reloadImminent = false;
 	const fireFxInMotion = false;
 
-	clientStore.subscribe(selectWeapon(Players.LocalPlayer.UserId), (newWeapon) => {
-		setTransparencyMotion.spring(newWeapon === undefined ? 1 : 0, springs.stiff);
-		if (newWeapon && isFirearmState(newWeapon)) {
-			updateWeaponState(newWeapon);
-		}
-	});
+	// clientStore.subscribe(selectWeapon(Players.LocalPlayer.UserId), (newWeapon) => {
+	// 	setTransparencyMotion.spring(newWeapon === undefined ? 1 : 0, springs.stiff);
+	// 	if (newWeapon && isFirearmState(newWeapon)) {
+	// 		updateWeaponState(newWeapon);
+	// 	}
+	// });
 
 	const updateWeaponState = (newWeapon: FirearmState) => {
 		setFireMode(newWeapon.mode);

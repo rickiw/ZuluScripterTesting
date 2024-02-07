@@ -1,16 +1,15 @@
 import * as ReactRoblox from "@rbxts/react-roblox";
 import Roact from "@rbxts/roact";
 import { ObjectStory } from "@rbxts/ui-labs";
-import { Crosshair } from "client/ui/library/weapon/crosshair";
+import { Customization } from "client/ui/customization/customization";
 import { RootProvider } from "client/ui/providers/root-provider";
 
 const Story: ObjectStory = {
-	summary: "Weapon HUD",
+	summary: "Weapon Customization UI",
 	story: (props) => {
 		return (
 			<RootProvider>
-				{/*<WeaponProvider />*/}
-				<Crosshair />
+				<Customization />
 			</RootProvider>
 		);
 	},

@@ -1,10 +1,12 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
-import { Players, UserInputService, Workspace } from "@rbxts/services";
+import { Players, Workspace } from "@rbxts/services";
 import { clientStore } from "client/store";
+import { selectCustomizationIsOpen } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
+import { ControlSet } from "client/types/ControlSet";
 
-const INPUTS = new ReadonlySet<Enum.KeyCode>([Enum.KeyCode.H, Enum.KeyCode.ButtonX]);
+const INPUTS = [Enum.KeyCode.M, Enum.KeyCode.ButtonL3];
 
 const player = Players.LocalPlayer;
 
@@ -13,6 +15,7 @@ export class MenuController implements OnStart, OnRender {
 	menuPanel: BasePart;
 	cameraTween?: Tween;
 	camStartCf?: CFrame;
+	controlSet = new ControlSet();
 
 	constructor() {
 		this.menuPanel = New("Part")({
@@ -41,10 +44,36 @@ export class MenuController implements OnStart, OnRender {
 	}
 
 	onStart() {
-		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && INPUTS.has(input.KeyCode)) {
+		// UserInputService.InputBegan.Connect((input, processed) => {
+		// 	if (!processed && INPUTS.has(input.KeyCode)) {
+		// 		this.toggleMenu();
+		// 	}
+		// });
+
+		this.controlSet.add({
+			ID: `menucontroller-toggle`,
+			Name: "Menu",
+			Enabled: true,
+			Mobile: false,
+
+			onBegin: () => {
 				this.toggleMenu();
-			}
+			},
+
+			controls: INPUTS,
+		});
+
+		this.controlSet.add({
+			ID: `customization-toggle`,
+			Name: "Customize",
+			Enabled: true,
+			Mobile: false,
+
+			onBegin: () => {
+				clientStore.setCustomizationOpen(!selectCustomizationIsOpen(clientStore.getState()));
+			},
+
+			controls: [Enum.KeyCode.C, Enum.KeyCode.ButtonSelect],
 		});
 	}
 
