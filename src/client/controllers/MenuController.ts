@@ -1,7 +1,9 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import { TweenService, UserInputService, Workspace } from "@rbxts/services";
+import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
+import { selectCustomizationIsOpen } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
 import { HandlesInput } from "./BaseInput";
 
@@ -10,7 +12,8 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	menuPanel: BasePart;
 	openedCFrame?: CFrame;
 	cameraTween?: Tween;
-	inputs = [Enum.KeyCode.H, Enum.KeyCode.ButtonX];
+	inputs = [Enum.KeyCode.M, Enum.KeyCode.ButtonL3];
+	controlSet = new ControlSet();
 
 	constructor() {
 		super();
@@ -30,10 +33,30 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	}
 
 	onStart() {
-		UserInputService.InputBegan.Connect((input, processed) => {
-			if (!processed && this.hasInput(input.KeyCode)) {
+		this.controlSet.add({
+			ID: `menucontroller-toggle`,
+			Name: "Menu",
+			Enabled: true,
+			Mobile: false,
+
+			onBegin: () => {
 				this.toggleMenu();
-			}
+			},
+
+			controls: this.inputs,
+		});
+
+		this.controlSet.add({
+			ID: `customization-toggle`,
+			Name: "Customize",
+			Enabled: true,
+			Mobile: false,
+
+			onBegin: () => {
+				clientStore.setCustomizationOpen(!selectCustomizationIsOpen(clientStore.getState()));
+			},
+
+			controls: [Enum.KeyCode.C, Enum.KeyCode.ButtonSelect],
 		});
 	}
 

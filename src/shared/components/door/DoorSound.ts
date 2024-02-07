@@ -25,7 +25,7 @@ export class DoorSound<A extends DoorSoundAttributes, I extends DoorSoundInstanc
 	constructor() {
 		super();
 
-		if (!SoundService.Effects) {
+		if (!SoundService.FindFirstChild("Effects")) {
 			New("SoundGroup")({
 				Name: "Effects",
 				Parent: SoundService,

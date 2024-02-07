@@ -26,6 +26,7 @@ import {
 	SoundCache,
 	SoundDict,
 	SoundUtil,
+	deepMerge,
 	getCharacterFromHit,
 	getLimbProjectileDamage,
 	isLimb,
@@ -64,7 +65,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	constructor(private enemyService: EnemyService) {
 		super();
-		this.configuration = this.getConfiguration();
+		this.configuration = this.getConfiguration(this.getRawConfiguration());
 		this.wielder = this.getWielder();
 		this.tool = this.instance;
 		this.equipped = false;
@@ -110,8 +111,21 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 	}
 
-	private getConfiguration() {
+	private getRawConfiguration() {
 		return require(this.instance.FindFirstChildOfClass("ModuleScript")!) as FirearmLike;
+	}
+
+	private getConfiguration(raw: FirearmLike) {
+		const fmtConfig: Indexable<string, any> = { ...raw };
+
+		for (const attachment of raw.Attachments) {
+			fmtConfig[attachment.type] = deepMerge(
+				fmtConfig[attachment.type],
+				attachment.modifiers as Indexable<string, any>,
+			);
+		}
+
+		return fmtConfig as FirearmLike;
 	}
 
 	private getWielder() {

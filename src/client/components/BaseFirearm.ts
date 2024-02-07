@@ -7,7 +7,7 @@ import { clientStore } from "client/store";
 import { selectCameraOffset } from "client/store/camera";
 import { FirearmAnimations, FirearmLike, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
-import { selectCombatState } from "shared/store/combat";
+import { selectWeapon } from "shared/store/combat";
 import { AnimationUtil, Indexable, SoundCache, SoundDict, SoundUtil } from "shared/utils";
 import { ControlSet } from "./controls";
 
@@ -60,7 +60,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.connections.activated = this.instance.Activated.Connect(() => {
 			if (this.state?.cooldown || this.state?.magazine === undefined) return;
 			this.loadedAnimations.Fire.Play();
-			Events.FireFirearm.fire(this.instance, this.wielder.GetMouse().Hit.Position);
+			Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
 		});
 
 		this.connections.equipped = this.instance.Equipped.Connect(() => {
@@ -100,14 +100,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	load() {
 		this.loadAnimations();
 
-		clientStore.subscribe(selectCombatState(this.wielder.UserId), (state) => {
-			if (state && state.weapon && state.weapon.configuration.tool === this.instance) {
-				this.state = state.weapon as FirearmState;
-			} else {
-				this.state = undefined;
-			}
-			this.loaded = true;
+		clientStore.subscribe(selectWeapon(player.UserId), (weapon) => {
+			this.state = weapon as FirearmState | undefined;
 		});
+		this.loaded = true;
 	}
 
 	private getConfiguration() {
@@ -168,7 +164,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			UserInputService.TouchTap.Connect((touchPositions, gameProcessedEvent) => {
 				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) return;
 				this.loadedAnimations.Fire.Play();
-				Events.FireFirearm.fire(this.instance, this.wielder.GetMouse().Hit.Position);
+				Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
 			});
 		}
 

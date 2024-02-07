@@ -42,6 +42,11 @@ type RoombaCharacter = BaseCharacter & {
 	};
 };
 
+type RBXPlayer = Player & {
+	Backpack: Backpack;
+	Character: import("@rbxts/promise-character").CharacterRigR15;
+};
+
 declare namespace JSX {
 	interface IntrinsicElements {
 		blureffect: JSX.IntrinsicElement<BlurEffect>;

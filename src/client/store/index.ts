@@ -3,6 +3,7 @@ import { InferState, combineProducers } from "@rbxts/reflex";
 import { slices } from "shared/store";
 import { cameraSlice } from "./camera";
 import { characterSlice } from "./character";
+import { customizationSlice } from "./customization";
 import { interactionSlice } from "./interaction/interaction-slice";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
@@ -25,6 +26,7 @@ function createStore() {
 		shop: shopSlice,
 		perks: perkSlice,
 		camera: cameraSlice,
+		customization: customizationSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

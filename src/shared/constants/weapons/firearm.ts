@@ -28,7 +28,7 @@ export interface SightConfig {
 }
 
 export interface FirearmLike extends WeaponLike {
-	Attachments: FirearmAttachment[];
+	Attachments: FirearmAttachment<keyof FirearmLike>[];
 	Barrel: BarrelConfig;
 	Magazine: MagazineConfig;
 	Sight: SightConfig;

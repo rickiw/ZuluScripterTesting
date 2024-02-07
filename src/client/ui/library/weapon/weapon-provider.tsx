@@ -1,12 +1,11 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useBinding } from "@rbxts/roact";
 import { Players } from "@rbxts/services";
-import { clientStore } from "client/store";
 import { useMotion } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
 import { springs } from "shared/constants/springs";
-import { FirearmState, isFirearmState } from "shared/constants/weapons/state";
+import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
 
 export function WeaponProvider() {
@@ -20,12 +19,12 @@ export function WeaponProvider() {
 	let reloadImminent = false;
 	const fireFxInMotion = false;
 
-	clientStore.subscribe(selectWeapon(Players.LocalPlayer.UserId), (newWeapon) => {
-		setTransparencyMotion.spring(newWeapon === undefined ? 1 : 0, springs.stiff);
-		if (newWeapon && isFirearmState(newWeapon)) {
-			updateWeaponState(newWeapon);
-		}
-	});
+	// clientStore.subscribe(selectWeapon(Players.LocalPlayer.UserId), (newWeapon) => {
+	// 	setTransparencyMotion.spring(newWeapon === undefined ? 1 : 0, springs.stiff);
+	// 	if (newWeapon && isFirearmState(newWeapon)) {
+	// 		updateWeaponState(newWeapon);
+	// 	}
+	// });
 
 	const updateWeaponState = (newWeapon: FirearmState) => {
 		setFireMode(newWeapon.mode);
