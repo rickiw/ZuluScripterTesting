@@ -33,8 +33,13 @@ interface SoundService extends Instance {
 
 type BaseCharacter = Model & {
 	Humanoid: Humanoid;
-	Body: MeshPart;
 	HumanoidRootPart: BasePart;
+};
+
+type RoombaCharacter = BaseCharacter & {
+	HumanoidRootPart: BasePart & {
+		Dust: ParticleEmitter;
+	};
 };
 
 declare namespace JSX {

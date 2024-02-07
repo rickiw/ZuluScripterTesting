@@ -1,5 +1,4 @@
 import { Networking } from "@flamework/networking";
-import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Clan, GroupID } from "./constants/clans";
 
 interface ClientToServerEvents {
@@ -8,14 +7,15 @@ interface ClientToServerEvents {
 
 	// BaseFirearm
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
+	ReloadFirearm(weapon: Tool): void;
 }
 
 interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
 
 	// RoombaTouchpad
-	RoombaActive(old: CharacterRigR15): void;
-	RoombaInactive(): void;
+	RoombaActive(chr: BaseCharacter): void;
+	RoombaInactive(chr: BaseCharacter): void;
 	RoombaLoaded(): void;
 	RoombaUnloaded(): void;
 

@@ -1,7 +1,8 @@
 import { FirearmLike } from ".";
 
 export interface FirearmAttachment {
-	modifiers: FirearmLike;
+	modifiers: Partial<FirearmLike>;
 	mountAttachment?: Attachment;
 	mountsTo?: string;
+	model?: Model;
 }

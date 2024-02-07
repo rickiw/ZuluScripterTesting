@@ -5,16 +5,23 @@ import Log from "@rbxts/log";
 import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Option } from "@rbxts/rust-classes";
-import { Players, Workspace } from "@rbxts/services";
+import { Players, RunService, Workspace } from "@rbxts/services";
 import { Events } from "server/network";
 import { EnemyService } from "server/services/EnemyService";
 import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
 import { BULLET_PROVIDER } from "shared/constants/firearm";
-import { FirearmLike, FirearmMagazine, FirearmProjectile, FirearmSounds } from "shared/constants/weapons";
+import {
+	FirearmAnimations,
+	FirearmLike,
+	FirearmMagazine,
+	FirearmProjectile,
+	FirearmSounds,
+} from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import {
+	AnimationUtil,
 	Indexable,
 	SoundCache,
 	SoundDict,
@@ -40,7 +47,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	wielder: Player;
 	character: CharacterRigR15 | undefined;
 
+	equipped: boolean;
+
 	loaded: boolean;
+	loadedAnimations!: FirearmAnimations<AnimationTrack>;
 
 	caster: Caster;
 	behavior!: FastCastBehavior;
@@ -57,6 +67,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.configuration = this.getConfiguration();
 		this.wielder = this.getWielder();
 		this.tool = this.instance;
+		this.equipped = false;
 
 		this.caster = new FastCast();
 		this.loaded = false;
@@ -71,6 +82,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			magazine: new FirearmMagazine(this.configuration.Magazine),
 			cooldown: false,
 			reloading: false,
+			bullets: 500,
+			mode: this.configuration.Barrel.fireModes[0],
 		};
 
 		this.state.magazine.onChanged.Connect(() => {
@@ -111,14 +124,23 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			  });
 	}
 
+	loadAnimations() {
+		if (!this.character) return;
+		this.character.WaitForChild("Humanoid");
+		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
+			this.configuration.animations,
+			this.character.Humanoid,
+		) as FirearmAnimations<AnimationTrack>;
+	}
+
 	load() {
 		this.initBehavior();
 		this.initRemotes();
+		this.loadAnimations();
 		this.loaded = true;
 	}
 
 	unload() {
-		Log.Verbose("unloading");
 		for (const key of Object.keys(this.connections)) this.connections[key].Disconnect();
 		this.loaded = false;
 	}
@@ -161,11 +183,30 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			}
 		});
 
-		this.connections.equipped = this.tool.Equipped.Connect(() =>
-			serverStore.setWeapon(this.wielder.UserId, this.state),
-		);
+		this.connections.reloadRemote = Events.ReloadFirearm.connect((player, weapon) => {
+			if (player === this.wielder && weapon === this.tool) {
+				this.reload();
+			}
+		});
 
-		this.connections.unequipped = this.tool.Unequipped.Connect(() => serverStore.setWeapon(this.wielder.UserId));
+		this.connections.update = RunService.Heartbeat.Connect(() => {
+			this.state.configuration = this.configuration;
+		});
+
+		this.connections.magUpdate = this.state.magazine.onChanged.Connect(() => {
+			serverStore.setWeapon(this.wielder.UserId, this.state);
+		});
+
+		this.connections.equipped = this.tool.Equipped.Connect(() => {
+			serverStore.setWeapon(this.wielder.UserId, this.state);
+			this.equipped = true;
+		});
+
+		this.connections.unequipped = this.tool.Unequipped.Connect(() => {
+			serverStore.setWeapon(this.wielder.UserId);
+			AnimationUtil.stopAll(this.loadedAnimations);
+			this.equipped = false;
+		});
 	}
 
 	getVelocity() {
@@ -183,8 +224,47 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.behavior,
 		);
 
+		this.state.cooldown = true;
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+		task.delay(60 / this.configuration.Barrel.rpm, () => {
+			this.state.cooldown = false;
+			serverStore.setWeapon(this.wielder.UserId, this.state);
+		});
+
 		this.loadedSounds.Fire.play();
 		this.state.magazine.take();
+	}
+
+	reload() {
+		if (this.state.reloading || this.state.bullets <= 0) return;
+		this.state.reloading = true;
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+		this.loadedSounds.Reload.play();
+		this.loadedAnimations.Reload.Play();
+
+		// Calculate bullets needed for a full mag
+		const bulletsNeeded = this.state.magazine.getCapacity() - this.state.magazine.getRemaining();
+		// Store how many bullets we will actually move from reserve to mag (either the bulletsNeeded, or the total bullets we have if they are less than bulletsNeeded)
+		const bulletsToMove = math.min(bulletsNeeded, this.state.bullets);
+
+		// Subtract needed bullets from bullet state and add it to the magBullets state
+		this.state.bullets -= bulletsToMove;
+		this.state.magazine.holding += bulletsToMove;
+
+		this.loadedAnimations.Reload.Stopped.Wait();
+		this.state.reloading = false;
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+	}
+
+	cycleFireModes() {
+		// mode is a string
+		this.state.mode =
+			this.configuration.Barrel.fireModes[
+				(this.configuration.Barrel.fireModes.indexOf(this.state.mode) + 1) %
+					this.configuration.Barrel.fireModes.size()
+			];
+
+		serverStore.setWeapon(this.wielder.UserId, this.state);
 	}
 
 	makeProjectile(result: RaycastResult) {
@@ -221,6 +301,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	canFire() {
-		return !this.state.magazine.isEmpty();
+		return !this.state.magazine.isEmpty() && !this.state.reloading;
 	}
 }

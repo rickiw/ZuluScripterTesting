@@ -2,9 +2,15 @@ import { AnimationDict, SoundCache, SoundDict } from "shared/utils";
 import { FirearmAttachment, WeaponLike } from ".";
 import { FirearmProjectileLike } from "./projectile";
 
+export type FireMode = "Automatic" | "Semi-Automatic" | "Single" | "Burst" | "Safety";
+
 export interface BarrelConfig {
 	velocity: number;
 	chambered: FirearmProjectileLike;
+	fireModes: FireMode[];
+	rpm: number;
+
+	burstCount: number;
 
 	firePoint: Attachment;
 	chamberPoint: Attachment;
@@ -40,4 +46,6 @@ export interface FirearmSounds<T extends number | string | Sound | SoundCache> e
 	Fire: T;
 	Reload: T;
 	ChamberEmpty: T;
+	AimIn: T;
+	AimOut: T;
 }

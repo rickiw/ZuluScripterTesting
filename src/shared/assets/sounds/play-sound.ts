@@ -1,4 +1,4 @@
-import { SoundService } from "@rbxts/services";
+import { Debris, SoundService } from "@rbxts/services";
 import { IS_EDIT } from "shared/constants/core";
 
 export interface SoundOptions {
@@ -6,11 +6,12 @@ export interface SoundOptions {
 	speed?: number;
 	looped?: boolean;
 	parent?: Instance;
+	lifetime?: number;
 }
 
 export function createSound(
 	soundId: string,
-	{ volume = 0.5, speed = 1, looped = false, parent = SoundService }: SoundOptions = {},
+	{ volume = 0.5, speed = 1, looped = false, parent = SoundService, lifetime = math.huge }: SoundOptions = {},
 ) {
 	const sound = new Instance("Sound");
 
@@ -19,6 +20,8 @@ export function createSound(
 	sound.PlaybackSpeed = speed;
 	sound.Looped = looped;
 	sound.Parent = parent;
+
+	if (lifetime !== math.huge) Debris.AddItem(sound, lifetime);
 
 	return sound;
 }

@@ -38,6 +38,9 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 		Functions.WithdrawClanFunds.setCallback((player, amount) => {
 			return this.withdrawClanFunds(player, amount);
 		});
+		Functions.JoinClan.setCallback((player, groupId) => {
+			return this.joinClan(player, groupId);
+		});
 
 		MessagingService.SubscribeAsync("UpdateClans", (data) => {
 			const clanData = data.Data as ClanUpdate;
