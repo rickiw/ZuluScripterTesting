@@ -1,9 +1,8 @@
-import { Modding, Service } from "@flamework/core";
+import { Modding, OnStart, Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Option } from "@rbxts/rust-classes";
-import { HttpService } from "@rbxts/services";
 import { EntityID, IDService } from "./IDService";
 import { DamageContributor, DamageSource, HealthChange } from "./variants";
 
@@ -21,12 +20,14 @@ export interface CharacterKilled {
 }
 
 @Service()
-export class EnemyService {
+export class EnemyService implements OnStart {
 	maid = new Maid();
 	private characterKilledListeners = new Set<CharacterKilled>();
 	private scpKilledListeners = new Set<SCPKilled>();
 
-	constructor(private idService: IDService) {
+	constructor(private idService: IDService) {}
+
+	onStart() {
 		Modding.onListenerAdded<CharacterKilled>((object) => this.characterKilledListeners.add(object));
 		Modding.onListenerRemoved<CharacterKilled>((object) => this.characterKilledListeners.delete(object));
 		Modding.onListenerAdded<SCPKilled>((object) => this.scpKilledListeners.add(object));
@@ -40,7 +41,6 @@ export class EnemyService {
 			return;
 		}
 		if (healthChange.crit) this.handleDeath(enemy, healthChange);
-		Log.Info("Enemy {@Enemy} took {@DamageSource}", model.Name, HttpService.JSONEncode(healthChange));
 	}
 
 	handleDeath(enemy: EntityID, healthChange: HealthChange) {
@@ -53,8 +53,6 @@ export class EnemyService {
 			);
 			return;
 		}
-
-		Log.Info("Enemy {@Enemy} died", model.Name);
 
 		const isPlayer = this.idService.isPlayer(enemy);
 		if (isPlayer) {

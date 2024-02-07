@@ -77,6 +77,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.loadedAnimations.Idle.Stop();
 			clientStore.setCameraLockedCenter(false);
 			clientStore.setCameraFlag("FirearmIsEquipped", false);
+			clientStore.setCameraFlag("FirearmIsAiming", false);
+
+			if (!this.aiming) return;
+			this.aiming = false;
+			clientStore.setShiftLocked(false);
+			clientStore.setFovOffset(0);
 
 			this.equipped = false;
 		});

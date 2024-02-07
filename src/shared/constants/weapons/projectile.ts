@@ -1,6 +1,8 @@
+import Log from "@rbxts/log";
 import { DAMAGE_BALANCE_FACTORS } from "../firearm";
 
 export type FirearmProjectileType = "Shell" | "Bullet" | "Arrow";
+const DEBUG = true;
 
 function gaussianElimination(input: number[][]) {
 	const matrix = input;
@@ -99,14 +101,16 @@ export const balancedDamageFunction = (volume: number) => {
 	result += solutions[solutions.size() - 1];
 
 	// Building formula string
-	const terms = [];
-	for (let i = 0; i < solutions.size() - 1; i++) {
-		terms.push(`${string.format("%.16f", solutions[i])} * x^${solutions.size() - 1 - i}`);
-	}
-	terms.push(tostring(string.format("%.16f", solutions[solutions.size() - 1]))); // The constant term
-	const formula = terms.join(" + ");
+	if (DEBUG) {
+		const terms = [];
+		for (let i = 0; i < solutions.size() - 1; i++) {
+			terms.push(`${string.format("%.16f", solutions[i])} * x^${solutions.size() - 1 - i}`);
+		}
+		terms.push(tostring(string.format("%.16f", solutions[solutions.size() - 1]))); // The constant term
+		const formula = terms.join(" + ");
 
-	print(formula); // Print the formula
+		Log.Info("Formula {@Formula}", formula); // Print the formula
+	}
 
 	return math.clamp(math.round(result * 10) / 10, 0, 100);
 };

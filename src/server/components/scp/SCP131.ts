@@ -2,6 +2,8 @@ import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
 import SimplePath from "@rbxts/simplepath";
+import { SCPKilled } from "server/services/EnemyService";
+import { HealthChange } from "server/services/variants";
 import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
 
 interface SCPInstance extends BaseSCPInstance {
@@ -22,13 +24,14 @@ interface SCPAttributes {
 })
 export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	extends BaseSCP<A, I>
-	implements OnStart, OnTick, OnPathfind
+	implements OnStart, OnTick, OnPathfind, SCPKilled
 {
 	status: "idle" | "wandering" | "following" = "idle";
 	target?: Player;
 	lastPos?: Vector3;
 	nextWanderPoint?: Vector3;
 	path: SimplePath;
+	alive = true;
 
 	constructor() {
 		super();
@@ -68,6 +71,7 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	}
 
 	onTick(dt: number) {
+		if (!this.alive) return;
 		switch (this.status) {
 			case "wandering": {
 				if (!this.nextWanderPoint) this.nextWanderPoint = this.getNextWanderPoint();
@@ -155,5 +159,15 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 				this.status = "wandering";
 			});
 		}
+	}
+
+	scpKilled(scp: BaseHumanoidSCP, deathCause: HealthChange) {
+		if (scp !== this.instance) return;
+		this.alive = false;
+		this.instance
+			.GetDescendants()
+			.filter((instance) => instance.IsA("ProximityPrompt"))
+			.forEach((instance) => instance.Destroy());
+		task.delay(3, () => this.instance.Destroy());
 	}
 }

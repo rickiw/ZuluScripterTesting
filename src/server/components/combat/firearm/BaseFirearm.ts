@@ -301,7 +301,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			assert(characterEntityId, "Character entity ID not found");
 
 			const shooter = this.wielder.Character!;
-			const crit = humanoid.Health - damage <= 0;
+			const crit = humanoid.Health <= 0;
 			const healthChange: HealthChange = {
 				amount: damage,
 				by: Option.wrap(DamageContributor.Solo(shooter)),
