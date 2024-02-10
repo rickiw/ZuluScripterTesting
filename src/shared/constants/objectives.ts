@@ -76,7 +76,7 @@ export const SDObjectives: SpecifiedObjective<"SD">[] = [
 		category: "SD",
 		name: "Patrol corridor quest",
 		description: "N/A",
-		location: new Vector3(0, 0, 0),
+		location: new Vector3(-82.25, 11.1, -22),
 		reward: [100, "credits"],
 		completion: {
 			steps: 0,

@@ -1,7 +1,9 @@
 import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
+import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
+import { Players } from "@rbxts/services";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { PlayerRemoving } from "server/services/PlayerService";
 import { On1SecondInterval } from "server/services/TickService";
@@ -11,7 +13,9 @@ import { PlayerID } from "shared/constants/clans";
 import { selectPlayerSave } from "shared/store/saves";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
-interface GuardObjectiveAttributes extends ObjectiveAttributes {}
+interface GuardObjectiveAttributes extends ObjectiveAttributes {
+	goal: number;
+}
 
 interface GuardObjectiveInstance extends ObjectiveInstance {
 	WatchArea: BasePart;
@@ -49,14 +53,32 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 		this.presenceComponents.push(presenceComponent);
 		this.maid.GiveTask(presenceComponent.presenceBegin.Connect((player: Player) => this.areaEnter(player)));
 		this.maid.GiveTask(presenceComponent.presenceEnd.Connect((player: Player) => this.areaExit(player)));
+
+		const Position = this.instance.GetBoundingBox()[0].Position;
+
+		this.beacon = New("Part")({
+			Anchored: true,
+			Name: "Beacon",
+			Parent: this.instance,
+			Position,
+			Size: new Vector3(500, 5, 5),
+			Orientation: new Vector3(0, 0, 90),
+			Color: Color3.fromRGB(63, 25, 180),
+			CanCollide: false,
+			Shape: Enum.PartType.Cylinder,
+			Transparency: 1,
+			Material: Enum.Material.Neon,
+		});
 	}
 
 	areaEnter(player: Player) {
 		this.inZone.add(player.UserId);
+		this.beacon.Transparency = 0.3;
 	}
 
 	areaExit(player: Player) {
 		this.inZone.delete(player.UserId);
+		this.beacon.Transparency = 1;
 	}
 
 	playerRemoving(player: Player) {
@@ -70,16 +92,26 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 				Log.Warn("No profile found for player {@PlayerID}", userId);
 				return;
 			}
-			const timeWatched =
-				profile.objectiveCompletion.find((objective) => objective.id === this.objectiveId)?.completion
-					.timeWatched ?? 0;
 
 			const objectiveCompletion = profile.objectiveCompletion.map((objective) => {
 				if (objective.id === this.objectiveId) {
+					const completed = (objective.completion.completed as boolean) ?? false;
 					const timeWatched = (objective.completion.timeWatched as number) ?? 0;
+					if (completed && timeWatched >= this.attributes.goal) return objective;
+					if (timeWatched >= this.attributes.goal) {
+						this.completeObjective(Players.GetPlayerByUserId(userId)!);
+						return {
+							id: this.objectiveId,
+							completion: {
+								completed: true,
+								timeWatched: this.attributes.goal,
+							},
+						};
+					}
 					return {
 						id: this.objectiveId,
 						completion: {
+							completed: false,
 							timeWatched: timeWatched + 1,
 						},
 					};
