@@ -3,7 +3,7 @@ import { buttons } from "client/ui/library/menu/button-row";
 
 type MenuPage = (typeof buttons)[number];
 
-export interface Objective {
+export interface UIObjective {
 	readonly title: string;
 	readonly description: string;
 	readonly importance: "low" | "medium" | "high";
@@ -14,8 +14,8 @@ export interface MenuState {
 	readonly menuOpen: boolean;
 	readonly menuPage: MenuPage;
 	readonly menuPanel?: BasePart;
-	readonly objectives: readonly Objective[];
-	readonly selectedObjective?: Objective;
+	readonly objectives: readonly UIObjective[];
+	readonly selectedObjective?: UIObjective;
 }
 
 const initialState: MenuState = {
@@ -46,15 +46,15 @@ const initialState: MenuState = {
 };
 
 export const menuSlice = createProducer(initialState, {
-	addObjective: (state, objective: Objective) => ({
+	addObjective: (state, objective: UIObjective) => ({
 		...state,
 		objectives: [objective, ...state.objectives],
 	}),
-	removeObjective: (state, objective: Objective) => ({
+	removeObjective: (state, objective: UIObjective) => ({
 		...state,
 		objectives: state.objectives.filter((o) => o.title !== objective.title),
 	}),
-	setSelectedObjective: (state, objective: Objective) => ({
+	setSelectedObjective: (state, objective: UIObjective) => ({
 		...state,
 		selectedObjective: objective,
 	}),

@@ -1,14 +1,14 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { Objective, selectMenuObjective, selectObjectives } from "client/store/menu";
+import { UIObjective, selectMenuObjective, selectObjectives } from "client/store/menu";
 import { fonts } from "shared/constants/fonts";
 import { Frame } from "../../frame";
 import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 interface ObjectiveProps {
-	objective: Objective;
+	objective: UIObjective;
 }
 
 function Objective({ objective }: ObjectiveProps) {

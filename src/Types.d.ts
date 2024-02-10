@@ -52,3 +52,5 @@ declare namespace JSX {
 		blureffect: JSX.IntrinsicElement<BlurEffect>;
 	}
 }
+
+type Prettify<T> = { [k in keyof T]: T[k] };

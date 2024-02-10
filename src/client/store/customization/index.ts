@@ -1,2 +1,2 @@
-export * from "./customization-selectors";
+export * from "./customization-selector";
 export * from "./customization-slice";

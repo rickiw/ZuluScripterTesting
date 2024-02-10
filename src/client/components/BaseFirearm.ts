@@ -79,9 +79,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			clientStore.setCameraFlag("FirearmIsEquipped", false);
 			clientStore.setCameraFlag("FirearmIsAiming", false);
 
-			if (!this.aiming) return;
 			this.aiming = false;
 			clientStore.setShiftLocked(false);
+			clientStore.setCameraOffset(Vector3.zero);
 			clientStore.setFovOffset(0);
 
 			this.equipped = false;

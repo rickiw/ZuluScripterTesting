@@ -1,6 +1,7 @@
 import { createProducer } from "@rbxts/reflex";
 import { GroupID } from "shared/constants/clans";
 import { mapProperty } from "shared/utils";
+import { ObjectiveSave } from "../objectives";
 import { PerkInfo } from "../perks";
 
 export interface PlayerProfile {
@@ -10,6 +11,7 @@ export interface PlayerProfile {
 	readonly experience: number;
 	readonly clan: GroupID | undefined;
 	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
+	readonly objectiveCompletion: Record<number, ObjectiveSave>;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;
 }

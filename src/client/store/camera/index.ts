@@ -1,2 +1,2 @@
-export * from "./camera-selectors";
+export * from "./camera-selector";
 export * from "./camera-slice";
