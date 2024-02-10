@@ -8,9 +8,7 @@ export const defaultPlayerProfile: PlayerProfile = {
 	clan: undefined,
 	scrap: new Map(),
 	purchasedPerks: [],
-	objectiveCompletion: {
-		999: { completion: {} },
-	},
+	objectiveCompletion: [],
 	credits: 0,
 };
 

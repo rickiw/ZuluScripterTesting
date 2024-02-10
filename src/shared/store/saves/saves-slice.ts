@@ -11,7 +11,7 @@ export interface PlayerProfile {
 	readonly experience: number;
 	readonly clan: GroupID | undefined;
 	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
-	readonly objectiveCompletion: Record<number, ObjectiveSave>;
+	readonly objectiveCompletion: ReadonlyArray<ObjectiveSave>;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;
 }

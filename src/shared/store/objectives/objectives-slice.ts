@@ -21,9 +21,10 @@ type ObjectiveNamesByCategory = {
 
 export type ObjectiveCategory = Prettify<keyof ObjectiveNamesByCategory>;
 export type ObjectiveName = ObjectiveNamesByCategory[ObjectiveCategory];
+export type ObjectiveID = number;
 
 export interface Objective extends Partial<ObjectiveSave> {
-	readonly id: number;
+	readonly id: ObjectiveID;
 	readonly category: ObjectiveCategory;
 	readonly name: ObjectiveName;
 	readonly priority: 1 | 2 | 3;
@@ -34,6 +35,7 @@ export interface Objective extends Partial<ObjectiveSave> {
 }
 
 export interface ObjectiveSave {
+	readonly id: ObjectiveID;
 	readonly completion: Record<string, unknown>;
 }
 
