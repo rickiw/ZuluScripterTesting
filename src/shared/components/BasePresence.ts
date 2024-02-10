@@ -4,11 +4,16 @@ import Maid from "@rbxts/maid";
 import Signal from "@rbxts/signal";
 import { Zone } from "@rbxts/zone-plus";
 
+export interface PresenceAttributes {}
+
 export interface PresenceInstanceModel extends Model {}
 
 export interface PresenceInstanceBasePart extends BasePart {}
 
-export interface PresenceAttributes {}
+export interface OnPresence {
+	areaEnter(player: Player): void;
+	areaExit(player: Player): void;
+}
 
 @Component({
 	defaults: {},

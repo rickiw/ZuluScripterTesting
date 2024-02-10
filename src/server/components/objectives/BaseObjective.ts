@@ -1,10 +1,12 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { ObjectiveService } from "server/services/ObjectiveService";
-import { ObjectiveCategory } from "shared/store/objectives";
+import { objectives } from "shared/constants/objectives";
+import { ObjectiveCategory, ObjectiveID } from "shared/store/objectives";
 
 export interface ObjectiveAttributes {
 	category: ObjectiveCategory;
+	name: string;
 }
 
 export interface ObjectiveInstance extends Model {}
@@ -16,8 +18,11 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	extends BaseComponent<A, I>
 	implements OnStart
 {
-	constructor(private objectiveService: ObjectiveService) {
+	objectiveId: ObjectiveID;
+
+	constructor(protected objectiveService: ObjectiveService) {
 		super();
+		this.objectiveId = objectives.find((objective) => objective.name === this.attributes.name)!.id;
 	}
 
 	onStart() {
