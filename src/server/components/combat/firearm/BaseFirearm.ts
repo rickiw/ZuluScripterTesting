@@ -296,8 +296,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const projectileData = this.makeProjectile(result);
 			const damage = getLimbProjectileDamage(result.Instance, projectileData);
 
-			humanoid.TakeDamage(damage);
+			const invincible = character.GetAttribute("invincible") as boolean;
+			if (invincible) return;
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
+			humanoid.TakeDamage(damage);
 			assert(characterEntityId, "Character entity ID not found");
 
 			const shooter = this.wielder.Character!;

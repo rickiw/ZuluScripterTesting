@@ -2,7 +2,7 @@ import Log from "@rbxts/log";
 import { DAMAGE_BALANCE_FACTORS } from "../firearm";
 
 export type FirearmProjectileType = "Shell" | "Bullet" | "Arrow";
-const DEBUG = true;
+const DEBUG = false;
 
 function gaussianElimination(input: number[][]) {
 	const matrix = input;

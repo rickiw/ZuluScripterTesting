@@ -2,8 +2,13 @@ import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ObjectiveService } from "server/services/ObjectiveService";
+import { PlayerRemoving } from "server/services/PlayerService";
+import { serverStore } from "server/store";
 import { BaseInteraction } from "shared/components/BaseInteraction";
+import { PlayerID } from "shared/constants/clans";
+import { selectPlayerSave } from "shared/store/saves";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
 interface CoffeeObjectiveAttributes extends ObjectiveAttributes {}
@@ -13,6 +18,9 @@ interface CoffeeObjectiveInstance extends ObjectiveInstance {
 		Scanner: MeshPart & {
 			Attachment: Attachment;
 			InteractPrompt: ProximityPrompt;
+		};
+		Coffee: Tool & {
+			Handle: MeshPart;
 		};
 	};
 	Worker: Model & {
@@ -28,10 +36,12 @@ interface CoffeeObjectiveInstance extends ObjectiveInstance {
 })
 export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends CoffeeObjectiveInstance>
 	extends BaseObjective<A, I>
-	implements OnStart
+	implements OnStart, PlayerRemoving
 {
 	interactComponents: BaseInteraction<any, any>[] = [];
 	maid = new Maid();
+
+	private holdingCoffee: Set<PlayerID> = new Set();
 
 	constructor(protected objectiveService: ObjectiveService) {
 		super(objectiveService);
@@ -66,10 +76,63 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 	}
 
 	vendingInteract(player: Player) {
-		Log.Warn("Vending machine interact by {@Player}", player.Name);
+		const alreadyHolding = this.holdingCoffee.has(player.UserId);
+		if (alreadyHolding) return;
+
+		const profile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!profile) {
+			Log.Warn("No profile found for player {@PlayerID}", player.Name);
+			return;
+		}
+
+		const objectiveCompletion = profile.objectiveCompletion.find((objective) => this.objectiveId === objective.id);
+		if (objectiveCompletion && objectiveCompletion.completion.completed) return;
+
+		this.holdingCoffee.add(player.UserId);
+		const coffee = this.instance.VendingMachine.Coffee.Clone();
+		coffee.Handle.Anchored = false;
+		coffee.Parent = player.FindFirstChildOfClass("Backpack")!;
+		(player.Character as CharacterRigR15).Humanoid.EquipTool(coffee);
+		Log.Warn("{@Player} is now holding coffee and must deliver it to the worker", player.Name);
 	}
 
 	workerInteract(player: Player) {
-		Log.Warn("Worker interact by {@Player}", player.Name);
+		const holdingCoffee = this.holdingCoffee.has(player.UserId);
+		if (!holdingCoffee) return;
+
+		const profile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!profile) {
+			Log.Warn("No profile found for player {@PlayerID}", player.Name);
+			return;
+		}
+
+		const objectiveCompletion = profile.objectiveCompletion.map((objective) => {
+			if (objective.id === this.objectiveId) {
+				const completed = (objective.completion.completed as boolean) ?? false;
+				if (completed) return objective;
+				(player.Character as CharacterRigR15).Humanoid.UnequipTools();
+				player.FindFirstChildOfClass("Backpack")!.FindFirstChild("Coffee")?.Destroy();
+				this.holdingCoffee.delete(player.UserId);
+				this.objectiveService.completeObjective(player, this.objective);
+				Log.Warn("{@Player} has delivered coffee to the worker", player.Name);
+				return {
+					id: objective.id,
+					completion: {
+						completed: true,
+					},
+				};
+			}
+			return objective;
+		});
+
+		serverStore.updatePlayerSave(player.UserId, {
+			objectiveCompletion,
+		});
+	}
+
+	playerRemoving(player: Player) {
+		if (this.holdingCoffee.has(player.UserId)) {
+			this.holdingCoffee.delete(player.UserId);
+		}
 	}
 }
