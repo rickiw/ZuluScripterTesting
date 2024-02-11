@@ -1,12 +1,13 @@
 import { Objective, SpecifiedObjective } from "shared/store/objectives";
 
+/* Foundation Personnel */
 export const FPObjectives: SpecifiedObjective<"FP">[] = [
 	{
 		id: 1,
 		priority: 1,
 		category: "FP",
 		name: "Get worker his coffee",
-		description: "N/A",
+		description: "Get coffee from a working vending machine and deliver it to the worker",
 		location: new Vector3(0, 0, 0),
 		reward: [100, "credits"],
 	},
@@ -15,7 +16,7 @@ export const FPObjectives: SpecifiedObjective<"FP">[] = [
 		priority: 1,
 		category: "FP",
 		name: "Deliver paperwork",
-		description: "N/A",
+		description: "Bring a stack of papers from one desk to another",
 		location: new Vector3(0, 0, 0),
 		reward: [100, "credits"],
 	},

@@ -38,7 +38,6 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 
 	onStart() {
 		const components = Dependency<Components>();
-
 		if (!this.instance.WatchArea || !this.instance.WatchArea.HasTag("basePresence")) {
 			Log.Error("GuardObjective must have a WatchArea");
 			return;
@@ -99,7 +98,7 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 					const timeWatched = (objective.completion.timeWatched as number) ?? 0;
 					if (completed && timeWatched >= this.attributes.goal) return objective;
 					if (timeWatched >= this.attributes.goal) {
-						this.completeObjective(Players.GetPlayerByUserId(userId)!);
+						this.objectiveService.completeObjective(Players.GetPlayerByUserId(userId)!, this.objective);
 						return {
 							id: this.objectiveId,
 							completion: {

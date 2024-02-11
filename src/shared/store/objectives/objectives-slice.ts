@@ -30,7 +30,7 @@ export interface Objective extends Partial<ObjectiveSave> {
 	readonly priority: 1 | 2 | 3;
 	readonly description: string;
 	readonly location: Vector3;
-	readonly reward: [amount: number, currency: "credits" | "scrap"];
+	readonly reward: [amount: number | [min: number, max: number], currency: "credits" | "scrap"];
 	readonly placeholders?: Record<string, unknown>;
 }
 
