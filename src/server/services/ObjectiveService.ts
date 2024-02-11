@@ -41,7 +41,7 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 	registerObjective(objective: ObjectiveInstance) {}
 
 	onStart() {
-		objectives.forEach((objective) => serverStore.setObjective(objective.id, objective));
+		objectives.forEach((objective) => serverStore.addObjective(objective));
 
 		Modding.onListenerAdded<OnObjectiveComplete>((object) => this.objectiveCompleteListeners.add(object));
 		Modding.onListenerRemoved<OnObjectiveComplete>((object) => this.objectiveCompleteListeners.delete(object));
@@ -61,7 +61,7 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 		} else {
 			reward = math.random(objectiveReward[0][0], objectiveReward[0][1]);
 		}
-		Log.Warn("Reawarding {@Reward} credits", reward);
+		Log.Warn("Rewarding {@Reward} credits", reward);
 		serverStore.updatePlayerSave(player.UserId, {
 			credits: credits + reward,
 		});

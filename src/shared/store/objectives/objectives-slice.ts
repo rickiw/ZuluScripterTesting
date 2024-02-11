@@ -45,25 +45,20 @@ export interface SpecifiedObjective<T extends ObjectiveCategory> extends Objecti
 }
 
 export interface ObjectivesState {
-	readonly [id: number]: Objective | undefined;
+	readonly objectives: readonly Objective[];
 }
 
-const initialState: ObjectivesState = {};
+const initialState: ObjectivesState = {
+	objectives: [],
+};
 
 export const objectivesSlice = createProducer(initialState, {
-	setObjective: (state, id: number, objective: Objective) => ({
+	addObjective: (state, objective: Objective) => ({
 		...state,
-		[id]: objective,
+		objectives: [objective, ...state.objectives],
 	}),
-	deleteObjective: (state, id: number) => ({
+	removeObjective: (state, objective: Objective) => ({
 		...state,
-		[id]: undefined,
-	}),
-	updateObjective: (state, id: number, update: Partial<Objective>) => ({
-		...state,
-		[id]: {
-			...state[id]!,
-			...update,
-		},
+		objectives: state.objectives.filter((o) => o.id !== objective.id),
 	}),
 });

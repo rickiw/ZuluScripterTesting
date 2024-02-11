@@ -15,7 +15,3 @@ export const selectMenuObjective = (state: RootState) => {
 export const selectMenuOpen = (state: RootState) => {
 	return state.menu.menuOpen;
 };
-
-export const selectObjectives = (state: RootState) => {
-	return state.menu.objectives;
-};

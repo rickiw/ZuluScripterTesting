@@ -9,6 +9,7 @@ import { serverStore } from "server/store";
 import { BaseInteraction } from "shared/components/BaseInteraction";
 import { PlayerID } from "shared/constants/clans";
 import { selectPlayerSave } from "shared/store/saves";
+import { removeTool } from "shared/utils";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
 interface CoffeeObjectiveAttributes extends ObjectiveAttributes {}
@@ -93,7 +94,6 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 		coffee.Handle.Anchored = false;
 		coffee.Parent = player.FindFirstChildOfClass("Backpack")!;
 		(player.Character as CharacterRigR15).Humanoid.EquipTool(coffee);
-		Log.Warn("{@Player} is now holding coffee and must deliver it to the worker", player.Name);
 	}
 
 	workerInteract(player: Player) {
@@ -110,11 +110,9 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 			if (objective.id === this.objectiveId) {
 				const completed = (objective.completion.completed as boolean) ?? false;
 				if (completed) return objective;
-				(player.Character as CharacterRigR15).Humanoid.UnequipTools();
-				player.FindFirstChildOfClass("Backpack")!.FindFirstChild("Coffee")?.Destroy();
+				removeTool(player, "Coffee");
 				this.holdingCoffee.delete(player.UserId);
 				this.objectiveService.completeObjective(player, this.objective);
-				Log.Warn("{@Player} has delivered coffee to the worker", player.Name);
 				return {
 					id: objective.id,
 					completion: {

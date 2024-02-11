@@ -13,7 +13,7 @@ export const FPObjectives: SpecifiedObjective<"FP">[] = [
 	},
 	{
 		id: 2,
-		priority: 1,
+		priority: 3,
 		category: "FP",
 		name: "Deliver paperwork",
 		description: "Bring a stack of papers from one desk to another",
@@ -22,7 +22,7 @@ export const FPObjectives: SpecifiedObjective<"FP">[] = [
 	},
 	{
 		id: 3,
-		priority: 1,
+		priority: 2,
 		category: "FP",
 		name: "Blackout keywords on research report",
 		description: "N/A",

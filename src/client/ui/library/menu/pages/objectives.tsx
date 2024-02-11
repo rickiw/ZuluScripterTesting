@@ -1,21 +1,23 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { UIObjective, selectMenuObjective, selectObjectives } from "client/store/menu";
+import { selectMenuObjective } from "client/store/menu";
 import { fonts } from "shared/constants/fonts";
+import { Objective, selectObjective } from "shared/store/objectives";
+import { priorityToImportance } from "shared/utils";
 import { Frame } from "../../frame";
 import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 interface ObjectiveProps {
-	objective: UIObjective;
+	objective: Objective;
 }
 
 function Objective({ objective }: ObjectiveProps) {
-	const { title, description, importance } = objective;
+	const { name, description, priority } = objective;
 
 	return (
-		<Frame key={title} backgroundColor={Color3.fromRGB(227, 227, 227)}>
+		<Frame key={name} backgroundColor={Color3.fromRGB(227, 227, 227)}>
 			<uigradient
 				Color={
 					new ColorSequence([
@@ -32,15 +34,15 @@ function Objective({ objective }: ObjectiveProps) {
 				position={UDim2.fromScale(0.016, 0)}
 				size={UDim2.fromScale(0.025, 1)}
 				backgroundColor={
-					importance === "low"
+					priority === 1
 						? Color3.fromRGB(143, 143, 143)
-						: importance === "medium"
+						: priority === 2
 						? Color3.fromRGB(171, 179, 0)
 						: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
-				text={title}
+				text={name}
 				font={fonts.gothic.bold}
 				textColor={Color3.fromRGB(255, 255, 255)}
 				position={UDim2.fromScale(0.081, 0)}
@@ -85,7 +87,7 @@ function Objective({ objective }: ObjectiveProps) {
 }
 
 export function ObjectivesPage() {
-	const objectives = useSelector(selectObjectives);
+	const objectives = useSelector(selectObjective("FP"));
 	const selectedObjective = useSelector(selectMenuObjective);
 
 	return (
@@ -105,11 +107,15 @@ export function ObjectivesPage() {
 				<uigridlayout
 					FillDirectionMaxCells={0}
 					FillDirection={Enum.FillDirection.Horizontal}
+					SortOrder={Enum.SortOrder.LayoutOrder}
 					CellSize={UDim2.fromScale(1, 0.08)}
 				/>
-				{objectives.map((objective) => (
-					<Objective objective={objective} />
-				))}
+				{objectives
+					.sort((a, b) => a.id < b.id)
+					.sort((a, b) => a.priority > b.priority)
+					.map((objective) => (
+						<Objective objective={objective} />
+					))}
 			</scrollingframe>
 			<Frame
 				key="objective-info"
@@ -160,7 +166,7 @@ export function ObjectivesPage() {
 						anchorPoint={new Vector2(0.5, 0.5)}
 						text={
 							selectedObjective
-								? `${selectedObjective.title} (${selectedObjective.importance.upper()}): ${
+								? `${selectedObjective.name} (${priorityToImportance(selectedObjective.priority)}): ${
 										selectedObjective.description
 								  }`
 								: "Objective Description...."
