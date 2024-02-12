@@ -3,12 +3,19 @@ import { Dependency, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { ObjectiveService } from "server/services/ObjectiveService";
+import { PlayerRemoving } from "server/services/PlayerService";
+import { serverStore } from "server/store";
 import { BaseInteraction } from "shared/components/BaseInteraction";
+import { selectPlayerSave } from "shared/store/saves";
+import { giveTool, removeTool } from "shared/utils";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
 interface PaperworkObjectiveAttributes extends ObjectiveAttributes {}
 
 interface PaperworkObjectiveInstance extends ObjectiveInstance {
+	Paperwork: Tool & {
+		Handle: UnionOperation;
+	};
 	Desk1: BasePart & {
 		ProximityAttachment: Attachment;
 		ProximityPrompt: ProximityPrompt;
@@ -24,10 +31,12 @@ interface PaperworkObjectiveInstance extends ObjectiveInstance {
 })
 export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extends PaperworkObjectiveInstance>
 	extends BaseObjective<A, I>
-	implements OnStart
+	implements OnStart, PlayerRemoving
 {
 	interactComponents: BaseInteraction<any, any>[] = [];
 	maid = new Maid();
+
+	private holdingPaperwork: Set<Player> = new Set();
 
 	constructor(protected objectiveService: ObjectiveService) {
 		super(objectiveService);
@@ -61,7 +70,56 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 		this.maid.GiveTask(desk2InteractComponent.activated.Connect((player) => this.desk2Interact(player)));
 	}
 
-	desk1Interact(player: Player) {}
+	desk1Interact(player: Player) {
+		const alreadyHolding = this.holdingPaperwork.has(player);
+		if (alreadyHolding) return;
 
-	desk2Interact(player: Player) {}
+		const profile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!profile) {
+			Log.Warn("No profile found for player {@PlayerID}", player.Name);
+			return;
+		}
+
+		const objectiveCompletion = profile.objectiveCompletion.find((objective) => this.objectiveId === objective.id);
+		if (objectiveCompletion && objectiveCompletion.completion.completed) return;
+
+		this.holdingPaperwork.add(player);
+		giveTool(player, this.instance.Paperwork);
+	}
+
+	desk2Interact(player: Player) {
+		const holdingPaperwork = this.holdingPaperwork.has(player);
+		if (!holdingPaperwork) return;
+
+		const profile = serverStore.getState(selectPlayerSave(player.UserId));
+		if (!profile) {
+			Log.Warn("No profile found for player {@PlayerID}", player.Name);
+			return;
+		}
+
+		const objectiveCompletion = profile.objectiveCompletion.map((objective) => {
+			if (objective.id === this.objectiveId) {
+				const completed = (objective.completion.completed as boolean) ?? false;
+				if (completed) return objective;
+				removeTool(player, "Paperwork");
+				this.holdingPaperwork.delete(player);
+				this.objectiveService.completeObjective(player, this.objective);
+				return {
+					id: objective.id,
+					completion: {
+						completed: true,
+					},
+				};
+			}
+			return objective;
+		});
+
+		serverStore.updatePlayerSave(player.UserId, {
+			objectiveCompletion,
+		});
+	}
+
+	playerRemoving(player: Player) {
+		this.holdingPaperwork.delete(player);
+	}
 }

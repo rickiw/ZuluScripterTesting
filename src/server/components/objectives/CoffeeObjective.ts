@@ -2,14 +2,13 @@ import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
-import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { PlayerRemoving } from "server/services/PlayerService";
 import { serverStore } from "server/store";
 import { BaseInteraction } from "shared/components/BaseInteraction";
 import { PlayerID } from "shared/constants/clans";
 import { selectPlayerSave } from "shared/store/saves";
-import { removeTool } from "shared/utils";
+import { giveTool, removeTool } from "shared/utils";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
 interface CoffeeObjectiveAttributes extends ObjectiveAttributes {}
@@ -90,10 +89,7 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 		if (objectiveCompletion && objectiveCompletion.completion.completed) return;
 
 		this.holdingCoffee.add(player.UserId);
-		const coffee = this.instance.VendingMachine.Coffee.Clone();
-		coffee.Handle.Anchored = false;
-		coffee.Parent = player.FindFirstChildOfClass("Backpack")!;
-		(player.Character as CharacterRigR15).Humanoid.EquipTool(coffee);
+		giveTool(player, this.instance.VendingMachine.Coffee);
 	}
 
 	workerInteract(player: Player) {
@@ -129,8 +125,6 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 	}
 
 	playerRemoving(player: Player) {
-		if (this.holdingCoffee.has(player.UserId)) {
-			this.holdingCoffee.delete(player.UserId);
-		}
+		this.holdingCoffee.delete(player.UserId);
 	}
 }

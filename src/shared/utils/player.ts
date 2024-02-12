@@ -12,3 +12,14 @@ export function removeTool(player: Player, toolName: string) {
 	}
 	tool.Destroy();
 }
+
+export function giveTool(player: Player, tool: ToolWithHandle, equip: boolean = true) {
+	const toolClone = tool.Clone();
+	const backpack = player.FindFirstChildOfClass("Backpack")!;
+	toolClone.Handle.Anchored = false;
+	toolClone.Parent = backpack;
+	if (equip) {
+		const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
+		character.Humanoid.EquipTool(toolClone);
+	}
+}

@@ -47,6 +47,10 @@ type RBXPlayer = Player & {
 	Character: import("@rbxts/promise-character").CharacterRigR15;
 };
 
+type ToolWithHandle = Tool & {
+	Handle: BasePart;
+};
+
 declare namespace JSX {
 	interface IntrinsicElements {
 		blureffect: JSX.IntrinsicElement<BlurEffect>;
