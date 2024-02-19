@@ -42,6 +42,7 @@ export interface ObjectiveSave {
 export interface SpecifiedObjective<T extends ObjectiveCategory> extends Objective {
 	readonly category: T;
 	readonly name: ObjectiveNamesByCategory[T];
+	readonly objectiveClass: string;
 }
 
 export interface ObjectivesState {
