@@ -6,6 +6,7 @@ import { InteractionProvider } from "./library/interaction/interaction-provider"
 import { Layer } from "./library/layer";
 import { MenuProvider } from "./library/menu/menu-provider";
 import { Stamina } from "./library/stamina";
+import { Vitals } from "./library/vitals";
 import { Crosshair } from "./library/weapon/crosshair";
 
 export function App() {
@@ -23,6 +24,7 @@ export function App() {
 			<Layer key="daily-rewards-layers"></Layer>
 
 			<Layer key="hud-layer">
+				<Vitals key="vitals" />
 				<Stamina key="stamina" />
 				{/* <WeaponProvider key="weapon" /> */}
 				<Crosshair key="crosshair" />

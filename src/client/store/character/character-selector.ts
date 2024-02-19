@@ -2,18 +2,14 @@ import { RootState } from "../index";
 
 export const selectCharacter = (state: RootState) => state.character;
 
-export const selectStamina = (state: RootState) => state.character.stamina * state.character.staminaBoost;
-
-export const selectHealth = (state: RootState) => state.character.health;
-
-export const selectSprinting = ({ character }: RootState) => {
-	return character.sprinting && character.stamina > 0;
+export const selectSprinting = ({ vitals, character }: RootState) => {
+	return character.sprinting && vitals.stamina.value > 0;
 };
 
-export const selectExhausted = ({ character }: RootState) => {
-	return character.stamina <= 0;
+export const selectExhausted = ({ vitals }: RootState) => {
+	return vitals.stamina.value <= 0;
 };
 
-export const selectRecovering = ({ character }: RootState) => {
-	return character.stamina > 0 && character.stamina < 1;
+export const selectRecovering = ({ vitals }: RootState) => {
+	return vitals.stamina.value > 0 && vitals.stamina.value < 1;
 };

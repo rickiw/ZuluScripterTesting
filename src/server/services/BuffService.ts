@@ -1,6 +1,7 @@
 import { OnStart, Service } from "@flamework/core";
 import Maid from "@rbxts/maid";
-import { Events } from "server/network";
+import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Events, Functions } from "server/network";
 import { BuffEffect } from "shared/components/variants/buff";
 import { PlayerProfile } from "shared/store/saves";
 import { PlayerDataLoaded } from "./DataService";
@@ -33,6 +34,36 @@ export class BuffService implements OnStart, PlayerDataLoaded {
 				break;
 		}
 		Events.StaminaBoostChanged.fire([], 2);
+
+		Functions.IngestFood.setCallback((player, food) => {
+			const durability = food.GetAttribute("durability") as number;
+			const recoveryType = food.GetAttribute("recoveryType") as "hunger" | "thirst" | "health";
+			const recoveryAmount = food.GetAttribute("recoveryType") as number;
+			const cooldown = food.GetAttribute("cooldown") as boolean;
+			const cooldownTime = food.GetAttribute("cooldownTime") as number;
+
+			if (cooldown) return false;
+			if (recoveryType === "health") {
+				const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
+				character.Humanoid.Health = math.min(
+					character.Humanoid.MaxHealth,
+					character.Humanoid.Health + recoveryAmount,
+				);
+			}
+
+			if (durability <= 1) {
+				food.Destroy();
+				return true;
+			}
+
+			food.SetAttribute("durability", durability - 1);
+			food.SetAttribute("cooldown", true);
+			task.delay(cooldownTime, () => {
+				food.SetAttribute("cooldown", false);
+			});
+
+			return true;
+		});
 	}
 
 	playerDataLoaded(player: Player, data: PlayerProfile) {

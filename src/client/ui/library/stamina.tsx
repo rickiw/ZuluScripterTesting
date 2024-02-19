@@ -1,7 +1,8 @@
 import { blend, composeBindings, map, useLifetime } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect } from "@rbxts/roact";
-import { selectExhausted, selectStamina } from "client/store/character";
+import { selectExhausted } from "client/store/character";
+import { selectStamina } from "client/store/vitals";
 import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 import { useMotion, useRem } from "../hooks";
@@ -27,7 +28,7 @@ export function Stamina() {
 
 	useEffect(() => {
 		staminaMotion.spring(staminaState);
-		transparencyMotion.spring(staminaState < 0.9 ? 0 : 1, springs.molasses);
+		transparencyMotion.spring(staminaState.value < 0.9 ? 0 : 1, springs.molasses);
 	}, [staminaState]);
 
 	useEffect(() => {
@@ -62,7 +63,7 @@ export function Stamina() {
 				key="stamina"
 				backgroundColor={palette.white}
 				cornerRadius={new UDim(0, 2)}
-				size={stamina.map((s) => new UDim2(s, 0, 1, 0))}
+				size={stamina.map((s) => new UDim2(s.value, 0, 1, 0))}
 			/>
 		</CanvasGroup>
 	);

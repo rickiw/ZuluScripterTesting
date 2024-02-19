@@ -1,8 +1,8 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { Players } from "@rbxts/services";
-import { selectHealth, selectStamina } from "client/store/character";
 import { selectMenuOpen } from "client/store/menu";
+import { selectHealth, selectStamina } from "client/store/vitals";
 import { fonts } from "shared/constants/fonts";
 import { selectPlayerSave } from "shared/store/saves";
 import { Frame } from "../frame";
@@ -122,7 +122,7 @@ export function SideInformation() {
 					textXAlignment="Right"
 				/>
 				<Text
-					text={`${stamina * 100 ?? "XX"}% STAMINA`}
+					text={`${stamina.value * 100 ?? "XX"}% STAMINA`}
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
 					textXAlignment="Right"

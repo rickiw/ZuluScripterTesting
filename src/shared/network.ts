@@ -35,6 +35,7 @@ interface ClientToServerFunctions {
 	DepositClanFunds(amount: number): ClanDepositStatus;
 	WithdrawClanFunds(amount: number): ClanWithdrawStatus;
 	GetClans(): readonly Clan[];
+	IngestFood(food: Tool): boolean;
 }
 
 interface ServerToClientFunctions {}

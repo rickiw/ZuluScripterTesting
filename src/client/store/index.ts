@@ -9,6 +9,7 @@ import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
 import { perkSlice } from "./perks";
 import { shopSlice } from "./shop";
+import { vitalsSlice } from "./vitals";
 
 type Store = typeof clientStore;
 
@@ -27,6 +28,7 @@ function createStore() {
 		perks: perkSlice,
 		camera: cameraSlice,
 		customization: customizationSlice,
+		vitals: vitalsSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;
