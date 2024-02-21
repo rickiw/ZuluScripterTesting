@@ -43,6 +43,7 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 	}
 
 	onStart() {
+		super.onStart();
 		const components = Dependency<Components>();
 		if (
 			!this.instance.Desk1 ||

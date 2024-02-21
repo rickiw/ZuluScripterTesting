@@ -26,6 +26,7 @@ export type ObjectiveID = number;
 export interface Objective extends Partial<ObjectiveSave> {
 	readonly id: ObjectiveID;
 	readonly category: ObjectiveCategory;
+	readonly objectiveClass: string;
 	readonly name: ObjectiveName;
 	readonly priority: 1 | 2 | 3;
 	readonly description: string;
@@ -42,7 +43,6 @@ export interface ObjectiveSave {
 export interface SpecifiedObjective<T extends ObjectiveCategory> extends Objective {
 	readonly category: T;
 	readonly name: ObjectiveNamesByCategory[T];
-	readonly objectiveClass: string;
 }
 
 export interface ObjectivesState {

@@ -68,13 +68,13 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	startObjective(player: Player): [complete: boolean, exists: boolean] {
 		const hasCompleted = this.hasCompletedObjective(player, this.objectiveId);
 		const exists = this.doingObjective.has(player.UserId);
-		if (!hasCompleted && !exists) Events.ToggleBeacon.fire(player, this.beacon, true);
+		if (!hasCompleted && !exists) Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
 		this.doingObjective.add(player.UserId);
 		return [hasCompleted, exists];
 	}
 
 	stopObjective(player: Player) {
-		Events.ToggleBeacon.fire(player, this.beacon, false);
+		Events.ToggleBeacon.fire(player, this.objective.objectiveClass, false);
 		this.doingObjective.delete(player.UserId);
 	}
 

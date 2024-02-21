@@ -1,6 +1,7 @@
 interface Workspace extends Instance {
 	Doors: Folder & { [key in DoorType]: BaseDoor };
 	SCPs: Folder & { [key: string]: BaseSCP };
+	Objectives: Folder & { [key: string]: Model };
 	Bullets: Folder;
 }
 

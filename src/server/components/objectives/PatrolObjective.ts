@@ -1,6 +1,5 @@
 import { Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
-import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
@@ -40,7 +39,10 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 
 		const maid = new Maid();
 		this.playerMaids.set(player.UserId, maid);
-		this.footSteps.set(player.UserId, 0);
+
+		const completion = this.objectiveService.getCompletion(player, this.objectiveId);
+		const steps = completion.steps ? (completion.steps as number) : 0;
+		this.footSteps.set(player.UserId, steps);
 
 		maid.GiveTask(
 			setInterval(() => {
@@ -62,7 +64,10 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 						const completed = this.hasCompletedObjective(player, this.objectiveId);
 						if (completed) return;
 
-						this.objectiveService.completeObjective(player, this.objective, { completed: true });
+						this.objectiveService.completeObjective(player, this.objective, {
+							completed: true,
+							steps: this.attributes.requiredSteps,
+						});
 						return;
 					}
 
@@ -71,7 +76,6 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 						steps,
 					});
 					this.footSteps.set(player.UserId, steps + 1);
-					Log.Warn("Footsteps: {@Footsteps}" + steps);
 				}
 			}, 0.5),
 		);

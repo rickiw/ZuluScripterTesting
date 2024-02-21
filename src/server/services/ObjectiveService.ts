@@ -21,32 +21,29 @@ export interface OnObjectiveReward {
 export class ObjectiveService implements OnStart, PlayerDataLoaded {
 	private objectiveCompleteListeners = new Set<OnObjectiveComplete>();
 	private objectiveRewardListeners = new Set<OnObjectiveReward>();
-	private objectiveClasses = new Map<string, BaseObjective<any, any>>();
+	private objectiveClasses = new Map<ObjectiveID, BaseObjective<any, any>>();
 
 	private populateDefaultObjectiveCompletion(playerId: PlayerID) {
 		const objectiveCompletion: ObjectiveSave[] = objectives.map((objective) => ({
 			id: objective.id,
 			completion: objective.completion || {},
 		}));
-		objectiveCompletion.forEach((objective) => {
-			Log.Warn("Populated {Objective} {Completion}", objective.id, objective.completion);
-		});
-		Log.Warn("Populated");
-		serverStore.updatePlayerSave(playerId, {
-			objectiveCompletion,
+		task.delay(3, () => {
+			serverStore.updatePlayerSave(playerId, {
+				objectiveCompletion,
+			});
 		});
 		return objectiveCompletion;
 	}
 
 	playerDataLoaded(player: Player, data: PlayerProfile) {
-		Log.Warn("Checking");
 		const objectiveCompletion = data.objectiveCompletion.isEmpty()
 			? this.populateDefaultObjectiveCompletion(player.UserId)
 			: data.objectiveCompletion;
 	}
 
 	registerObjective(objective: BaseObjective<ObjectiveAttributes, any>) {
-		this.objectiveClasses.set(objective.attributes.name, objective);
+		this.objectiveClasses.set(objective.objectiveId, objective);
 	}
 
 	onStart() {
@@ -117,7 +114,7 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 		serverStore.updatePlayerSave(player.UserId, {
 			credits: credits + reward,
 		});
-		const objectiveClass = this.objectiveClasses.get(objective.name);
+		const objectiveClass = this.objectiveClasses.get(objective.id);
 		if (!objectiveClass) {
 			Log.Warn("Objective class {@Objective} not found", objective.name);
 			return;
