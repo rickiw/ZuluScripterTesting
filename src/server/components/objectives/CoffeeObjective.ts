@@ -48,6 +48,7 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 	}
 
 	onStart() {
+		super.onStart();
 		const components = Dependency<Components>();
 		if (
 			!this.instance.VendingMachine ||
@@ -96,32 +97,12 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 		const holdingCoffee = this.holdingCoffee.has(player.UserId);
 		if (!holdingCoffee) return;
 
-		const profile = serverStore.getState(selectPlayerSave(player.UserId));
-		if (!profile) {
-			Log.Warn("No profile found for player {@PlayerID}", player.Name);
-			return;
-		}
+		const completed = this.hasCompletedObjective(player, this.objectiveId);
+		if (completed) return;
 
-		const objectiveCompletion = profile.objectiveCompletion.map((objective) => {
-			if (objective.id === this.objectiveId) {
-				const completed = (objective.completion.completed as boolean) ?? false;
-				if (completed) return objective;
-				removeTool(player, "Coffee");
-				this.holdingCoffee.delete(player.UserId);
-				this.objectiveService.completeObjective(player, this.objective);
-				return {
-					id: objective.id,
-					completion: {
-						completed: true,
-					},
-				};
-			}
-			return objective;
-		});
-
-		serverStore.updatePlayerSave(player.UserId, {
-			objectiveCompletion,
-		});
+		removeTool(player, "Coffee");
+		this.holdingCoffee.delete(player.UserId);
+		this.objectiveService.completeObjective(player, this.objective, { completed: true });
 	}
 
 	playerRemoving(player: Player) {

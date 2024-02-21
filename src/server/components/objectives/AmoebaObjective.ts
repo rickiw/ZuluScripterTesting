@@ -5,7 +5,9 @@ import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObj
 
 interface AmoebaObjectiveAttributes extends ObjectiveAttributes {}
 
-interface AmoebaObjectiveInstance extends ObjectiveInstance {}
+interface AmoebaObjectiveInstance extends ObjectiveInstance {
+	Microscope: Model;
+}
 
 @Component({
 	tag: "amoebaObjective",

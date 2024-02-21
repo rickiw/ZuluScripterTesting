@@ -73,7 +73,7 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 				nextRecovery = time() + 5;
 			}
 
-			if (clientStore.getState(selectSprinting)) {
+			if (this.isMoving() && clientStore.getState(selectSprinting)) {
 				clientStore.incrementHunger(-HUNGER_DEPLETE_PER_SECOND * 0.1);
 				clientStore.incrementThirst(-THIRST_DEPLETE_PER_SECOND * 0.1);
 			}
@@ -148,7 +148,8 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 			clientStore.setSprinting(false);
 		}
 
-		humanoid.WalkSpeed = lerp(humanoid.WalkSpeed, this.getSpeed() + offset, damp(2, dt));
+		humanoid.WalkSpeed =
+			humanoid.WalkSpeed === 0 ? 0 : lerp(humanoid.WalkSpeed, this.getSpeed() + offset, damp(2, dt));
 	}
 
 	getSpeed() {

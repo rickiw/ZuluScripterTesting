@@ -72,7 +72,7 @@ export const SCDObjectives: SpecifiedObjective<"SCD">[] = [
 		description: "Conduct research by studying papers",
 		location: new Vector3(0, 0, 0),
 		reward: [100, "credits"],
-		objectiveClass: "ResearchObjective",
+		objectiveClass: "ConductResearchObjective",
 	},
 ];
 

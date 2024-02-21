@@ -8,10 +8,13 @@ interface ClientToServerEvents {
 	// BaseFirearm
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 	ReloadFirearm(weapon: Tool): void;
+
+	BeginObjective(objective: string): void;
 }
 
 interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
+	ToggleBeacon(beacon: BasePart, toggled: boolean): void;
 
 	// RoombaTouchpad
 	RoombaActive(chr: BaseCharacter): void;

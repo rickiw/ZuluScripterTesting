@@ -5,7 +5,9 @@ import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObj
 
 interface CookAndServeObjectiveAttributes extends ObjectiveAttributes {}
 
-interface CookAndServeObjectiveInstance extends ObjectiveInstance {}
+interface CookAndServeObjectiveInstance extends ObjectiveInstance {
+	Food: Folder;
+}
 
 @Component({
 	tag: "cookAndServeObjective",
@@ -14,9 +16,20 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 	extends BaseObjective<A, I>
 	implements OnStart
 {
+	private foodClones: {
+		[key in FoodTypes]: Tool;
+	} = {} as any;
+
 	constructor(protected objectiveService: ObjectiveService) {
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+		const food = this.instance.Food.GetChildren();
+		for (const toolClone of food) {
+			const tool = toolClone.Clone() as Tool;
+			this.foodClones[tool.Name as FoodTypes] = tool;
+		}
+	}
 }

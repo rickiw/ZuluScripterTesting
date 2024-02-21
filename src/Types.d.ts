@@ -4,6 +4,8 @@ interface Workspace extends Instance {
 	Bullets: Folder;
 }
 
+type FoodTypes = "Chicken";
+
 type BaseDoor = Model & {
 	Keypads: Model;
 };

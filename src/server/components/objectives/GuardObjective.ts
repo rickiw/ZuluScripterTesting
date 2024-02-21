@@ -1,16 +1,13 @@
 import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
-import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { Players } from "@rbxts/services";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { PlayerRemoving } from "server/services/PlayerService";
 import { On1SecondInterval } from "server/services/TickService";
-import { serverStore } from "server/store";
 import { BasePresence, OnPresence } from "shared/components/BasePresence";
 import { PlayerID } from "shared/constants/clans";
-import { selectPlayerSave } from "shared/store/saves";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
 interface GuardObjectiveAttributes extends ObjectiveAttributes {
@@ -50,24 +47,16 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 		}
 
 		this.presenceComponents.push(presenceComponent);
-		this.maid.GiveTask(presenceComponent.presenceBegin.Connect((player: Player) => this.areaEnter(player)));
-		this.maid.GiveTask(presenceComponent.presenceEnd.Connect((player: Player) => this.areaExit(player)));
-
-		const Position = this.instance.GetBoundingBox()[0].Position;
-
-		this.beacon = New("Part")({
-			Anchored: true,
-			Name: "Beacon",
-			Parent: this.instance,
-			Position,
-			Size: new Vector3(500, 5, 5),
-			Orientation: new Vector3(0, 0, 90),
-			Color: Color3.fromRGB(63, 25, 180),
-			CanCollide: false,
-			Shape: Enum.PartType.Cylinder,
-			Transparency: 1,
-			Material: Enum.Material.Neon,
-		});
+		this.maid.GiveTask(
+			presenceComponent.presenceBegin.Connect((player) => {
+				if (this.isDoingObjective(player)) this.areaEnter(player);
+			}),
+		);
+		this.maid.GiveTask(
+			presenceComponent.presenceEnd.Connect((player) => {
+				if (this.isDoingObjective(player)) this.areaExit(player);
+			}),
+		);
 	}
 
 	areaEnter(player: Player) {
@@ -86,40 +75,24 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 
 	on1SecondInterval() {
 		this.inZone.forEach((userId) => {
-			const profile = serverStore.getState(selectPlayerSave(userId));
-			if (!profile) {
-				Log.Warn("No profile found for player {@PlayerID}", userId);
+			const player = Players.GetPlayerByUserId(userId)!;
+			assert(player, "Player not found");
+
+			const completion = this.objectiveService.getCompletion(player, this.objectiveId);
+			const completed = completion.completed ? (completion.completed as boolean) : false;
+			const timeWatched = completion.timeWatched ? (completion.timeWatched as number) : 0;
+			if (completed && timeWatched >= this.attributes.goal) return;
+			if (timeWatched >= this.attributes.goal) {
+				this.objectiveService.completeObjective(player, this.objective, {
+					completed: true,
+					timeWatched: this.attributes.goal,
+				});
 				return;
 			}
 
-			const objectiveCompletion = profile.objectiveCompletion.map((objective) => {
-				if (objective.id === this.objectiveId) {
-					const completed = (objective.completion.completed as boolean) ?? false;
-					const timeWatched = (objective.completion.timeWatched as number) ?? 0;
-					if (completed && timeWatched >= this.attributes.goal) return objective;
-					if (timeWatched >= this.attributes.goal) {
-						this.objectiveService.completeObjective(Players.GetPlayerByUserId(userId)!, this.objective);
-						return {
-							id: this.objectiveId,
-							completion: {
-								completed: true,
-								timeWatched: this.attributes.goal,
-							},
-						};
-					}
-					return {
-						id: this.objectiveId,
-						completion: {
-							completed: false,
-							timeWatched: timeWatched + 1,
-						},
-					};
-				}
-				return objective;
-			});
-
-			serverStore.updatePlayerSave(userId, {
-				objectiveCompletion,
+			this.objectiveService.saveCompletion(player, this.objectiveId, {
+				completed: false,
+				timeWatched: timeWatched + 1,
 			});
 		});
 	}
