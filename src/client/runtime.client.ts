@@ -13,6 +13,6 @@ bootstrap();
 
 UserInputService.InputBegan.Connect((inp) => {
 	if (inp.KeyCode === Enum.KeyCode.Y) {
-		Events.BeginObjective.fire(11);
+		Events.BeginObjective.fire(13);
 	}
 });

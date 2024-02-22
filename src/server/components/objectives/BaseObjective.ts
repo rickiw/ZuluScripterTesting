@@ -3,7 +3,7 @@ import { OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import { Events } from "server/network";
-import { ObjectiveService } from "server/services/ObjectiveService";
+import { ObjectiveService, OnObjectiveComplete } from "server/services/ObjectiveService";
 import { serverStore } from "server/store";
 import { PlayerID } from "shared/constants/clans";
 import { objectives } from "shared/constants/objectives";
@@ -22,7 +22,7 @@ export interface ObjectiveInstance extends Model {}
 })
 export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveInstance>
 	extends BaseComponent<A, I>
-	implements OnStart
+	implements OnStart, OnObjectiveComplete
 {
 	objective: Objective;
 	objectiveId: ObjectiveID;
@@ -65,11 +65,15 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 		return (objective.completion.completed as boolean) ?? false;
 	}
 
-	startObjective(player: Player): [complete: boolean, exists: boolean] {
+	addToDoing(player: PlayerID) {
+		this.doingObjective.add(player);
+	}
+
+	startObjective(player: Player, overrideIfCompleted: boolean = false): [complete: boolean, exists: boolean] {
 		const hasCompleted = this.hasCompletedObjective(player, this.objectiveId);
 		const exists = this.doingObjective.has(player.UserId);
 		if (!hasCompleted && !exists) Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
-		this.doingObjective.add(player.UserId);
+		if (!overrideIfCompleted) this.doingObjective.add(player.UserId);
 		return [hasCompleted, exists];
 	}
 
@@ -80,5 +84,9 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 
 	isDoingObjective(player: Player) {
 		return this.doingObjective.has(player.UserId);
+	}
+
+	objectiveComplete(player: Player, objective: Objective) {
+		if (objective.id === this.objectiveId) this.stopObjective(player);
 	}
 }
