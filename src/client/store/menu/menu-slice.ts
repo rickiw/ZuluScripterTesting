@@ -9,6 +9,7 @@ export interface MenuState {
 	readonly menuPage: MenuPage;
 	readonly menuPanel?: BasePart;
 	readonly selectedObjective?: Objective;
+	readonly activeObjective?: Objective;
 }
 
 const initialState: MenuState = {
@@ -22,6 +23,10 @@ export const menuSlice = createProducer(initialState, {
 	setSelectedObjective: (state, objective: Objective) => ({
 		...state,
 		selectedObjective: objective,
+	}),
+	setActiveObjective: (state, objective: Objective) => ({
+		...state,
+		activeObjective: objective,
 	}),
 	setMenuOpen: (state, menuOpen: boolean) => ({
 		...state,

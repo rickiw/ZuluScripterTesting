@@ -86,7 +86,7 @@ export const vitalsSlice = createProducer(initialState, {
 		...state,
 		stamina: {
 			...state.stamina,
-			value: math.clamp(state.stamina.value + staminaAmount, 0, IS_DEV ? math.huge : 1),
+			value: math.clamp(state.stamina.value + staminaAmount, 0, IS_DEV ? math.huge : state.stamina.max),
 		},
 	}),
 });

@@ -1,6 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { Clan, GroupID } from "./constants/clans";
-import { ObjectiveID } from "./store/objectives";
+import { Objective, ObjectiveID } from "./store/objectives";
 
 interface ClientToServerEvents {
 	// RoombaTouchpad
@@ -40,6 +40,7 @@ interface ClientToServerFunctions {
 	WithdrawClanFunds(amount: number): ClanWithdrawStatus;
 	GetClans(): readonly Clan[];
 	IngestFood(food: Tool): boolean;
+	BeginObjective(objectiveId: ObjectiveID): false | Objective;
 }
 
 interface ServerToClientFunctions {}

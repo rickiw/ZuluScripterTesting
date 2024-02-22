@@ -37,8 +37,8 @@ function Objective({ objective }: ObjectiveProps) {
 					priority === 1
 						? Color3.fromRGB(143, 143, 143)
 						: priority === 2
-						? Color3.fromRGB(171, 179, 0)
-						: Color3.fromRGB(245, 0, 0)
+							? Color3.fromRGB(171, 179, 0)
+							: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
@@ -168,7 +168,7 @@ export function ObjectivesPage() {
 							selectedObjective
 								? `${selectedObjective.name} (${priorityToImportance(selectedObjective.priority)}): ${
 										selectedObjective.description
-								  }`
+									}`
 								: "Objective Description...."
 						}
 						textWrapped={true}
@@ -181,6 +181,29 @@ export function ObjectivesPage() {
 						textYAlignment="Top"
 						textXAlignment="Left"
 					/>
+					<Frame
+						key="purchase"
+						backgroundTransparency={0.6}
+						backgroundColor={Color3.fromRGB(0, 0, 0)}
+						borderColor={Color3.fromRGB(255, 255, 255)}
+						borderSize={1}
+						anchorPoint={new Vector2(0.5, 0.5)}
+						position={UDim2.fromScale(0.5, 0.9)}
+						size={UDim2.fromScale(0.3, 0.075)}
+					>
+						<textbutton
+							BackgroundTransparency={1}
+							Size={UDim2.fromScale(1, 1)}
+							Text="START"
+							TextColor3={Color3.fromRGB(255, 255, 255)}
+							FontFace={fonts.gothic.bold}
+							TextScaled={false}
+							TextSize={18}
+							Event={{
+								MouseButton1Down: () => {},
+							}}
+						/>
+					</Frame>
 				</Frame>
 			</Frame>
 		</>
