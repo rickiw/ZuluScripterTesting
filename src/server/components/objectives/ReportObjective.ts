@@ -18,5 +18,7 @@ export class ReportObjective<A extends ReportObjectiveAttributes, I extends Repo
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }

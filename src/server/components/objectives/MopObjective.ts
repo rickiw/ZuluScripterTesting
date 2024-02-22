@@ -52,13 +52,9 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 	onStart() {
 		super.onStart();
 
-		this.spawnPuddle(new Vector3(5.75, 0.25, -12.25));
-		task.delay(15, () => {
-			this.spawnPuddle(new Vector3(5.75, 0.25, -22.25));
-			task.delay(5, () => {
-				this.spawnPuddle(new Vector3(5.75, 0.25, -15.25));
-			});
-		});
+		for (let i = 0; i < 5; i++) {
+			this.spawnPuddle(new Vector3(5.75 * i, 0.25, -12.25));
+		}
 	}
 
 	startObjective(player: Player): [complete: boolean, exists: boolean] {
@@ -80,7 +76,11 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 	}
 
 	stopObjective(player: Player) {
+		super.stopObjective(player);
 		removeTool(player, "Broom");
+		const maid = this.playerMaids.get(player.UserId);
+		if (maid) maid.DoCleaning();
+		this.playerMaids.delete(player.UserId);
 	}
 
 	spawnPuddle(location: Vector3, lifetime: number = 30) {

@@ -18,5 +18,7 @@ export class CookObjective<A extends CookObjectiveAttributes, I extends CookObje
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }

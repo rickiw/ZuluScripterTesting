@@ -12,7 +12,7 @@ export class ObjectiveController implements OnStart {
 				| (Model & { Beacon: BasePart })
 				| undefined;
 			assert(objective, `objective ${objectiveName} not found`);
-			objective.Beacon.Transparency = toggled ? 0 : 1;
+			objective.Beacon.Transparency = toggled ? 0.5 : 1;
 		});
 	}
 }

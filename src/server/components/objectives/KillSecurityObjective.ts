@@ -18,5 +18,7 @@ export class KillSecurityObjective<A extends KillSecurityObjectiveAttributes, I 
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }

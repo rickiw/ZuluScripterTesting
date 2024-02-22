@@ -18,5 +18,7 @@ export class RestockObjective<A extends RestockObjectiveAttributes, I extends Re
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }

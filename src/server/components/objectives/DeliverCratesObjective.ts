@@ -18,5 +18,7 @@ export class DeliverCratesObjective<A extends DeliverCratesAttributes, I extends
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }

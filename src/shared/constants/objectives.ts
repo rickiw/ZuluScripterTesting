@@ -207,7 +207,7 @@ export const MDObjectives: SpecifiedObjective<"MD">[] = [
 		description: "Conduct research by studying papers",
 		location: false,
 		reward: [100, "credits"],
-		objectiveClass: "ResearchObjective",
+		objectiveClass: "MDResearchObjective",
 	},
 	{
 		id: 19,

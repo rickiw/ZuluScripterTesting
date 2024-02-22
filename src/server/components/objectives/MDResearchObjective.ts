@@ -3,14 +3,14 @@ import { OnStart } from "@flamework/core";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
-interface PullupObjectiveAttributes extends ObjectiveAttributes {}
+interface MDResearchObjectiveAttributes extends ObjectiveAttributes {}
 
-interface PullupObjectiveInstance extends ObjectiveInstance {}
+interface MDResearchObjectiveInstance extends ObjectiveInstance {}
 
 @Component({
-	tag: "pullupObjective",
+	tag: "mdResearchObjective",
 })
-export class PullupObjective<A extends PullupObjectiveAttributes, I extends PullupObjectiveInstance>
+export class MDResearchObjective<A extends MDResearchObjectiveAttributes, I extends MDResearchObjectiveInstance>
 	extends BaseObjective<A, I>
 	implements OnStart
 {

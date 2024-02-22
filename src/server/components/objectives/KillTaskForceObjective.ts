@@ -21,5 +21,7 @@ export class KillTaskForceObjective<
 		super(objectiveService);
 	}
 
-	onStart() {}
+	onStart() {
+		super.onStart();
+	}
 }
