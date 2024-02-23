@@ -139,10 +139,11 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 		const sprinting = clientStore.getState(selectSprinting);
 		const inMenu = clientStore.getState(selectMenuOpen);
 
-		if (inMenu) {
-			humanoid.WalkSpeed = 0;
-			return;
-		}
+		// TODO: Wait until not in menu and set back to speed
+		// if (inMenu) {
+		// 	humanoid.WalkSpeed = 0;
+		// 	return;
+		// }
 
 		if (offset <= SPEED_CROUCH - SPEED_WALK && sprinting) {
 			clientStore.setSprinting(false);

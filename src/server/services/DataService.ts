@@ -4,9 +4,11 @@ import ProfileService from "@rbxts/profileservice";
 import { Profile, ProfileStore } from "@rbxts/profileservice/globals";
 import { Players } from "@rbxts/services";
 import { PLAYER_DATA_KEY, defaultPlayerProfile } from "server/data";
+import { Events } from "server/network";
 import { serverStore } from "server/store";
+import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
-import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
+import { PlayerProfile } from "shared/utils";
 import { PlayerAdded, PlayerRemoving } from "./PlayerService";
 
 // TODO: consider moving away from ProfileService
@@ -64,7 +66,10 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 			player.Kick("Session was terminated");
 		});
 
+		if (!player.IsDescendantOf(Players)) return;
 		serverStore.setPlayerSave(player.UserId, profile.Data);
+
+		Events.SetProfile.fire(player, profile.Data);
 
 		const selectPlayerData = selectPlayerSave(player.UserId);
 		serverStore.subscribe(selectPlayerData, (data, oldData) => {

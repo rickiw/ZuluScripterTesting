@@ -5,9 +5,10 @@ import { CLANS_DATA_KEY, GLOBAL_SERVER_DATA_KEY } from "server/data";
 import { Functions } from "server/network";
 import { serverStore } from "server/store";
 import { selectClan, selectClans } from "server/store/clan";
+import { selectPlayerSave } from "server/store/saves";
 import { Clan, ClanRank, GroupID } from "shared/constants/clans";
 import { ClanCreationStatus, ClanDepositStatus, ClanJoinStatus, ClanWithdrawStatus } from "shared/network";
-import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
+import { PlayerProfile } from "shared/utils";
 import { PlayerDataLoaded } from "./DataService";
 
 interface ClanUpdate {

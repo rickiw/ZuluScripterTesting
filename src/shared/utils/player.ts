@@ -1,5 +1,20 @@
 import Log from "@rbxts/log";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { GroupID } from "shared/constants/clans";
+import { ObjectiveSave } from "shared/store/objectives";
+import { PerkInfo } from "shared/store/perks";
+
+export interface PlayerProfile {
+	readonly logInTimes: number;
+	readonly dailyLoginStreak: number;
+	readonly lastLogin: number; // TODO: consider using a serialized DateTime string here
+	readonly experience: number;
+	readonly clan: GroupID | undefined;
+	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
+	readonly objectiveCompletion: ReadonlyArray<ObjectiveSave>;
+	readonly scrap: Map<string, number>;
+	readonly credits: number;
+}
 
 export function removeTool(player: Player, toolName: string) {
 	const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;

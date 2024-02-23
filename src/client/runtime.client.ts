@@ -22,7 +22,7 @@ UserInputService.InputBegan.Connect((inp) => {
 			return;
 		}
 
-		clientStore.setActiveObjective(beginObjectiveResult);
+		clientStore.setActiveObjective({ ...beginObjectiveResult, active: true });
 		Log.Warn("Started: {@Started}", beginObjectiveResult);
 	}
 });

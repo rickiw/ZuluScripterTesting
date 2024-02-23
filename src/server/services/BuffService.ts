@@ -3,7 +3,7 @@ import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Events, Functions } from "server/network";
 import { BuffEffect } from "shared/components/variants/buff";
-import { PlayerProfile } from "shared/store/saves";
+import { PlayerProfile } from "shared/utils";
 import { PlayerDataLoaded } from "./DataService";
 
 export interface BuffData {

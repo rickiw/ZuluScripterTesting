@@ -1,4 +1,4 @@
-import { PlayerProfile } from "shared/store/saves";
+import { PlayerProfile } from "shared/utils";
 
 export const defaultPlayerProfile: PlayerProfile = {
 	logInTimes: 0,

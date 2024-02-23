@@ -1,7 +1,10 @@
+import Log from "@rbxts/log";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
+import { Players } from "@rbxts/services";
+import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
-import { selectMenuObjective } from "client/store/menu";
+import { selectActiveObjective, selectMenuObjective, selectPlayerSave } from "client/store/menu";
 import { fonts } from "shared/constants/fonts";
 import { Objective, selectObjective } from "shared/store/objectives";
 import { priorityToImportance } from "shared/utils";
@@ -10,11 +13,14 @@ import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 interface ObjectiveProps {
-	objective: Objective;
+	objective: Objective & { active: boolean };
 }
+
+const player = Players.LocalPlayer;
 
 function Objective({ objective }: ObjectiveProps) {
 	const { name, description, priority } = objective;
+	const playerSave = useSelector(selectPlayerSave);
 
 	return (
 		<Frame key={name} backgroundColor={Color3.fromRGB(227, 227, 227)}>
@@ -37,8 +43,8 @@ function Objective({ objective }: ObjectiveProps) {
 					priority === 1
 						? Color3.fromRGB(143, 143, 143)
 						: priority === 2
-							? Color3.fromRGB(171, 179, 0)
-							: Color3.fromRGB(245, 0, 0)
+						? Color3.fromRGB(171, 179, 0)
+						: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
@@ -77,7 +83,13 @@ function Objective({ objective }: ObjectiveProps) {
 					TextScaled={true}
 					Event={{
 						MouseButton1Down: () => {
-							clientStore.setSelectedObjective(objective);
+							if (!playerSave) {
+								Log.Warn("Player save not found");
+								return;
+							}
+							const objectiveData = playerSave.objectiveCompletion.find((o) => o.id === objective.id);
+							Log.Warn("Selected objective: {@Objective}", objectiveData);
+							clientStore.setSelectedObjective({ ...objective, ...objectiveData });
 						},
 					}}
 				/>
@@ -89,6 +101,7 @@ function Objective({ objective }: ObjectiveProps) {
 export function ObjectivesPage() {
 	const objectives = useSelector(selectObjective("FP"));
 	const selectedObjective = useSelector(selectMenuObjective);
+	const activeObjective = useSelector(selectActiveObjective);
 
 	return (
 		<>
@@ -114,7 +127,7 @@ export function ObjectivesPage() {
 					.sort((a, b) => a.id < b.id)
 					.sort((a, b) => a.priority > b.priority)
 					.map((objective) => (
-						<Objective objective={objective} />
+						<Objective objective={{ ...objective, active: activeObjective?.id === objective.id }} />
 					))}
 			</scrollingframe>
 			<Frame
@@ -168,7 +181,7 @@ export function ObjectivesPage() {
 							selectedObjective
 								? `${selectedObjective.name} (${priorityToImportance(selectedObjective.priority)}): ${
 										selectedObjective.description
-									}`
+								  }`
 								: "Objective Description...."
 						}
 						textWrapped={true}
@@ -181,29 +194,76 @@ export function ObjectivesPage() {
 						textYAlignment="Top"
 						textXAlignment="Left"
 					/>
-					<Frame
-						key="purchase"
-						backgroundTransparency={0.6}
-						backgroundColor={Color3.fromRGB(0, 0, 0)}
-						borderColor={Color3.fromRGB(255, 255, 255)}
-						borderSize={1}
-						anchorPoint={new Vector2(0.5, 0.5)}
-						position={UDim2.fromScale(0.5, 0.9)}
-						size={UDim2.fromScale(0.3, 0.075)}
-					>
-						<textbutton
-							BackgroundTransparency={1}
-							Size={UDim2.fromScale(1, 1)}
-							Text="START"
-							TextColor3={Color3.fromRGB(255, 255, 255)}
-							FontFace={fonts.gothic.bold}
-							TextScaled={false}
-							TextSize={18}
-							Event={{
-								MouseButton1Down: () => {},
-							}}
-						/>
-					</Frame>
+					{selectedObjective !== undefined && (
+						<>
+							<Frame
+								key="purchase"
+								backgroundTransparency={0.6}
+								backgroundColor={Color3.fromRGB(0, 0, 0)}
+								borderColor={Color3.fromRGB(255, 255, 255)}
+								borderSize={selectedObjective.completion?.completed === true ? 0 : 1}
+								anchorPoint={new Vector2(0.5, 0.5)}
+								position={UDim2.fromScale(0.5, 0.9)}
+								size={UDim2.fromScale(0.3, 0.075)}
+							>
+								<textbutton
+									BackgroundTransparency={1}
+									Size={UDim2.fromScale(1, 1)}
+									Text={
+										selectedObjective.completion?.completed === true
+											? "COMPLETED"
+											: selectedObjective.active
+											? "STARTED"
+											: "START"
+									}
+									TextColor3={Color3.fromRGB(255, 255, 255)}
+									FontFace={fonts.gothic.bold}
+									TextScaled={true}
+									TextSize={18}
+									Event={{
+										MouseButton1Down: () => {
+											const startedObjective = Functions.BeginObjective(
+												selectedObjective.id,
+											).expect();
+											if (startedObjective === false) {
+												Log.Warn("Failed to start objective");
+												return;
+											}
+											Log.Warn(
+												"Objective {@ID} {@Active}",
+												selectedObjective.id,
+												activeObjective?.active,
+											);
+
+											clientStore.setActiveObjective({ ...startedObjective, active: true });
+											clientStore.setSelectedObjective({ ...startedObjective, active: true });
+										},
+									}}
+								/>
+							</Frame>
+							{selectedObjective.active && (
+								<textbutton
+									BackgroundTransparency={1}
+									AnchorPoint={new Vector2(0.5, 0.5)}
+									Text={"STOP OBJECTIVE"}
+									TextColor3={Color3.fromRGB(255, 0, 0)}
+									FontFace={fonts.gothic.regular}
+									TextSize={12}
+									TextTransparency={0.2}
+									Position={UDim2.fromScale(0.5, 0.97)}
+									TextYAlignment="Center"
+									Size={UDim2.fromScale(1, 0.1)}
+									Event={{
+										MouseButton1Click: () => {
+											Events.StopObjective(selectedObjective.id);
+											clientStore.setActiveObjective({ ...selectedObjective, active: false });
+											clientStore.setSelectedObjective({ ...selectedObjective, active: false });
+										},
+									}}
+								/>
+							)}
+						</>
+					)}
 				</Frame>
 			</Frame>
 		</>

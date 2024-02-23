@@ -2,9 +2,11 @@ import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import { TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
+import { Events } from "client/network";
 import { clientStore } from "client/store";
 import { selectCustomizationIsOpen } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
+import { PlayerProfile } from "shared/utils";
 import { HandlesInput } from "./BaseInput";
 
 @Controller()
@@ -57,6 +59,10 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			},
 
 			controls: [Enum.KeyCode.C, Enum.KeyCode.ButtonSelect],
+		});
+
+		Events.SetProfile.connect((profile: PlayerProfile) => {
+			clientStore.setSave(profile);
 		});
 	}
 

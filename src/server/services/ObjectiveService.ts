@@ -1,12 +1,13 @@
 import { Modding, OnStart, Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import { BaseObjective, ObjectiveAttributes } from "server/components/objectives/BaseObjective";
-import { Functions } from "server/network";
+import { Events, Functions } from "server/network";
 import { serverStore } from "server/store";
+import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
 import { objectives } from "shared/constants/objectives";
 import { Objective, ObjectiveID, ObjectiveSave } from "shared/store/objectives";
-import { PlayerProfile, selectPlayerSave } from "shared/store/saves";
+import { PlayerProfile } from "shared/utils";
 import { PlayerDataLoaded } from "./DataService";
 
 export interface OnObjectiveComplete {
@@ -58,6 +59,15 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 			objectiveClass.startObjective(player);
 			const completion = this.getCompletion(player, objective);
 			return { ...objectiveClass.objective, completion };
+		});
+
+		Events.StopObjective.connect((player, objectiveId) => {
+			const objectiveClass = this.objectiveClasses.get(objectiveId);
+			if (!objectiveClass) {
+				Log.Warn("Objective class {@Objective} not found", objectiveId);
+				return;
+			}
+			objectiveClass.stopObjective(player);
 		});
 
 		Modding.onListenerAdded<OnObjectiveComplete>((object) => this.objectiveCompleteListeners.add(object));

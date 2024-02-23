@@ -1,6 +1,7 @@
 import { Networking } from "@flamework/networking";
 import { Clan, GroupID } from "./constants/clans";
 import { Objective, ObjectiveID } from "./store/objectives";
+import { PlayerProfile } from "./utils";
 
 interface ClientToServerEvents {
 	// RoombaTouchpad
@@ -10,12 +11,14 @@ interface ClientToServerEvents {
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 	ReloadFirearm(weapon: Tool): void;
 
-	BeginObjective(objectiveId: ObjectiveID): void;
+	// Objectives
+	StopObjective(objectiveId: ObjectiveID): void;
 }
 
 interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
 	ToggleBeacon(objectiveName: string, toggled: boolean): void;
+	SetProfile(profile: PlayerProfile): void;
 
 	// RoombaTouchpad
 	RoombaActive(chr: BaseCharacter): void;

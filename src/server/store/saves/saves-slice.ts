@@ -1,20 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { GroupID } from "shared/constants/clans";
-import { mapProperty } from "shared/utils";
-import { ObjectiveSave } from "../objectives";
-import { PerkInfo } from "../perks";
-
-export interface PlayerProfile {
-	readonly logInTimes: number;
-	readonly dailyLoginStreak: number;
-	readonly lastLogin: number; // TODO: consider using a serialized DateTime string here
-	readonly experience: number;
-	readonly clan: GroupID | undefined;
-	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
-	readonly objectiveCompletion: ReadonlyArray<ObjectiveSave>;
-	readonly scrap: Map<string, number>;
-	readonly credits: number;
-}
+import { PlayerProfile, mapProperty } from "shared/utils";
 
 export interface SaveState {
 	readonly [id: number]: PlayerProfile | undefined;

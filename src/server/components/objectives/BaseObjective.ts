@@ -5,10 +5,10 @@ import Log from "@rbxts/log";
 import { Events } from "server/network";
 import { ObjectiveService, OnObjectiveComplete } from "server/services/ObjectiveService";
 import { serverStore } from "server/store";
+import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
 import { objectives } from "shared/constants/objectives";
 import { Objective, ObjectiveCategory, ObjectiveID } from "shared/store/objectives";
-import { selectPlayerSave } from "shared/store/saves";
 
 export interface ObjectiveAttributes {
 	category: ObjectiveCategory;

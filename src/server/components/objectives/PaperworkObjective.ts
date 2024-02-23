@@ -5,8 +5,8 @@ import Maid from "@rbxts/maid";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { PlayerRemoving } from "server/services/PlayerService";
 import { serverStore } from "server/store";
+import { selectPlayerSave } from "server/store/saves";
 import { BaseInteraction } from "shared/components/BaseInteraction";
-import { selectPlayerSave } from "shared/store/saves";
 import { giveTool, removeTool } from "shared/utils";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 

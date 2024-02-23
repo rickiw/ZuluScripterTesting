@@ -1,17 +1,14 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
-import { Players } from "@rbxts/services";
-import { selectMenuOpen } from "client/store/menu";
+import { selectMenuOpen, selectPlayerSave } from "client/store/menu";
 import { selectHealth, selectStamina } from "client/store/vitals";
+
 import { fonts } from "shared/constants/fonts";
-import { selectPlayerSave } from "shared/store/saves";
 import { Frame } from "../frame";
 import { Text } from "../text";
 
-const player = Players.LocalPlayer;
-
 export function SideInformation() {
-	const playerSave = useSelector(selectPlayerSave(player.UserId));
+	const playerSave = useSelector(selectPlayerSave);
 	const stamina = useSelector(selectStamina);
 	const health = useSelector(selectHealth);
 	const menuOpen = useSelector(selectMenuOpen);
