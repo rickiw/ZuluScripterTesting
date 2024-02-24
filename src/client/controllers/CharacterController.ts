@@ -45,6 +45,14 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 
 		Events.StaminaBoostChanged.connect((staminaBoost) => clientStore.setStaminaBoost(staminaBoost));
 
+		Events.ToggleCollision.connect((instance, toggled) => {
+			for (const part of instance.GetDescendants()) {
+				if (part.IsA("BasePart")) {
+					part.CanCollide = toggled;
+				}
+			}
+		});
+
 		this.startVitalsLoop();
 		this.startStaminaLoop();
 

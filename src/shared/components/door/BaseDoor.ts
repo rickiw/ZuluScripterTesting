@@ -1,5 +1,6 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
+import { ServerHandler } from "@flamework/networking/out/events/types";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import Octree from "@rbxts/octo-tree";
@@ -8,6 +9,7 @@ import { RunService } from "@rbxts/services";
 import Signal from "@rbxts/signal";
 import type { SimNodeInfo, SimulationController } from "client/controllers/SimulationController";
 import { springs } from "shared/constants/springs";
+import { ClientToServerEvents, GlobalEvents, ServerToClientEvents } from "shared/network";
 import { BaseInteraction } from "../BaseInteraction";
 import { BasePresence } from "../BasePresence";
 import { DoorSound } from "./DoorSound";
@@ -68,6 +70,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 	springSettings: SpringOptions;
 	simulationNode?: Octree.Node<SimNodeInfo>;
 	isSimulated: boolean;
+	net?: ServerHandler<ServerToClientEvents, ClientToServerEvents>;
 
 	constructor() {
 		super();
@@ -93,6 +96,10 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		this.maid.GiveTask(this.interacted);
 		this.maid.GiveTask(this.stateChanged);
 		this.maid.GiveTask(this.authenticated);
+
+		if (!RunService.IsClient()) {
+			this.net = GlobalEvents.createServer({});
+		}
 	}
 
 	onInteract(player: Player) {
@@ -214,10 +221,15 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 					if (this.doorSound) this.doorSound.doorOpen();
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.openMotor, this.getSpringSettings());
-						task.delay(0.1, () => this.setCollision(true));
-					} else {
-						this.setCollision(false);
+						return;
 					}
+
+					this.setCollision(false);
+					if (!this.net) {
+						Log.Warn("Door is not connected to the server");
+						return;
+					}
+					this.net.ToggleCollision.broadcast(this.instance, true);
 				} else {
 					this.stateChanged.Fire(false);
 					if (this.doorSound) this.doorSound.doorClose();

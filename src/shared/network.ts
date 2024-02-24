@@ -3,7 +3,7 @@ import { Clan, GroupID } from "./constants/clans";
 import { Objective, ObjectiveID } from "./store/objectives";
 import { PlayerProfile } from "./utils";
 
-interface ClientToServerEvents {
+export interface ClientToServerEvents {
 	// RoombaTouchpad
 	RoombaExplode(): void;
 
@@ -15,10 +15,11 @@ interface ClientToServerEvents {
 	StopObjective(objectiveId: ObjectiveID): void;
 }
 
-interface ServerToClientEvents {
+export interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
 	ToggleBeacon(objectiveName: string, toggled: boolean): void;
 	SetProfile(profile: PlayerProfile): void;
+	ToggleCollision(instance: Instance, toggled: boolean): void;
 
 	// RoombaTouchpad
 	RoombaActive(chr: BaseCharacter): void;
