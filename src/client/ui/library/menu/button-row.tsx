@@ -1,5 +1,6 @@
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
+import { useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
 import { Button } from "../button/button";
 import { Frame } from "../frame";
@@ -7,16 +8,17 @@ import { Frame } from "../frame";
 export const buttons = ["Shop", "Objectives", "Clan", "Perks"] as const;
 
 export function ButtonRow() {
+	const rem = useRem();
+
 	return (
 		<Frame
 			backgroundTransparency={1}
-			anchorPoint={new Vector2(0.5, 0.5)}
-			position={UDim2.fromScale(0.8, 0.5)}
-			size={UDim2.fromScale(1, 1)}
+			position={new UDim2(0, rem(31), 0, rem(2))}
+			size={new UDim2(0, rem(60), 0, rem(2))}
 		>
 			<uigridlayout
 				CellPadding={UDim2.fromOffset(5, 5)}
-				CellSize={UDim2.fromOffset(120, 30)}
+				CellSize={UDim2.fromOffset(rem(12.5), rem(3))}
 				FillDirection={Enum.FillDirection.Horizontal}
 			/>
 			{buttons.map((button) => (
@@ -28,7 +30,7 @@ export function ButtonRow() {
 					borderColor={Color3.fromRGB(255, 255, 255)}
 					borderSize={1}
 					textColor={Color3.fromRGB(255, 255, 255)}
-					textSize={20}
+					textSize={rem(1.25)}
 					textWrapped={true}
 					fontFace={fonts.gothic.regular}
 					event={{

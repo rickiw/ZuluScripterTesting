@@ -1,4 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
+import { objectives } from "shared/constants/objectives";
 
 type ObjectiveNamesByCategory = {
 	FP:
@@ -50,7 +51,7 @@ export interface ObjectivesState {
 }
 
 const initialState: ObjectivesState = {
-	objectives: [],
+	objectives,
 };
 
 export const objectivesSlice = createProducer(initialState, {

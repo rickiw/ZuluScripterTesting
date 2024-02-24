@@ -1,10 +1,12 @@
 import Log from "@rbxts/log";
+import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
-import { Players } from "@rbxts/services";
+import { Players, RunService } from "@rbxts/services";
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
 import { selectActiveObjective, selectMenuObjective, selectPlayerSave } from "client/store/menu";
+import { useMotion, useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
 import { Objective, selectObjective } from "shared/store/objectives";
 import { priorityToImportance } from "shared/utils";
@@ -19,8 +21,10 @@ interface ObjectiveProps {
 const player = Players.LocalPlayer;
 
 function Objective({ objective }: ObjectiveProps) {
+	const rem = useRem();
 	const { name, description, priority } = objective;
 	const playerSave = useSelector(selectPlayerSave);
+	const [hover, hoverMotion] = useMotion(0);
 
 	return (
 		<Frame key={name} backgroundColor={Color3.fromRGB(227, 227, 227)}>
@@ -72,7 +76,11 @@ function Objective({ objective }: ObjectiveProps) {
 				borderColor={Color3.fromRGB(255, 255, 255)}
 				borderSize={1}
 				position={UDim2.fromScale(0.885, 0.28)}
-				size={UDim2.fromOffset(25, 25)}
+				size={lerpBinding(hover, UDim2.fromOffset(25, 25), UDim2.fromOffset(0, 0))}
+				event={{
+					MouseEnter: () => hoverMotion.spring(1),
+					MouseLeave: () => hoverMotion.spring(0),
+				}}
 			>
 				<textbutton
 					BackgroundTransparency={1}
@@ -83,12 +91,15 @@ function Objective({ objective }: ObjectiveProps) {
 					TextScaled={true}
 					Event={{
 						MouseButton1Down: () => {
+							if (!RunService.IsRunning()) {
+								clientStore.setSelectedObjective({ ...objective, active: math.random() > 0.5 });
+								return;
+							}
 							if (!playerSave) {
 								Log.Warn("Player save not found");
 								return;
 							}
 							const objectiveData = playerSave.objectiveCompletion.find((o) => o.id === objective.id);
-							Log.Warn("Selected objective: {@Objective}", objectiveData);
 							clientStore.setSelectedObjective({ ...objective, ...objectiveData });
 						},
 					}}

@@ -48,8 +48,6 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 	}
 
 	onStart() {
-		objectives.forEach((objective) => serverStore.addObjective(objective));
-
 		Functions.BeginObjective.setCallback((player, objective) => {
 			const objectiveClass = this.objectiveClasses.get(objective);
 			if (!objectiveClass) {
