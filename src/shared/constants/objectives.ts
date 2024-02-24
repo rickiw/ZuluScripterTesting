@@ -203,7 +203,7 @@ export const MDObjectives: SpecifiedObjective<"MD">[] = [
 		id: 18,
 		priority: 1,
 		category: "MD",
-		name: "Conduct Research",
+		name: "Conduct Research (MD)",
 		description: "Conduct research by studying papers",
 		location: false,
 		reward: [100, "credits"],

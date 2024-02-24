@@ -33,9 +33,9 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 		super.onStart();
 	}
 
-	startObjective(player: Player): [complete: boolean, exists: boolean] {
-		const [completed, existed] = super.startObjective(player);
-		if (completed || existed) return [completed, existed];
+	startObjective(player: Player): [complete: boolean, exists: boolean, started: boolean] {
+		const [completed, existed, started] = super.startObjective(player);
+		if (completed || existed) return [completed, existed, started];
 
 		const maid = new Maid();
 		this.playerMaids.set(player.UserId, maid);
@@ -80,7 +80,7 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 			}, 0.5),
 		);
 
-		return [completed, existed];
+		return [completed, existed, true];
 	}
 
 	cleanupPlayer(player: Player) {

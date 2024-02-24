@@ -16,7 +16,7 @@ type ObjectiveNamesByCategory = {
 		| "Make food"
 		| "Kill X security"
 		| "Kill X Mobile Task Forces";
-	MD: "Conduct Research" | "Report Checkup Documents";
+	MD: "Conduct Research (MD)" | "Report Checkup Documents";
 	LOGISTICS: "Deliver crates" | "Restock supplies";
 };
 

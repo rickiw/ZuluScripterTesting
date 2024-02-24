@@ -3,11 +3,14 @@ import Roact from "@rbxts/roact";
 import { selectMenuOpen, selectPlayerSave } from "client/store/menu";
 import { selectHealth, selectStamina } from "client/store/vitals";
 
+import { useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
 import { Frame } from "../frame";
 import { Text } from "../text";
 
 export function SideInformation() {
+	const rem = useRem();
+
 	const playerSave = useSelector(selectPlayerSave);
 	const stamina = useSelector(selectStamina);
 	const health = useSelector(selectHealth);
@@ -29,23 +32,23 @@ export function SideInformation() {
 			<Text
 				text="STATISTICS"
 				anchorPoint={new Vector2(0.5, 0.5)}
-				position={UDim2.fromScale(0.7, 0.05)}
+				position={UDim2.fromOffset(rem(17.5), rem(2.5))}
 				size={UDim2.fromScale(0.5, 0.05)}
 				textColor={Color3.fromRGB(255, 255, 255)}
 				font={fonts.gothic.bold}
-				textSize={24}
+				textSize={rem(2.5)}
 				textXAlignment="Right"
 				textYAlignment="Center"
 			/>
 			<Frame
 				key="xp-info"
-				position={UDim2.fromScale(0.4, 0.139)}
+				position={UDim2.fromOffset(rem(10), rem(5))}
 				size={UDim2.fromScale(0.5, 0.1)}
 				backgroundTransparency={1}
 			>
 				<uigridlayout
 					CellSize={UDim2.fromOffset(80, 10)}
-					CellPadding={UDim2.fromOffset(5, 5)}
+					CellPadding={UDim2.fromOffset(5, 15)}
 					HorizontalAlignment={Enum.HorizontalAlignment.Right}
 					FillDirection={Enum.FillDirection.Vertical}
 				/>
@@ -53,24 +56,26 @@ export function SideInformation() {
 					text="XP"
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
+					textSize={rem(2)}
 					textXAlignment="Right"
 				/>
 				<Text
 					text={playerSave ? tostring(playerSave.experience) : "XXX"}
 					textColor={Color3.fromRGB(135, 189, 255)}
 					font={fonts.gothic.regular}
+					textSize={rem(1.75)}
 					textXAlignment="Right"
 				/>
 			</Frame>
 			<Frame
 				key="credit-info"
-				position={UDim2.fromScale(0.4, 0.275)}
+				position={UDim2.fromOffset(rem(10), rem(10))}
 				size={UDim2.fromScale(0.5, 0.1)}
 				backgroundTransparency={1}
 			>
 				<uigridlayout
 					CellSize={UDim2.fromOffset(80, 10)}
-					CellPadding={UDim2.fromOffset(5, 5)}
+					CellPadding={UDim2.fromOffset(5, 15)}
 					HorizontalAlignment={Enum.HorizontalAlignment.Right}
 					FillDirection={Enum.FillDirection.Vertical}
 				/>
@@ -78,12 +83,14 @@ export function SideInformation() {
 					text="CREDITS"
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
+					textSize={rem(2)}
 					textXAlignment="Right"
 				/>
 				<Text
 					text={playerSave ? tostring(playerSave.credits) : "XXX"}
 					textColor={Color3.fromRGB(255, 179, 1)}
 					font={fonts.gothic.regular}
+					textSize={rem(1.75)}
 					textXAlignment="Right"
 				/>
 			</Frame>

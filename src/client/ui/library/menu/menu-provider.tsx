@@ -29,8 +29,8 @@ export function MenuProvider() {
 			alwaysOnTop={true}
 			face={Enum.NormalId.Front}
 			adornee={adornee}
-			sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
-			pixelsPerStud={50}
+			sizingMode={Enum.SurfaceGuiSizingMode.FixedSize}
+			canvasSize={new Vector2(2440, 1080)}
 			enabled={menuOpen}
 		>
 			<Frame

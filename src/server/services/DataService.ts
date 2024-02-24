@@ -75,6 +75,7 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 		serverStore.subscribe(selectPlayerData, (data, oldData) => {
 			if (!data || !oldData) return;
 			profile.Data = data;
+			Events.SetProfile.fire(player, profile.Data);
 		});
 	}
 

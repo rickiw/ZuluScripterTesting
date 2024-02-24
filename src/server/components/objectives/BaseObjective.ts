@@ -32,7 +32,9 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 
 	constructor(protected objectiveService: ObjectiveService) {
 		super();
-		this.objective = objectives.find((objective) => objective.name === this.attributes.name)!;
+		this.objective = objectives.find(
+			(objective) => objective.name === this.attributes.name && objective.category === this.attributes.category,
+		)!;
 		this.objectiveId = this.objective.id;
 
 		Log.Warn("Registering objective {@Name}", this.attributes.name);
@@ -69,12 +71,19 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 		this.doingObjective.add(player);
 	}
 
-	startObjective(player: Player, overrideIfCompleted: boolean = false): [complete: boolean, exists: boolean] {
+	startObjective(
+		player: Player,
+		overrideIfCompleted: boolean = false,
+	): [complete: boolean, exists: boolean, started: boolean] {
 		const hasCompleted = this.hasCompletedObjective(player, this.objectiveId);
 		const exists = this.doingObjective.has(player.UserId);
 		if (!hasCompleted && !exists) Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
-		if (!overrideIfCompleted) this.doingObjective.add(player.UserId);
-		return [hasCompleted, exists];
+		let started = false;
+		if (!overrideIfCompleted) {
+			started = true;
+			this.doingObjective.add(player.UserId);
+		}
+		return [hasCompleted, exists, started];
 	}
 
 	stopObjective(player: Player) {
@@ -87,6 +96,7 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	}
 
 	objectiveComplete(player: Player, objective: Objective) {
+		Log.Warn("Objective complete");
 		if (objective.id === this.objectiveId) this.stopObjective(player);
 	}
 }

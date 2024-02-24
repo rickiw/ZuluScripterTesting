@@ -37,6 +37,18 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 		return objectiveCompletion;
 	}
 
+	isDoingObjective(player: Player) {
+		let doing = false;
+
+		this.objectiveClasses.forEach((objectiveClass) => {
+			if (objectiveClass.isDoingObjective(player)) {
+				doing = true;
+			}
+		});
+
+		return doing;
+	}
+
 	playerDataLoaded(player: Player, data: PlayerProfile) {
 		const objectiveCompletion = data.objectiveCompletion.isEmpty()
 			? this.populateDefaultObjectiveCompletion(player.UserId)
@@ -49,12 +61,20 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 
 	onStart() {
 		Functions.BeginObjective.setCallback((player, objective) => {
+			if (this.isDoingObjective(player)) return false;
 			const objectiveClass = this.objectiveClasses.get(objective);
 			if (!objectiveClass) {
 				Log.Warn("Objective class {@ObjectiveName} not found", objective);
 				return false;
 			}
-			objectiveClass.startObjective(player);
+			const [completed, , started] = objectiveClass.startObjective(player);
+			if (!started) return false;
+
+			if (objectiveClass.isDoingObjective(player) && !completed) {
+				Log.Warn("Objective {@ObjectiveName} is already active", objective);
+				Events.SetActiveObjective.fire(player, objectiveClass.objective);
+			}
+
 			const completion = this.getCompletion(player, objective);
 			return { ...objectiveClass.objective, completion };
 		});

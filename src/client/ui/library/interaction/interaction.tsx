@@ -144,8 +144,8 @@ export function Interaction({
 					alwaysOnTop={true}
 					face={Enum.NormalId.Back}
 					adornee={adornee as BasePart}
-					sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
-					pixelsPerStud={100}
+					sizingMode={Enum.SurfaceGuiSizingMode.FixedSize}
+					canvasSize={new Vector2(2350, 950)}
 				>
 					<InteractionState />
 				</SurfaceLayer>

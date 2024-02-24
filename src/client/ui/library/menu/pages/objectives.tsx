@@ -22,6 +22,7 @@ const player = Players.LocalPlayer;
 
 function Objective({ objective }: ObjectiveProps) {
 	const rem = useRem();
+
 	const { name, description, priority } = objective;
 	const playerSave = useSelector(selectPlayerSave);
 	const [hover, hoverMotion] = useMotion(0);
@@ -55,18 +56,18 @@ function Objective({ objective }: ObjectiveProps) {
 				text={name}
 				font={fonts.gothic.bold}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				position={UDim2.fromScale(0.081, 0)}
+				position={UDim2.fromOffset(rem(5), 0)}
 				size={UDim2.fromScale(0.3, 0.5)}
-				textSize={16}
+				textSize={rem(2.5)}
 				textXAlignment="Left"
 			/>
 			<Text
 				text={description}
 				font={fonts.gothic.regular}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				position={UDim2.fromScale(0.081, 0.225)}
+				position={UDim2.fromOffset(rem(5), rem(2))}
 				size={UDim2.fromScale(0.3, 0.5)}
-				textSize={14}
+				textSize={rem(1.5)}
 				textXAlignment="Left"
 			/>
 			<Frame
@@ -75,8 +76,9 @@ function Objective({ objective }: ObjectiveProps) {
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
 				borderColor={Color3.fromRGB(255, 255, 255)}
 				borderSize={1}
-				position={UDim2.fromScale(0.885, 0.28)}
-				size={lerpBinding(hover, UDim2.fromOffset(25, 25), UDim2.fromOffset(0, 0))}
+				anchorPoint={new Vector2(0.5, 0.5)}
+				position={UDim2.fromOffset(rem(55), rem(3.75))}
+				size={lerpBinding(hover, UDim2.fromOffset(40, 40), UDim2.fromOffset(45, 45))}
 				event={{
 					MouseEnter: () => hoverMotion.spring(1),
 					MouseLeave: () => hoverMotion.spring(0),
@@ -110,7 +112,9 @@ function Objective({ objective }: ObjectiveProps) {
 }
 
 export function ObjectivesPage() {
-	const objectives = useSelector(selectObjective("FP"));
+	const rem = useRem();
+
+	const objectives = useSelector(selectObjective("MD"));
 	const selectedObjective = useSelector(selectMenuObjective);
 	const activeObjective = useSelector(selectActiveObjective);
 
@@ -163,7 +167,7 @@ export function ObjectivesPage() {
 					text="OBJECTIVE REFRESH"
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
-					textSize={16}
+					textSize={rem(2.5)}
 					position={UDim2.fromScale(0.5, 0.05)}
 					textYAlignment="Center"
 					size={UDim2.fromScale(1, 0.15)}
@@ -173,7 +177,7 @@ export function ObjectivesPage() {
 					text="XX:XX:XX"
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
-					textSize={16}
+					textSize={rem(1.5)}
 					textYAlignment="Bottom"
 					position={UDim2.fromScale(0.5, 0.125)}
 				/>
@@ -199,7 +203,7 @@ export function ObjectivesPage() {
 						textTruncate="AtEnd"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={16}
+						textSize={rem(2)}
 						size={UDim2.fromScale(0.95, 0.95)}
 						position={UDim2.fromScale(0.5, 0.5)}
 						textYAlignment="Top"
@@ -229,8 +233,8 @@ export function ObjectivesPage() {
 									}
 									TextColor3={Color3.fromRGB(255, 255, 255)}
 									FontFace={fonts.gothic.bold}
-									TextScaled={true}
-									TextSize={18}
+									TextSize={rem(1.5)}
+									TextWrapped={true}
 									Event={{
 										MouseButton1Down: () => {
 											const startedObjective = Functions.BeginObjective(
@@ -240,39 +244,37 @@ export function ObjectivesPage() {
 												Log.Warn("Failed to start objective");
 												return;
 											}
-											Log.Warn(
-												"Objective {@ID} {@Active}",
-												selectedObjective.id,
-												activeObjective?.active,
-											);
 
-											clientStore.setActiveObjective({ ...startedObjective, active: true });
 											clientStore.setSelectedObjective({ ...startedObjective, active: true });
 										},
 									}}
 								/>
 							</Frame>
-							{selectedObjective.active && (
-								<textbutton
-									BackgroundTransparency={1}
-									AnchorPoint={new Vector2(0.5, 0.5)}
-									Text={"STOP OBJECTIVE"}
-									TextColor3={Color3.fromRGB(255, 0, 0)}
-									FontFace={fonts.gothic.regular}
-									TextSize={12}
-									TextTransparency={0.2}
-									Position={UDim2.fromScale(0.5, 0.97)}
-									TextYAlignment="Center"
-									Size={UDim2.fromScale(1, 0.1)}
-									Event={{
-										MouseButton1Click: () => {
-											Events.StopObjective(selectedObjective.id);
-											clientStore.setActiveObjective({ ...selectedObjective, active: false });
-											clientStore.setSelectedObjective({ ...selectedObjective, active: false });
-										},
-									}}
-								/>
-							)}
+							{selectedObjective.active &&
+								(!selectedObjective.completion ||
+									selectedObjective.completion?.completed === false) && (
+									<textbutton
+										BackgroundTransparency={1}
+										AnchorPoint={new Vector2(0.5, 0.5)}
+										Text={"STOP OBJECTIVE"}
+										TextColor3={Color3.fromRGB(255, 0, 0)}
+										FontFace={fonts.gothic.regular}
+										TextSize={rem(1)}
+										TextTransparency={0.2}
+										Position={UDim2.fromScale(0.5, 0.97)}
+										TextYAlignment="Center"
+										Size={UDim2.fromScale(1, 0.1)}
+										Event={{
+											MouseButton1Click: () => {
+												Events.StopObjective(selectedObjective.id);
+												clientStore.setSelectedObjective({
+													...selectedObjective,
+													active: false,
+												});
+											},
+										}}
+									/>
+								)}
 						</>
 					)}
 				</Frame>

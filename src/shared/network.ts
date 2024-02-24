@@ -19,6 +19,7 @@ export interface ServerToClientEvents {
 	StaminaBoostChanged(StaminaBoost: number): void;
 	ToggleBeacon(objectiveName: string, toggled: boolean): void;
 	SetProfile(profile: PlayerProfile): void;
+	SetActiveObjective(objective: Objective | undefined): void;
 	ToggleCollision(instance: Instance, toggled: boolean): void;
 
 	// RoombaTouchpad

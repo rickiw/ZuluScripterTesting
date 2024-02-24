@@ -57,9 +57,9 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 		}
 	}
 
-	startObjective(player: Player): [complete: boolean, exists: boolean] {
-		const [completed, existed] = super.startObjective(player, true);
-		if (completed || existed) return [completed, existed];
+	startObjective(player: Player): [complete: boolean, exists: boolean, started: boolean] {
+		const [completed, existed, started] = super.startObjective(player);
+		if (completed || existed) return [completed, existed, started];
 
 		const maid = new Maid();
 		this.playerMaids.set(player.UserId, maid);
@@ -72,7 +72,7 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 		const mop = this.instance.Assets.Broom.Clone();
 		giveTool(player, mop);
 
-		return [completed, existed];
+		return [completed, existed, true];
 	}
 
 	stopObjective(player: Player) {
