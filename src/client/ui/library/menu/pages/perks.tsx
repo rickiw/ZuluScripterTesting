@@ -1,48 +1,68 @@
+import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { selectActivePerk, selectPerks } from "client/store/perks";
+import { useMotion, useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
+import { springs } from "shared/constants/springs";
 import { PerkInfo } from "shared/store/perks";
 import { Frame } from "../../frame";
 import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 function Perk(props: { perk: PerkInfo }) {
+	const rem = useRem();
+
 	const { title, displayImage, color } = props.perk;
+	const [hover, hoverMotion] = useMotion(0);
+
 	return (
-		<imagebutton
-			key={title}
-			Image={displayImage}
-			Event={{
-				MouseButton1Click: () => {
-					clientStore.setSelectedPerk(props.perk);
-				},
-			}}
-		>
-			<Frame
-				backgroundColor={Color3.fromRGB(255, 255, 255)}
-				size={UDim2.fromScale(1, 1)}
-				anchorPoint={new Vector2(0.5, 0.5)}
-				position={UDim2.fromScale(0.5, 0.5)}
+		<Frame backgroundTransparency={1} size={UDim2.fromScale(1, 1)}>
+			<imagebutton
+				key={title}
+				Image={displayImage}
+				Event={{
+					MouseButton1Click: () => {
+						clientStore.setSelectedPerk(props.perk);
+					},
+					MouseEnter: () => hoverMotion.spring(1, springs.molasses),
+					MouseLeave: () => hoverMotion.spring(0, springs.molasses),
+				}}
+				AnchorPoint={new Vector2(0.5, 0.5)}
+				Position={UDim2.fromScale(0.5, 0.5)}
+				Size={lerpBinding(hover, UDim2.fromScale(1, 1), UDim2.fromScale(0.97, 0.95))}
 			>
-				<uigradient
-					Color={new ColorSequence(color)}
-					Transparency={
-						new NumberSequence([
-							new NumberSequenceKeypoint(0, 1),
-							new NumberSequenceKeypoint(0.518, 1),
-							new NumberSequenceKeypoint(1, 0),
-						])
-					}
-					Rotation={90}
-				/>
-			</Frame>
-		</imagebutton>
+				<Frame
+					backgroundColor={Color3.fromRGB(255, 255, 255)}
+					anchorPoint={new Vector2(0.5, 0.5)}
+					position={UDim2.fromScale(0.5, 0.5)}
+					size={UDim2.fromScale(1, 1)}
+					event={{
+						MouseEnter: () => hoverMotion.spring(1),
+						MouseLeave: () => hoverMotion.spring(0),
+					}}
+				>
+					<uigradient
+						Color={new ColorSequence(color)}
+						Transparency={
+							new NumberSequence([
+								new NumberSequenceKeypoint(0, 1),
+								new NumberSequenceKeypoint(0.518, 1),
+								new NumberSequenceKeypoint(1, 0),
+							])
+						}
+						Rotation={90}
+					/>
+				</Frame>
+			</imagebutton>
+		</Frame>
 	);
 }
 
 export function PerksPage() {
+	const rem = useRem();
+
 	const perks = useSelector(selectPerks);
 	const selectedPerk = useSelector(selectActivePerk);
 
@@ -51,8 +71,8 @@ export function PerksPage() {
 			<SideInformation />
 			<scrollingframe
 				key="objectives"
-				Position={UDim2.fromScale(0.22, 0.14)}
-				Size={UDim2.fromScale(0.5, 0.825)}
+				Position={UDim2.fromOffset(rem(26), rem(7.5))}
+				Size={UDim2.fromOffset(rem(65), rem(42.5))}
 				BackgroundTransparency={0.5}
 				BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 				BorderSizePixel={1}
@@ -68,7 +88,7 @@ export function PerksPage() {
 					SortOrder={Enum.SortOrder.LayoutOrder}
 					StartCorner={Enum.StartCorner.TopLeft}
 					VerticalAlignment={Enum.VerticalAlignment.Top}
-					CellSize={UDim2.fromScale(0.25, 0.5)}
+					CellSize={UDim2.fromOffset(rem(12.5), rem(42.5))}
 					CellPadding={UDim2.fromScale(0.025, 0.01)}
 				/>
 				{perks.map((perk) => (
@@ -79,28 +99,24 @@ export function PerksPage() {
 				key="objective-info"
 				backgroundTransparency={0.6}
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
-				position={UDim2.fromScale(0.72, 0.14)}
-				size={UDim2.fromScale(0.25, 0.825)}
+				position={UDim2.fromOffset(rem(91), rem(7.5))}
+				size={UDim2.fromOffset(rem(25), rem(42.5))}
 			>
 				<Text
-					anchorPoint={new Vector2(0.5, 0.5)}
 					text=""
-					position={UDim2.fromScale(0.5, 0.05)}
 					borderSize={1}
 					borderColor={Color3.fromRGB(255, 255, 255)}
 					backgroundTransparency={0.7}
 					backgroundColor={Color3.fromRGB(0, 0, 0)}
-					size={UDim2.fromScale(1, 0.1)}
+					size={UDim2.fromOffset(rem(25), rem(5))}
 				/>
 				<Text
-					anchorPoint={new Vector2(0.5, 0.5)}
 					text={"INFORMATION"}
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
-					textSize={16}
-					position={UDim2.fromScale(0.5, 0.05)}
+					textSize={rem(2.5)}
 					textYAlignment="Center"
-					size={UDim2.fromScale(1, 0.1)}
+					size={UDim2.fromOffset(rem(25), rem(5))}
 				/>
 				<Frame
 					key="item-description"
@@ -108,19 +124,17 @@ export function PerksPage() {
 					backgroundColor={Color3.fromRGB(0, 0, 0)}
 					borderColor={Color3.fromRGB(255, 255, 255)}
 					borderSize={1}
-					position={UDim2.fromScale(0, 0.1)}
-					size={UDim2.fromScale(1, 0.9)}
+					position={UDim2.fromOffset(rem(0), rem(5))}
+					size={UDim2.fromOffset(rem(25), rem(37.5))}
 				>
 					<Text
-						anchorPoint={new Vector2(0.5, 0.5)}
 						text={""}
 						textWrapped={true}
 						textTruncate="AtEnd"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={16}
-						size={UDim2.fromScale(0.95, 0.825)}
-						position={UDim2.fromScale(0.5, 0.425)}
+						textSize={rem(2)}
+						size={UDim2.fromOffset(rem(25), rem(35))}
 						textYAlignment="Top"
 						textXAlignment="Left"
 					/>
@@ -130,9 +144,8 @@ export function PerksPage() {
 						backgroundColor={Color3.fromRGB(0, 0, 0)}
 						borderColor={Color3.fromRGB(255, 255, 255)}
 						borderSize={1}
-						anchorPoint={new Vector2(0.5, 0.5)}
-						position={UDim2.fromScale(0.5, 0.9)}
-						size={UDim2.fromScale(0.3, 0.075)}
+						position={UDim2.fromOffset(rem(7.5), rem(32.5))}
+						size={UDim2.fromOffset(rem(10), rem(3))}
 					>
 						<textbutton
 							BackgroundTransparency={1}
@@ -140,20 +153,18 @@ export function PerksPage() {
 							Text="BUY"
 							TextColor3={Color3.fromRGB(255, 255, 255)}
 							FontFace={fonts.gothic.bold}
-							TextScaled={false}
-							TextSize={18}
+							TextSize={rem(1.5)}
 							Event={{
 								MouseButton1Down: () => {},
 							}}
 						/>
 					</Frame>
 					<Text
-						anchorPoint={new Vector2(0.5, 0.5)}
 						text={selectedPerk ? `${selectedPerk.price} CREDITS` : "XXX CREDITS"}
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={16}
-						position={UDim2.fromScale(0.5, 0.965)}
+						textSize={rem(1)}
+						position={UDim2.fromOffset(rem(0), rem(34.75))}
 						textYAlignment="Center"
 						size={UDim2.fromScale(1, 0.1)}
 					/>

@@ -8,6 +8,7 @@ import { clientStore } from "client/store";
 import { selectActiveObjective, selectMenuObjective, selectPlayerSave } from "client/store/menu";
 import { useMotion, useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
+import { springs } from "shared/constants/springs";
 import { Objective, selectObjective } from "shared/store/objectives";
 import { priorityToImportance } from "shared/utils";
 import { Frame } from "../../frame";
@@ -80,8 +81,8 @@ function Objective({ objective }: ObjectiveProps) {
 				position={UDim2.fromOffset(rem(55), rem(3.75))}
 				size={lerpBinding(hover, UDim2.fromOffset(40, 40), UDim2.fromOffset(45, 45))}
 				event={{
-					MouseEnter: () => hoverMotion.spring(1),
-					MouseLeave: () => hoverMotion.spring(0),
+					MouseEnter: () => hoverMotion.spring(1, springs.responsive),
+					MouseLeave: () => hoverMotion.spring(0, springs.responsive),
 				}}
 			>
 				<textbutton
@@ -114,7 +115,7 @@ function Objective({ objective }: ObjectiveProps) {
 export function ObjectivesPage() {
 	const rem = useRem();
 
-	const objectives = useSelector(selectObjective("MD"));
+	const objectives = useSelector(selectObjective("FP"));
 	const selectedObjective = useSelector(selectMenuObjective);
 	const activeObjective = useSelector(selectActiveObjective);
 
@@ -123,8 +124,8 @@ export function ObjectivesPage() {
 			<SideInformation />
 			<scrollingframe
 				key="objectives"
-				Position={UDim2.fromScale(0.22, 0.14)}
-				Size={UDim2.fromScale(0.5, 0.825)}
+				Position={UDim2.fromOffset(rem(26), rem(7.5))}
+				Size={UDim2.fromOffset(rem(65), rem(42.5))}
 				BackgroundTransparency={0.5}
 				BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 				BorderSizePixel={1}
@@ -149,8 +150,8 @@ export function ObjectivesPage() {
 				key="objective-info"
 				backgroundTransparency={0.6}
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
-				position={UDim2.fromScale(0.72, 0.14)}
-				size={UDim2.fromScale(0.25, 0.825)}
+				position={UDim2.fromOffset(rem(91), rem(7.5))}
+				size={UDim2.fromOffset(rem(25), rem(42.5))}
 			>
 				<Text
 					anchorPoint={new Vector2(0.5, 0.5)}

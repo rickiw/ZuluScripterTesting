@@ -18,8 +18,8 @@ export function SideInformation() {
 
 	return (
 		<Frame
-			position={UDim2.fromScale(0.019, 0.14)}
-			size={UDim2.fromScale(0.2, 0.825)}
+			position={UDim2.fromOffset(rem(1), rem(7.5))}
+			size={UDim2.fromOffset(rem(25), rem(42.5))}
 			backgroundTransparency={0.6}
 			backgroundColor={Color3.fromRGB(0, 0, 0)}
 		>

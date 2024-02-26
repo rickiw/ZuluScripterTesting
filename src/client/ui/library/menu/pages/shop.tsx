@@ -1,17 +1,25 @@
+import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { ShopItem as BaseShopItem, selectActiveShopItem, selectDevProducts, selectGamePasses } from "client/store/shop";
+import { useMotion, useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
+import { springs } from "shared/constants/springs";
 import { Frame } from "../../frame";
 import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 function ShopItem(props: { shopItem: BaseShopItem }) {
+	const rem = useRem();
+
 	const { title, color } = props.shopItem;
 	const itemType = props.shopItem.type;
 	const darkenedColor = color.Lerp(Color3.fromRGB(0, 0, 0), 0.5);
 	const lightenedColor = color.Lerp(Color3.fromRGB(255, 255, 255), 0.5);
+
+	const [hover, hoverMotion] = useMotion(0);
+
 	return (
 		<Frame key={title} backgroundColor={Color3.fromRGB(227, 227, 227)}>
 			<uigradient
@@ -27,27 +35,29 @@ function ShopItem(props: { shopItem: BaseShopItem }) {
 			/>
 			<Frame
 				key="status-marker"
-				position={UDim2.fromScale(0.016, 0)}
-				size={UDim2.fromScale(0.025, 1)}
+				position={UDim2.fromOffset(rem(1), 0)}
+				size={UDim2.fromOffset(rem(2.5), rem(10))}
 				backgroundColor={lightenedColor}
 			/>
 			<Text
 				text={title}
 				font={fonts.gothic.regular}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				position={UDim2.fromScale(0.081, 0.1)}
-				size={UDim2.fromScale(0.3, 0.5)}
-				textSize={16}
+				position={UDim2.fromOffset(rem(5), 0)}
+				size={UDim2.fromOffset(rem(2.5), rem(5))}
+				textSize={rem(2.5)}
 				textXAlignment="Left"
+				textYAlignment="Bottom"
 			/>
 			<Text
 				text={itemType.upper()}
-				font={fonts.gothic.bold}
+				font={fonts.gothic.regular}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				position={UDim2.fromScale(0.081, 0.325)}
-				size={UDim2.fromScale(0.3, 0.5)}
-				textSize={16}
+				position={UDim2.fromOffset(rem(5), rem(5))}
+				size={UDim2.fromOffset(rem(2.5), rem(5))}
+				textSize={rem(2)}
 				textXAlignment="Left"
+				textYAlignment="Top"
 			/>
 			<Frame
 				key="location-marker"
@@ -55,8 +65,13 @@ function ShopItem(props: { shopItem: BaseShopItem }) {
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
 				borderColor={Color3.fromRGB(255, 255, 255)}
 				borderSize={1}
-				position={UDim2.fromScale(0.885, 0.28)}
-				size={UDim2.fromOffset(25, 25)}
+				anchorPoint={new Vector2(0.5, 0.5)}
+				position={UDim2.fromOffset(rem(60), rem(5))}
+				size={lerpBinding(hover, UDim2.fromOffset(40, 40), UDim2.fromOffset(45, 45))}
+				event={{
+					MouseEnter: () => hoverMotion.spring(1, springs.responsive),
+					MouseLeave: () => hoverMotion.spring(0, springs.responsive),
+				}}
 			>
 				<textbutton
 					BackgroundTransparency={1}
@@ -75,6 +90,8 @@ function ShopItem(props: { shopItem: BaseShopItem }) {
 }
 
 export function ShopPage() {
+	const rem = useRem();
+
 	const gamepasses = useSelector(selectGamePasses);
 	const devProducts = useSelector(selectDevProducts);
 	const selectedShopItem = useSelector(selectActiveShopItem);
@@ -84,8 +101,8 @@ export function ShopPage() {
 			<SideInformation />
 			<scrollingframe
 				key="items"
-				Position={UDim2.fromScale(0.22, 0.14)}
-				Size={UDim2.fromScale(0.5, 0.825)}
+				Position={UDim2.fromOffset(rem(26), rem(7.5))}
+				Size={UDim2.fromOffset(rem(65), rem(42.5))}
 				BackgroundTransparency={0.5}
 				BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 				BorderSizePixel={1}
@@ -96,7 +113,7 @@ export function ShopPage() {
 				<uigridlayout
 					FillDirectionMaxCells={0}
 					FillDirection={Enum.FillDirection.Horizontal}
-					CellSize={UDim2.fromScale(1, 0.08)}
+					CellSize={UDim2.fromOffset(rem(65), rem(10))}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				<Frame key="gamepass-header" backgroundTransparency={1}>
@@ -111,8 +128,8 @@ export function ShopPage() {
 						text="GAMEPASS SHOP"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={26}
-						position={UDim2.fromScale(0.016, 0)}
+						textSize={rem(3)}
+						position={UDim2.fromOffset(rem(1), rem(0.5))}
 						textYAlignment="Center"
 						size={UDim2.fromScale(1, 0.6)}
 					/>
@@ -120,8 +137,8 @@ export function ShopPage() {
 						text="(Credit Shop Below)"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={16}
-						position={UDim2.fromScale(0.016, 0.3)}
+						textSize={rem(1.5)}
+						position={UDim2.fromOffset(rem(1), rem(3.5))}
 						textYAlignment="Center"
 						size={UDim2.fromScale(1, 0.6)}
 					/>
@@ -141,10 +158,10 @@ export function ShopPage() {
 						text="CREDIT SHOP"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={26}
-						position={UDim2.fromScale(0.016, 0.15)}
+						textSize={rem(3)}
+						position={UDim2.fromOffset(rem(1), rem(0))}
 						textYAlignment="Center"
-						size={UDim2.fromScale(1, 0.6)}
+						size={UDim2.fromScale(1, 1)}
 					/>
 				</Frame>
 				{devProducts.map((devProduct) => (
@@ -152,31 +169,27 @@ export function ShopPage() {
 				))}
 			</scrollingframe>
 			<Frame
-				key="objective-info"
+				key="item-info"
 				backgroundTransparency={0.6}
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
-				position={UDim2.fromScale(0.72, 0.14)}
-				size={UDim2.fromScale(0.25, 0.825)}
+				position={UDim2.fromOffset(rem(91), rem(7.5))}
+				size={UDim2.fromOffset(rem(25), rem(42.5))}
 			>
 				<Text
-					anchorPoint={new Vector2(0.5, 0.5)}
 					text=""
-					position={UDim2.fromScale(0.5, 0.05)}
 					borderSize={1}
 					borderColor={Color3.fromRGB(255, 255, 255)}
 					backgroundTransparency={0.7}
 					backgroundColor={Color3.fromRGB(0, 0, 0)}
-					size={UDim2.fromScale(1, 0.1)}
+					size={UDim2.fromOffset(rem(25), rem(5))}
 				/>
 				<Text
-					anchorPoint={new Vector2(0.5, 0.5)}
 					text={selectedShopItem ? `${selectedShopItem.title}` : "INFORMATION"}
 					textColor={Color3.fromRGB(255, 255, 255)}
 					font={fonts.gothic.regular}
-					textSize={16}
-					position={UDim2.fromScale(0.5, 0.05)}
+					textSize={rem(2.5)}
 					textYAlignment="Center"
-					size={UDim2.fromScale(1, 0.1)}
+					size={UDim2.fromOffset(rem(25), rem(5))}
 				/>
 				<Frame
 					key="item-description"
@@ -184,19 +197,17 @@ export function ShopPage() {
 					backgroundColor={Color3.fromRGB(0, 0, 0)}
 					borderColor={Color3.fromRGB(255, 255, 255)}
 					borderSize={1}
-					position={UDim2.fromScale(0, 0.1)}
-					size={UDim2.fromScale(1, 0.9)}
+					position={UDim2.fromOffset(rem(0), rem(5))}
+					size={UDim2.fromOffset(rem(25), rem(37.5))}
 				>
 					<Text
-						anchorPoint={new Vector2(0.5, 0.5)}
 						text={selectedShopItem ? `${selectedShopItem.description}` : ""}
 						textWrapped={true}
 						textTruncate="AtEnd"
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
 						textSize={16}
-						size={UDim2.fromScale(0.95, 0.825)}
-						position={UDim2.fromScale(0.5, 0.425)}
+						size={UDim2.fromOffset(rem(25), rem(35))}
 						textYAlignment="Top"
 						textXAlignment="Left"
 					/>
@@ -206,9 +217,8 @@ export function ShopPage() {
 						backgroundColor={Color3.fromRGB(0, 0, 0)}
 						borderColor={Color3.fromRGB(255, 255, 255)}
 						borderSize={1}
-						anchorPoint={new Vector2(0.5, 0.5)}
-						position={UDim2.fromScale(0.5, 0.9)}
-						size={UDim2.fromScale(0.3, 0.075)}
+						position={UDim2.fromOffset(rem(7.5), rem(32.5))}
+						size={UDim2.fromOffset(rem(10), rem(3))}
 					>
 						<textbutton
 							BackgroundTransparency={1}
@@ -217,19 +227,18 @@ export function ShopPage() {
 							TextColor3={Color3.fromRGB(255, 255, 255)}
 							FontFace={fonts.gothic.bold}
 							TextScaled={false}
-							TextSize={18}
+							TextSize={rem(1.5)}
 							Event={{
 								MouseButton1Down: () => {},
 							}}
 						/>
 					</Frame>
 					<Text
-						anchorPoint={new Vector2(0.5, 0.5)}
 						text={selectedShopItem ? `${selectedShopItem.price} ROBUX` : "XXX ROBUX"}
 						textColor={Color3.fromRGB(255, 255, 255)}
 						font={fonts.gothic.regular}
-						textSize={16}
-						position={UDim2.fromScale(0.5, 0.965)}
+						textSize={rem(1)}
+						position={UDim2.fromOffset(rem(0), rem(34.75))}
 						textYAlignment="Center"
 						size={UDim2.fromScale(1, 0.1)}
 					/>

@@ -3,6 +3,7 @@ import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { useMotion, useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
+import { springs } from "shared/constants/springs";
 import { Button } from "../button/button";
 import { Frame } from "../frame";
 
@@ -20,12 +21,13 @@ export function ButtonRow() {
 		<Frame
 			backgroundTransparency={1}
 			position={new UDim2(0, rem(31), 0, rem(1))}
-			size={new UDim2(0, rem(60), 0, rem(2))}
+			size={new UDim2(0, rem(70), 0, rem(5))}
 		>
 			<uigridlayout
 				CellPadding={UDim2.fromOffset(5, 5)}
-				CellSize={UDim2.fromOffset(rem(12.5), rem(3))}
+				CellSize={UDim2.fromOffset(rem(15), rem(5))}
 				FillDirection={Enum.FillDirection.Horizontal}
+				HorizontalAlignment={Enum.HorizontalAlignment.Center}
 			/>
 			{buttons.map((button) => (
 				<Frame backgroundTransparency={1} size={UDim2.fromScale(1, 1)}>
@@ -38,7 +40,7 @@ export function ButtonRow() {
 						borderSize={1}
 						anchorPoint={new Vector2(0.5, 0.5)}
 						textColor={Color3.fromRGB(255, 255, 255)}
-						textSize={rem(1.25)}
+						textSize={rem(2.25)}
 						textWrapped={true}
 						fontFace={fonts.gothic.regular}
 						size={lerpBinding(
@@ -57,32 +59,32 @@ export function ButtonRow() {
 							MouseEnter: () => {
 								switch (button) {
 									case "Shop":
-										shopHoverMotion.spring(1);
+										shopHoverMotion.spring(1, springs.responsive);
 										break;
 									case "Objectives":
-										objectivesHoverMotion.spring(1);
+										objectivesHoverMotion.spring(1, springs.responsive);
 										break;
 									case "Clan":
-										clanHoverMotion.spring(1);
+										clanHoverMotion.spring(1, springs.responsive);
 										break;
 									case "Perks":
-										perksHoverMotion.spring(1);
+										perksHoverMotion.spring(1, springs.responsive);
 										break;
 								}
 							},
 							MouseLeave: () => {
 								switch (button) {
 									case "Shop":
-										shopHoverMotion.spring(0);
+										shopHoverMotion.spring(0, springs.responsive);
 										break;
 									case "Objectives":
-										objectivesHoverMotion.spring(0);
+										objectivesHoverMotion.spring(0, springs.responsive);
 										break;
 									case "Clan":
-										clanHoverMotion.spring(0);
+										clanHoverMotion.spring(0, springs.responsive);
 										break;
 									case "Perks":
-										perksHoverMotion.spring(0);
+										perksHoverMotion.spring(0, springs.responsive);
 										break;
 								}
 							},

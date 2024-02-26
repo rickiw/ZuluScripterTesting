@@ -51,6 +51,7 @@ export function MenuProvider() {
 					text={player.Name.upper()}
 					textSize={rem(2.5)}
 					size={new UDim2(0, rem(30), 0, rem(5))}
+					position={UDim2.fromOffset(rem(0), rem(1))}
 					textColor={Color3.fromRGB(255, 255, 255)}
 				/>
 				<ButtonRow />
