@@ -22,7 +22,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 		this.menuPanel = New("Part")({
 			Parent: Workspace.CurrentCamera,
 			Name: "MenuPanel",
-			Size: new Vector3(15, 8, 1),
+			Size: new Vector3(13, 6, 1),
 			CanCollide: false,
 			CanQuery: false,
 			Anchored: true,
@@ -115,12 +115,10 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			this.cameraTween = TweenService.Create(camera, new TweenInfo(0.5), { CFrame: newCameraCFrame });
 			this.cameraTween.Play();
 			TweenService.Create(this.menuPanel, new TweenInfo(0.5), { CFrame: menuPanelCFrame }).Play();
-			this.menuPanel.Transparency = 0.2;
 		} else {
 			this.menuPanel.Position = new Vector3(0, -100, 0);
 			if (this.openedCFrame) {
 				TweenService.Create(camera, new TweenInfo(0.5), { CFrame: this.openedCFrame }).Play();
-				this.menuPanel.Transparency = 1;
 			}
 		}
 

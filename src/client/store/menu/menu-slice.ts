@@ -16,7 +16,7 @@ export interface MenuState {
 
 const initialState: MenuState = {
 	menuOpen: false,
-	menuPage: "Clan",
+	menuPage: "Objectives",
 	menuPanel: undefined,
 	selectedObjective: undefined,
 	activeObjective: undefined,
