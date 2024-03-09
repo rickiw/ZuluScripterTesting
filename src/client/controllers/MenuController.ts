@@ -111,16 +111,10 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 
 			const newCameraCFrame = this.getCameraOffsetCFrame();
 			const menuPanelCFrame = this.getMenuPanelCFrame();
-
-			this.cameraTween = TweenService.Create(camera, new TweenInfo(0.5), { CFrame: newCameraCFrame });
-			this.cameraTween.Play();
-			TweenService.Create(this.menuPanel, new TweenInfo(0.5), { CFrame: menuPanelCFrame }).Play();
-			this.menuPanel.Transparency = 0.2;
 		} else {
 			this.menuPanel.Position = new Vector3(0, -100, 0);
 			if (this.openedCFrame) {
 				TweenService.Create(camera, new TweenInfo(0.5), { CFrame: this.openedCFrame }).Play();
-				this.menuPanel.Transparency = 1;
 			}
 		}
 

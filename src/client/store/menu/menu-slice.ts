@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { buttons } from "client/ui/library/menu/button-row";
+import { buttons } from "client/ui/menu/button-row";
 import { Objective } from "shared/store/objectives";
 import { PlayerProfile } from "shared/utils";
 

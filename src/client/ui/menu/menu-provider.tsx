@@ -4,9 +4,9 @@ import { Players } from "@rbxts/services";
 import { selectMenuOpen, selectMenuPage, selectMenuPanel } from "client/store/menu";
 import { useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
-import { Frame } from "../frame";
-import { SurfaceLayer } from "../layer";
-import { Text } from "../text";
+import { Frame } from "../library/frame";
+import { SurfaceLayer } from "../library/layer";
+import { Text } from "../library/text";
 import { ButtonRow } from "./button-row";
 import { MenuPage } from "./pages/page";
 
@@ -30,7 +30,7 @@ export function MenuProvider() {
 			face={Enum.NormalId.Front}
 			adornee={adornee}
 			sizingMode={Enum.SurfaceGuiSizingMode.FixedSize}
-			canvasSize={new Vector2(2440, 1080)}
+			canvasSize={new Vector2(2085, 900)}
 			enabled={menuOpen}
 		>
 			<Frame

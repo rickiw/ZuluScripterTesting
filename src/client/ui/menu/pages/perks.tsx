@@ -4,11 +4,11 @@ import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { selectActivePerk, selectPerks } from "client/store/perks";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Frame } from "client/ui/library/frame";
+import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { springs } from "shared/constants/springs";
 import { PerkInfo } from "shared/store/perks";
-import { Frame } from "../../frame";
-import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 function Perk(props: { perk: PerkInfo }) {

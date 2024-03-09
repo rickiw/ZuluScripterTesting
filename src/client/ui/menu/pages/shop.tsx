@@ -4,10 +4,10 @@ import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { ShopItem as BaseShopItem, selectActiveShopItem, selectDevProducts, selectGamePasses } from "client/store/shop";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Frame } from "client/ui/library/frame";
+import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { springs } from "shared/constants/springs";
-import { Frame } from "../../frame";
-import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 function ShopItem(props: { shopItem: BaseShopItem }) {

@@ -5,8 +5,8 @@ import { selectHealth, selectStamina } from "client/store/vitals";
 
 import { useRem } from "client/ui/hooks";
 import { fonts } from "shared/constants/fonts";
-import { Frame } from "../frame";
-import { Text } from "../text";
+import { Frame } from "../library/frame";
+import { Text } from "../library/text";
 
 export function SideInformation() {
 	const rem = useRem();

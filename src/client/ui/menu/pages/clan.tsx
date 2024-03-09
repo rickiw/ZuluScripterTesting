@@ -1,8 +1,8 @@
 import Roact from "@rbxts/roact";
 import { useRem } from "client/ui/hooks";
+import { Frame } from "client/ui/library/frame";
+import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
-import { Frame } from "../../frame";
-import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 export function ClanPage() {

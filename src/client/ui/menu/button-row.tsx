@@ -2,10 +2,10 @@ import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Button } from "client/ui/library/button/button";
+import { Frame } from "client/ui/library/frame";
 import { fonts } from "shared/constants/fonts";
 import { springs } from "shared/constants/springs";
-import { Button } from "../button/button";
-import { Frame } from "../frame";
 
 export const buttons = ["Shop", "Objectives", "Clan", "Perks"] as const;
 

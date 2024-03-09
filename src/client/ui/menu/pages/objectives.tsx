@@ -7,12 +7,12 @@ import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
 import { selectActiveObjective, selectMenuObjective, selectPlayerSave } from "client/store/menu";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Frame } from "client/ui/library/frame";
+import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { springs } from "shared/constants/springs";
 import { Objective, selectObjective } from "shared/store/objectives";
 import { priorityToImportance } from "shared/utils";
-import { Frame } from "../../frame";
-import { Text } from "../../text";
 import { SideInformation } from "../side-information";
 
 interface ObjectiveProps {
