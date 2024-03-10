@@ -5,6 +5,7 @@ import { clientStore } from "client/store";
 import {
 	selectCameraDistance,
 	selectCameraFOVOffset,
+	selectCameraLock,
 	selectCameraLockedCenter,
 	selectCameraOffset,
 	selectCameraShiftLocked,
@@ -128,6 +129,7 @@ export class CameraController implements OnStart, OnTick {
 	onTick(dt: number) {
 		const State = clientStore.getState();
 		const Root = this.getCharacterRoot();
+		if (selectCameraLock(State)) return;
 		if (!Root) {
 			Camera.CameraType = Enum.CameraType.Follow;
 			return;

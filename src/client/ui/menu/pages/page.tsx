@@ -23,7 +23,7 @@ export function MenuPage({ menuPage }: MenuPageProps) {
 	}, [menuPage]);
 
 	return (
-		<Frame backgroundTransparency={fade} backgroundColor={Color3.fromRGB(0, 0, 0)} size={UDim2.fromScale(1, 1)}>
+		<Frame backgroundTransparency={1} backgroundColor={Color3.fromRGB(0, 0, 0)} size={UDim2.fromScale(1, 1)}>
 			{menuPage === "Clan" && <ClanPage />}
 			{menuPage === "Objectives" && <ObjectivesPage />}
 			{menuPage === "Perks" && <PerksPage />}

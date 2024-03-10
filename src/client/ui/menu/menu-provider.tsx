@@ -36,6 +36,8 @@ export function MenuProvider() {
 			<Frame
 				backgroundTransparency={0.7}
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
+				anchorPoint={new Vector2(0.5, 0.5)}
+				position={UDim2.fromScale(0.5, 0.5)}
 				size={UDim2.fromOffset(rem(120), rem(52.5))}
 			>
 				<uipadding

@@ -56,6 +56,7 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 	}
 
 	registerObjective(objective: BaseObjective<ObjectiveAttributes, any>) {
+		if (this.objectiveClasses.has(objective.objectiveId)) return;
 		this.objectiveClasses.set(objective.objectiveId, objective);
 	}
 

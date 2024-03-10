@@ -7,6 +7,7 @@ export interface CameraState {
 	shiftLocked: boolean;
 	distance: number;
 	lockedCenter: boolean;
+	dontUpdate: boolean;
 
 	flags: Indexable<string, number | boolean | string>;
 }
@@ -18,6 +19,7 @@ const initialState: CameraState = {
 	distance: 8,
 	lockedCenter: false,
 	flags: {},
+	dontUpdate: false,
 };
 
 export const cameraSlice = createProducer(initialState, {
@@ -44,6 +46,11 @@ export const cameraSlice = createProducer(initialState, {
 	setCameraLockedCenter: (state, lockedCenter) => ({
 		...state,
 		lockedCenter,
+	}),
+
+	setCameraLock: (state, lock) => ({
+		...state,
+		dontUpdate: lock,
 	}),
 
 	setCameraFlag: (state, flag: string, value: number | string | boolean) => ({

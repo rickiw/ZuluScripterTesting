@@ -49,8 +49,8 @@ function Objective({ objective }: ObjectiveProps) {
 					priority === 1
 						? Color3.fromRGB(143, 143, 143)
 						: priority === 2
-							? Color3.fromRGB(171, 179, 0)
-							: Color3.fromRGB(245, 0, 0)
+						? Color3.fromRGB(171, 179, 0)
+						: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
@@ -197,7 +197,7 @@ export function ObjectivesPage() {
 							selectedObjective
 								? `${selectedObjective.name} (${priorityToImportance(selectedObjective.priority)}): ${
 										selectedObjective.description
-									}`
+								  }`
 								: "Objective Description...."
 						}
 						textWrapped={true}
@@ -229,8 +229,8 @@ export function ObjectivesPage() {
 										selectedObjective.completion?.completed === true
 											? "COMPLETED"
 											: selectedObjective.active
-												? "STARTED"
-												: "START"
+											? "STARTED"
+											: "START"
 									}
 									TextColor3={Color3.fromRGB(255, 255, 255)}
 									FontFace={fonts.gothic.bold}
@@ -238,6 +238,7 @@ export function ObjectivesPage() {
 									TextWrapped={true}
 									Event={{
 										MouseButton1Down: () => {
+											if (selectedObjective.completion?.completed === true) return;
 											const startedObjective = Functions.BeginObjective(
 												selectedObjective.id,
 											).expect();
@@ -251,31 +252,29 @@ export function ObjectivesPage() {
 									}}
 								/>
 							</Frame>
-							{selectedObjective.active &&
-								(!selectedObjective.completion ||
-									selectedObjective.completion?.completed === false) && (
-									<textbutton
-										BackgroundTransparency={1}
-										AnchorPoint={new Vector2(0.5, 0.5)}
-										Text={"STOP OBJECTIVE"}
-										TextColor3={Color3.fromRGB(255, 0, 0)}
-										FontFace={fonts.gothic.regular}
-										TextSize={rem(1)}
-										TextTransparency={0.2}
-										Position={UDim2.fromScale(0.5, 0.97)}
-										TextYAlignment="Center"
-										Size={UDim2.fromScale(1, 0.1)}
-										Event={{
-											MouseButton1Click: () => {
-												Events.StopObjective(selectedObjective.id);
-												clientStore.setSelectedObjective({
-													...selectedObjective,
-													active: false,
-												});
-											},
-										}}
-									/>
-								)}
+							{selectedObjective.active && (
+								<textbutton
+									BackgroundTransparency={1}
+									AnchorPoint={new Vector2(0.5, 0.5)}
+									Text={"STOP OBJECTIVE"}
+									TextColor3={Color3.fromRGB(255, 0, 0)}
+									FontFace={fonts.gothic.regular}
+									TextSize={rem(1)}
+									TextTransparency={0.2}
+									Position={UDim2.fromScale(0.5, 0.97)}
+									TextYAlignment="Center"
+									Size={UDim2.fromScale(1, 0.1)}
+									Event={{
+										MouseButton1Click: () => {
+											Events.StopObjective(selectedObjective.id);
+											clientStore.setSelectedObjective({
+												...selectedObjective,
+												active: false,
+											});
+										},
+									}}
+								/>
+							)}
 						</>
 					)}
 				</Frame>

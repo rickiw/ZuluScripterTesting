@@ -1,6 +1,7 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
-import { TweenService, UserInputService, Workspace } from "@rbxts/services";
+import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Players, TweenService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
@@ -9,11 +10,14 @@ import { selectMenuOpen } from "client/store/menu";
 import { PlayerProfile } from "shared/utils";
 import { HandlesInput } from "./BaseInput";
 
+const Player = Players.LocalPlayer;
+const Character = (Player.Character || Player.CharacterAdded.Wait()[0]) as CharacterRigR15;
+
 @Controller()
 export class MenuController extends HandlesInput implements OnStart, OnRender {
 	menuPanel: BasePart;
 	openedCFrame?: CFrame;
-	cameraTween?: Tween;
+	currentTween?: Tween;
 	inputs = [Enum.KeyCode.M, Enum.KeyCode.ButtonL3];
 	controlSet = new ControlSet();
 
@@ -22,7 +26,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 		this.menuPanel = New("Part")({
 			Parent: Workspace.CurrentCamera,
 			Name: "MenuPanel",
-			Size: new Vector3(13, 6, 1),
+			Size: new Vector3(25, 15, 1),
 			CanCollide: false,
 			CanQuery: false,
 			Anchored: true,
@@ -69,57 +73,58 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	getCameraOffsetCFrame() {
 		const camera = Workspace.CurrentCamera!;
 
-		const offset = new Vector3(0, 0, 3);
+		const hrp = Character.HumanoidRootPart;
+		const offset = hrp.Position.add(hrp.CFrame.RightVector.mul(5)).add(hrp.CFrame.LookVector.mul(-3));
 
-		return camera.CFrame.mul(new CFrame(offset));
+		return new CFrame(offset.add(new Vector3(0, 3, 0)), this.getMenuPanelCFrame().Position);
 	}
 
-	getMenuPositionOffset() {
-		const offset = new CFrame(10, -1, -12.5);
-		return offset;
+	setCamera() {
+		const camera = Workspace.CurrentCamera!;
+		const CFrame = this.getCameraOffsetCFrame();
+		this.currentTween = TweenService.Create(camera, new TweenInfo(0.6, Enum.EasingStyle.Quart), { CFrame });
+		this.currentTween.Play();
 	}
 
 	getMenuPanelCFrame() {
-		const camera = Workspace.CurrentCamera!;
-		const mouse = UserInputService.GetMouseLocation();
+		const hrp = Character.HumanoidRootPart;
+		const position = hrp.CFrame.LookVector.mul(10);
+		const offset = new Vector3(0, 2, 0);
+		return new CFrame(hrp.Position.add(position).add(offset), hrp.Position.add(offset));
+	}
 
-		// add positioning offset
-		const posititionalOffset = this.getMenuPositionOffset();
-		const rotationalOffset = CFrame.Angles(0, math.rad(160), 0);
-
-		// add mouse offset from center screen
-		const menuPanelWorldSpace = this.menuPanel.Position;
-		const [viewportPoint, visible] = camera.WorldToViewportPoint(menuPanelWorldSpace);
-
-		const center = new Vector2(viewportPoint.X, viewportPoint.Y);
-		const tiltAngleX = ((mouse.X - center.X) / center.X) * 5;
-		const tiltAngleY = ((mouse.Y - center.Y) / center.Y) * 10;
-		const rotation = CFrame.Angles(math.rad(tiltAngleY), math.rad(tiltAngleX), 0);
-
-		const panelCFrame = camera.CFrame.mul(posititionalOffset).mul(rotationalOffset);
-		return visible ? panelCFrame.mul(rotation) : panelCFrame;
+	setMenuPanel() {
+		const CFrame = this.getMenuPanelCFrame();
+		this.menuPanel.CFrame = CFrame;
 	}
 
 	toggleMenu() {
 		const camera = Workspace.CurrentCamera!;
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
+		const isAirborne = !Character.Humanoid.FloorMaterial || Character.Humanoid.FloorMaterial === Enum.Material.Air;
+		if (isAirborne) return;
+		if (
+			(this.currentTween && this.currentTween.PlaybackState === Enum.PlaybackState.Playing) ||
+			(this.currentTween && this.currentTween.PlaybackState === Enum.PlaybackState.Playing)
+		)
+			return;
 
 		if (!currentlyOpen) {
+			Character.Humanoid.UnequipTools();
 			this.openedCFrame = camera.CFrame;
-
-			if (this.cameraTween) this.cameraTween.Cancel();
-
-			const newCameraCFrame = this.getCameraOffsetCFrame();
-			const menuPanelCFrame = this.getMenuPanelCFrame();
-
-			this.cameraTween = TweenService.Create(camera, new TweenInfo(0.5), { CFrame: newCameraCFrame });
-			this.cameraTween.Play();
-			TweenService.Create(this.menuPanel, new TweenInfo(0.5), { CFrame: menuPanelCFrame }).Play();
+			clientStore.setCameraLock(true);
+			Character.Humanoid.WalkSpeed = 0;
+			this.setCamera();
+			this.setMenuPanel();
 		} else {
-			this.menuPanel.Position = new Vector3(0, -100, 0);
-			if (this.openedCFrame) {
-				TweenService.Create(camera, new TweenInfo(0.5), { CFrame: this.openedCFrame }).Play();
-			}
+			this.currentTween = TweenService.Create(camera, new TweenInfo(0.6, Enum.EasingStyle.Quart), {
+				CFrame: this.openedCFrame,
+			});
+			this.currentTween.Play();
+			this.currentTween.Completed.Connect(() => {
+				clientStore.setCameraLock(false);
+				Character.Humanoid.WalkSpeed = 1;
+			});
 		}
 
 		clientStore.setMenuOpen(!currentlyOpen);
@@ -127,12 +132,8 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 
 	onRender(dt: number) {
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
-
 		if (currentlyOpen) {
-			const camera = Workspace.CurrentCamera!;
-			const menuPanelCFrame = this.getMenuPanelCFrame();
-
-			this.menuPanel.CFrame = menuPanelCFrame;
+			Character.Humanoid.UnequipTools();
 		}
 	}
 }

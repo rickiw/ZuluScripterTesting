@@ -44,6 +44,7 @@
 		"@rbxts/fastcast": "^13.2.0-ts.2",
 		"@rbxts/flipper": "^2.0.1",
 		"@rbxts/fusion": "^0.1.1-ts.beta.1",
+		"@rbxts/iris": "^1.0.1",
 		"@rbxts/log": "^0.6.3",
 		"@rbxts/maid": "^1.1.0",
 		"@rbxts/net": "^3.0.9",
