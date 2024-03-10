@@ -49,8 +49,8 @@ function Objective({ objective }: ObjectiveProps) {
 					priority === 1
 						? Color3.fromRGB(143, 143, 143)
 						: priority === 2
-						? Color3.fromRGB(171, 179, 0)
-						: Color3.fromRGB(245, 0, 0)
+							? Color3.fromRGB(171, 179, 0)
+							: Color3.fromRGB(245, 0, 0)
 				}
 			/>
 			<Text
@@ -78,7 +78,7 @@ function Objective({ objective }: ObjectiveProps) {
 				borderColor={Color3.fromRGB(255, 255, 255)}
 				borderSize={1}
 				anchorPoint={new Vector2(0.5, 0.5)}
-				position={UDim2.fromOffset(rem(55), rem(3.75))}
+				position={UDim2.fromOffset(rem(60), rem(5))}
 				size={lerpBinding(hover, UDim2.fromOffset(40, 40), UDim2.fromOffset(45, 45))}
 				event={{
 					MouseEnter: () => hoverMotion.spring(1, springs.responsive),
@@ -137,7 +137,7 @@ export function ObjectivesPage() {
 					FillDirectionMaxCells={0}
 					FillDirection={Enum.FillDirection.Horizontal}
 					SortOrder={Enum.SortOrder.LayoutOrder}
-					CellSize={UDim2.fromScale(1, 0.08)}
+					CellSize={UDim2.fromOffset(rem(65), rem(10))}
 				/>
 				{objectives
 					.sort((a, b) => a.id < b.id)
@@ -197,7 +197,7 @@ export function ObjectivesPage() {
 							selectedObjective
 								? `${selectedObjective.name} (${priorityToImportance(selectedObjective.priority)}): ${
 										selectedObjective.description
-								  }`
+									}`
 								: "Objective Description...."
 						}
 						textWrapped={true}
@@ -229,8 +229,8 @@ export function ObjectivesPage() {
 										selectedObjective.completion?.completed === true
 											? "COMPLETED"
 											: selectedObjective.active
-											? "STARTED"
-											: "START"
+												? "STARTED"
+												: "START"
 									}
 									TextColor3={Color3.fromRGB(255, 255, 255)}
 									FontFace={fonts.gothic.bold}

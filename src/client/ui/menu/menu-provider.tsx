@@ -29,16 +29,14 @@ export function MenuProvider() {
 			alwaysOnTop={true}
 			face={Enum.NormalId.Front}
 			adornee={adornee}
-			sizingMode={Enum.SurfaceGuiSizingMode.FixedSize}
-			canvasSize={new Vector2(2085, 900)}
+			sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
+			pixelsPerStud={100}
 			enabled={menuOpen}
 		>
 			<Frame
-				anchorPoint={new Vector2(0.5, 0.5)}
 				backgroundTransparency={0.7}
 				backgroundColor={Color3.fromRGB(0, 0, 0)}
-				position={UDim2.fromScale(0.5, 0.5)}
-				size={UDim2.fromScale(1, 1)}
+				size={UDim2.fromOffset(rem(120), rem(52.5))}
 			>
 				<uipadding
 					PaddingTop={new UDim(0, rem(1))}
