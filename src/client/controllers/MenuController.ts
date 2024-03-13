@@ -71,10 +71,8 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	}
 
 	getCameraOffsetCFrame() {
-		const camera = Workspace.CurrentCamera!;
-
 		const hrp = Character.HumanoidRootPart;
-		const offset = hrp.Position.add(hrp.CFrame.RightVector.mul(5)).add(hrp.CFrame.LookVector.mul(-3));
+		const offset = hrp.Position.add(hrp.CFrame.RightVector.mul(3)).add(hrp.CFrame.LookVector.mul(-3));
 
 		return new CFrame(offset.add(new Vector3(0, 3, 0)), this.getMenuPanelCFrame().Position);
 	}
@@ -88,7 +86,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 
 	getMenuPanelCFrame() {
 		const hrp = Character.HumanoidRootPart;
-		const position = hrp.CFrame.LookVector.mul(10);
+		const position = hrp.CFrame.LookVector.mul(8);
 		const offset = new Vector3(0, 2, 0);
 		return new CFrame(hrp.Position.add(position).add(offset), hrp.Position.add(offset));
 	}
@@ -96,6 +94,14 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	setMenuPanel() {
 		const CFrame = this.getMenuPanelCFrame();
 		this.menuPanel.CFrame = CFrame;
+	}
+
+	setCharacterVisible(visible: boolean) {
+		Character.GetDescendants().forEach((child) => {
+			if (child.IsA("BasePart") && child.Transparency < 1) {
+				child.Transparency = visible ? 0 : 0.95;
+			}
+		});
 	}
 
 	toggleMenu() {
@@ -116,11 +122,13 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			Character.Humanoid.WalkSpeed = 0;
 			this.setCamera();
 			this.setMenuPanel();
+			this.setCharacterVisible(false);
 		} else {
 			this.currentTween = TweenService.Create(camera, new TweenInfo(0.6, Enum.EasingStyle.Quart), {
 				CFrame: this.openedCFrame,
 			});
 			this.currentTween.Play();
+			this.setCharacterVisible(true);
 			this.currentTween.Completed.Connect(() => {
 				clientStore.setCameraLock(false);
 				Character.Humanoid.WalkSpeed = 1;
