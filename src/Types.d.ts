@@ -27,6 +27,9 @@ interface ReplicatedStorage extends Instance {
 	};
 	Assets: Folder & {
 		Bullet: BasePart;
+		Weapons: Folder & {
+			"AK-105": Tool;
+		};
 	};
 }
 

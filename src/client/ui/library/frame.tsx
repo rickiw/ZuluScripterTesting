@@ -20,10 +20,6 @@ export interface FrameProps<T extends Instance = Frame> extends Roact.PropsWithC
 	cornerRadius?: UDim | Roact.Binding<UDim>;
 }
 
-export interface ViewportFrameProps<T extends Instance = ViewportFrame> extends FrameProps<T> {
-	camera?: Camera | Roact.Binding<Camera>;
-}
-
 export interface ScrollingFrameProps<T extends Instance = ScrollingFrame> extends FrameProps<T> {
 	canvasSize?: UDim2 | Roact.Binding<UDim2>;
 	automaticSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;

@@ -1,19 +1,33 @@
-import Roact from "@rbxts/roact";
+import Roact, { useContext } from "@rbxts/roact";
 import { Button } from "client/ui/library/button/button";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
+import { SelectedWeaponContext } from "../context/customization";
 import { useRem } from "../hooks";
 
 export interface GunButtonProps {
 	name: string;
 	previewImage: string;
+	setContext?: boolean;
 }
 
 export function CustomizationButton(props: GunButtonProps) {
 	const rem = useRem();
 
+	const [selectedWeapon, setSelectedWeapon] = useContext(SelectedWeaponContext);
+
 	return (
-		<Button cornerRadius={new UDim(0, 8)} backgroundColor={Color3.fromRGB(52, 52, 52)}>
+		<Button
+			cornerRadius={new UDim(0, 8)}
+			backgroundColor={Color3.fromRGB(52, 52, 52)}
+			event={{
+				MouseButton1Click: () => {
+					if (props.setContext) {
+						setSelectedWeapon(props.name);
+					}
+				},
+			}}
+		>
 			<Image
 				image={props.previewImage}
 				backgroundTransparency={1}
