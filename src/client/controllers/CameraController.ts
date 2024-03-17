@@ -5,6 +5,7 @@ import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
 import {
 	selectCameraFOVOffset,
+	selectCameraFlag,
 	selectCameraLock,
 	selectCameraLockedCenter,
 	selectCameraOffset,
@@ -14,7 +15,8 @@ import {
 import { lerp } from "shared/utils";
 
 let SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
-const ZOOM_SENSITIVITY = 1;
+const SCROLL_SENSITIVITY = 1;
+const CAMERA_SMOOTHING = 0.5;
 const FIELD_OF_VIEW = 70;
 const Camera = Workspace.CurrentCamera!;
 
@@ -51,7 +53,7 @@ export class CameraController implements OnStart, OnTick {
 
 			if (inputObject.UserInputType === Enum.UserInputType.MouseWheel) {
 				clientStore.setCameraZoomDistance(
-					math.clamp(selectCameraZoomDistance(state) - inputObject.Position.Z * ZOOM_SENSITIVITY, 3, 15),
+					math.clamp(selectCameraZoomDistance(state) - inputObject.Position.Z * SCROLL_SENSITIVITY, 3, 15),
 				);
 			}
 
@@ -89,8 +91,9 @@ export class CameraController implements OnStart, OnTick {
 		UserInputService.TouchPinch.Connect((touches: Vector2[]) => {
 			const state = clientStore.getState();
 			const zoomSpeed = touches[0].Magnitude - touches[1].Magnitude;
+			const currentZoom = selectCameraZoomDistance(state);
 
-			clientStore.setCameraZoomDistance(math.clamp(selectCameraDistance(state) + zoomSpeed, 0, 15));
+			clientStore.setCameraZoomDistance(math.clamp(currentZoom + zoomSpeed, 0, 15));
 		});
 	}
 
@@ -151,18 +154,29 @@ export class CameraController implements OnStart, OnTick {
 		const baseCameraPosition = humanoidRootPart.Position;
 		const lookAtPosition = baseCameraPosition.sub(targetCamRotation);
 
-		Camera.CFrame = CFrame.lookAt(lookAtPosition, baseCameraPosition).mul(new CFrame(this.currentCameraOffset));
+		const cameraBaseTarget = CFrame.lookAt(lookAtPosition, baseCameraPosition);
+		const cameraTarget = cameraBaseTarget.mul(new CFrame(this.currentCameraOffset));
+
+		Camera.CFrame = Camera.CFrame.Lerp(cameraTarget, CAMERA_SMOOTHING);
 		Camera.FieldOfView = lerp(Camera.FieldOfView, this.currentCameraFOV, 0.1);
+
+		// Rotate body to face the camera
 		const [pitch, yaw, roll] = Camera.CFrame.ToEulerAnglesYXZ();
 		const isShiftLocked = selectCameraShiftLocked(state);
-		if (humanoidRootPart && isShiftLocked) {
-			humanoidRootPart.CFrame = humanoidRootPart.CFrame.Lerp(
-				new CFrame(humanoidRootPart.Position).mul(CFrame.Angles(0, yaw, 0)),
-				0.2,
-			);
+		if (isShiftLocked && humanoidRootPart) {
+			humanoidRootPart.CFrame = new CFrame(humanoidRootPart.Position).mul(CFrame.Angles(0, yaw, 0));
 		}
+
 		SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
-		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY * math.pi, 0, math.rad(160));
-		this.theta += this.gamepadState.X * SENSITIVITY * math.pi;
+
+		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
+		const aimMultiplier = isAiming ? 0.5 : 1;
+
+		this.phi = math.clamp(
+			this.phi - this.gamepadState.Y * (SENSITIVITY * aimMultiplier) * math.pi,
+			0,
+			math.rad(160),
+		);
+		this.theta += this.gamepadState.X * (SENSITIVITY * aimMultiplier) * math.pi;
 	}
 }

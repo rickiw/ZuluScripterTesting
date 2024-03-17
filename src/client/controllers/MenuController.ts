@@ -1,7 +1,7 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, TweenService, Workspace } from "@rbxts/services";
+import { Players, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
@@ -108,12 +108,18 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 		const camera = Workspace.CurrentCamera!;
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
 		const isAirborne = !Character.Humanoid.FloorMaterial || Character.Humanoid.FloorMaterial === Enum.Material.Air;
-		if (isAirborne) return;
+		if (isAirborne) {
+			return;
+		}
 		if (
 			(this.currentTween && this.currentTween.PlaybackState === Enum.PlaybackState.Playing) ||
 			(this.currentTween && this.currentTween.PlaybackState === Enum.PlaybackState.Playing)
-		)
+		) {
 			return;
+		}
+
+		UserInputService.MouseIconEnabled = true;
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
 
 		if (!currentlyOpen) {
 			Character.Humanoid.UnequipTools();

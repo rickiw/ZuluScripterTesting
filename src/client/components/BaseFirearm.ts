@@ -18,6 +18,9 @@ export interface FirearmAttributes {}
 const player = Players.LocalPlayer;
 const camera = Workspace.CurrentCamera!;
 
+const CAMERA_X_OFFSET = 1.75;
+const CAMERA_Z_OFFSET = 0.2;
+
 @Component({
 	tag: "baseFirearm",
 	refreshAttributes: false,
@@ -68,31 +71,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.connections.equipped = this.instance.Equipped.Connect(() => {
-			this.loadBinds();
-			this.loadedAnimations.Idle.Play();
-			clientStore.setCameraLockedCenter(true);
-			clientStore.setCameraFlag("FirearmIsEquipped", true);
-
-			clientStore.setShiftLocked(false);
-			clientStore.setFovOffset(0);
-			clientStore.setCameraFlag("FirearmIsAiming", false);
-
-			this.equipped = true;
+			this.equip();
 		});
 
 		this.connections.unequipped = this.instance.Unequipped.Connect(() => {
-			this.unloadBinds();
-			this.loadedAnimations.Idle.Stop();
-			clientStore.setCameraLockedCenter(false);
-			clientStore.setCameraFlag("FirearmIsEquipped", false);
-			clientStore.setCameraFlag("FirearmIsAiming", false);
-
-			this.aiming = false;
-			clientStore.setShiftLocked(false);
-			clientStore.setCameraOffset(Vector3.zero);
-			clientStore.setFovOffset(0);
-
-			this.equipped = false;
+			this.unequip();
 		});
 
 		this.connections.loop = RunService.RenderStepped.Connect(() => {
@@ -125,8 +108,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	loadAnimations() {
-		if (!this.character) return;
-		this.character.WaitForChild("Humanoid");
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
 			this.character.Humanoid,
@@ -140,7 +121,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	loadBinds() {
 		this.controls.add({
-			// differentiate by name so multiple weapons can have binds (and for general stability)
 			ID: `fire-${this.instance.Name}`,
 			Name: "Fire",
 			Enabled: false,
@@ -183,7 +163,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		}
 
 		this.controls.add({
-			// differentiate by name so multiple weapons can have binds (and for general stability)
 			ID: `reload-${this.instance.Name}`,
 			Name: "Reload",
 			Enabled: false,
@@ -196,7 +175,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.controls.add({
-			// differentiate by name so multiple weapons can have binds (and for general stability)
 			ID: `aim-${this.instance.Name}`,
 			Name: "Aim",
 			Enabled: false,
@@ -215,49 +193,68 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.controls.add({
-			// differentiate by name so multiple weapons can have binds (and for general stability)
-			ID: `switchShoulderLeft-${this.instance.Name}`,
-			Name: "Lean Left",
+			ID: `switchShoulder-${this.instance.Name}`,
+			Name: "Toggle Lean",
 			Enabled: false,
 			Mobile: false,
-			controls: [Enum.KeyCode.Q, Enum.KeyCode.DPadLeft],
+			controls: [Enum.KeyCode.T, Enum.KeyCode.DPadLeft],
 
 			onBegin: () => {
 				this.bias.left = !this.bias.left;
 				if (this.bias.left && this.bias.right) this.bias.right = false;
 			},
 		});
+	}
 
-		this.controls.add({
-			// differentiate by name so multiple weapons can have binds (and for general stability)
-			ID: `switchShoulderRight-${this.instance.Name}`,
-			Name: "Lean Right",
-			Enabled: false,
-			Mobile: false,
-			controls: [Enum.KeyCode.E, Enum.KeyCode.DPadRight],
+	equip() {
+		this.loadBinds();
+		this.loadedAnimations.Idle.Play();
 
-			onBegin: () => {
-				this.bias.right = !this.bias.right;
-				if (!this.bias.left && !this.bias.right) this.bias.left = false;
-			},
-		});
+		clientStore.setCameraLockedCenter(true);
+		clientStore.setShiftLocked(false);
+		clientStore.setFovOffset(0);
+		clientStore.setCameraFlag("FirearmIsAiming", false);
+
+		this.equipped = true;
+	}
+
+	unequip() {
+		this.unloadBinds();
+
+		this.loadedSounds.Reload.stop();
+		this.loadedAnimations.Idle.Stop();
+		this.loadedAnimations.Aim.Stop();
+		this.loadedAnimations.Reload.Stop();
+		this.loadedAnimations.Fire.Stop();
+
+		clientStore.setCameraLockedCenter(false);
+		clientStore.setCameraFlag("FirearmIsAiming", false);
+
+		this.aiming = false;
+		clientStore.setShiftLocked(false);
+		clientStore.setCameraOffset(Vector3.zero);
+		clientStore.setFovOffset(0);
+
+		this.equipped = false;
 	}
 
 	aimIn() {
 		this.loadedSounds.AimIn.play();
 
-		this.aiming = true;
+		clientStore.setShiftLocked(true);
+		clientStore.setCameraFlag("FirearmIsAiming", true);
 
-		// clientStore.setShiftLocked(true);
-		// clientStore.setCameraFlag("FirearmIsAiming", true);
+		this.aiming = true;
 	}
 
 	aimOut() {
 		this.loadedSounds.AimOut.play();
-		this.aiming = false;
+
 		clientStore.setShiftLocked(false);
-		clientStore.setFovOffset(0);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
+		clientStore.setFovOffset(0);
+
+		this.aiming = false;
 	}
 
 	unloadBinds() {
@@ -273,24 +270,26 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	onTick(dt: number) {
+		if (!this.equipped) return;
+
 		const state = clientStore.getState();
 
 		const zoom = this.character.Head.Position.sub(camera.CFrame.Position).Magnitude;
-		const targetAimOffset = new Vector3(1.75 * (this.bias.left && this.bias ? 1 : -1), 0.15, 0).add(
-			new Vector3(0, 0, -zoom),
-		);
-		if (this.aiming && selectCameraOffset(state) !== targetAimOffset && this.equipped) {
+		const bias = CAMERA_X_OFFSET * (this.bias.left && this.bias ? 1 : -1);
+		const targetAimOffset = new Vector3(bias, CAMERA_Z_OFFSET, 0).add(new Vector3(0, 0, -zoom));
+		const currentAimOffset = selectCameraOffset(state);
+
+		const aimOffsetIsDifferent = currentAimOffset !== targetAimOffset;
+		if (this.aiming && aimOffsetIsDifferent) {
 			clientStore.setCameraOffset(targetAimOffset);
-		} else if (!this.aiming && selectCameraOffset(state) === targetAimOffset && this.equipped) {
+		} else if (!this.aiming) {
 			clientStore.setCameraOffset(Vector3.zero);
 		}
 
 		if (this.aiming && !this.loadedAnimations.Aim.IsPlaying) {
-			this.loadedAnimations.Aim.Play();
 			this.loadedAnimations.Idle.Stop();
-		}
-
-		if (!this.aiming && this.loadedAnimations.Aim.IsPlaying) {
+			this.loadedAnimations.Aim.Play();
+		} else if (!this.aiming && this.loadedAnimations.Aim.IsPlaying) {
 			this.loadedAnimations.Aim.Stop();
 			this.loadedAnimations.Idle.Play();
 		}

@@ -32,6 +32,12 @@ export class SoundCache {
 			this.play();
 		}
 	}
+
+	stop() {
+		for (const sound of this.playing) {
+			sound.Stop();
+		}
+	}
 }
 
 export namespace SoundUtil {
