@@ -5,7 +5,7 @@ export interface CameraState {
 	cameraOffset: Vector3;
 	fovOffset: number;
 	shiftLocked: boolean;
-	distance: number;
+	zoomDistance: number;
 	lockedCenter: boolean;
 	dontUpdate: boolean;
 
@@ -16,7 +16,7 @@ const initialState: CameraState = {
 	cameraOffset: Vector3.zero,
 	fovOffset: 0,
 	shiftLocked: false,
-	distance: 8,
+	zoomDistance: 8,
 	lockedCenter: false,
 	flags: {},
 	dontUpdate: false,
@@ -38,9 +38,9 @@ export const cameraSlice = createProducer(initialState, {
 		shiftLocked,
 	}),
 
-	setCameraDistance: (state, distance) => ({
+	setCameraZoomDistance: (state, zoomDistance) => ({
 		...state,
-		distance,
+		zoomDistance,
 	}),
 
 	setCameraLockedCenter: (state, lockedCenter) => ({

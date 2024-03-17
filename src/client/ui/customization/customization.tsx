@@ -8,7 +8,6 @@ import { Button } from "client/ui/library/button/button";
 import { Frame, ScrollingFrame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
 import { SelectedWeaponContext } from "../context/customization";
-import { WeaponPreview } from "./frames/weapon-preview";
 
 export function Customization() {
 	const rem = useRem();
@@ -197,7 +196,7 @@ export function Customization() {
 						size={UDim2.fromOffset(rem(80), rem(42.5))}
 						backgroundColor={Color3.fromRGB(255, 255, 255)}
 					>
-						<WeaponPreview weapon={weapon} />
+						{/* <WeaponPreview weapon={weapon} /> */}
 					</Frame>
 				</Frame>
 			</SelectedWeaponContext.Provider>

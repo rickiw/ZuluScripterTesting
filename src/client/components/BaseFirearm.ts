@@ -1,7 +1,7 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, RunService, UserInputService } from "@rbxts/services";
+import { Players, RunService, UserInputService, Workspace } from "@rbxts/services";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
 import { selectCameraOffset } from "client/store/camera";
@@ -16,6 +16,7 @@ export interface FirearmInstance extends Tool {}
 export interface FirearmAttributes {}
 
 const player = Players.LocalPlayer;
+const camera = Workspace.CurrentCamera!;
 
 @Component({
 	tag: "baseFirearm",
@@ -36,7 +37,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	burstFiring = false;
 
 	aiming = false;
-	bias = [true, false];
+	bias: { left: boolean; right: boolean } = {
+		left: true,
+		right: false,
+	};
 
 	loaded = false;
 	equipped = false;
@@ -68,6 +72,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.loadedAnimations.Idle.Play();
 			clientStore.setCameraLockedCenter(true);
 			clientStore.setCameraFlag("FirearmIsEquipped", true);
+
+			clientStore.setShiftLocked(false);
+			clientStore.setFovOffset(0);
+			clientStore.setCameraFlag("FirearmIsAiming", false);
 
 			this.equipped = true;
 		});
@@ -196,19 +204,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			controls: [Enum.UserInputType.MouseButton2, Enum.KeyCode.ButtonL2],
 
 			onBegin: () => {
-				this.loadedSounds.AimIn.play();
-				this.aiming = true;
-				clientStore.setShiftLocked(true);
-				clientStore.setFovOffset(-40);
-				clientStore.setCameraFlag("FirearmIsAiming", true);
+				this.aimIn();
 			},
 
 			onEnd: () => {
-				this.loadedSounds.AimOut.play();
-				this.aiming = false;
-				clientStore.setShiftLocked(false);
-				clientStore.setFovOffset(0);
-				clientStore.setCameraFlag("FirearmIsAiming", false);
+				this.aimOut();
 			},
 
 			priority: 1,
@@ -223,8 +223,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			controls: [Enum.KeyCode.Q, Enum.KeyCode.DPadLeft],
 
 			onBegin: () => {
-				this.bias[0] = !this.bias[0];
-				if (this.bias[0] && this.bias[1]) this.bias[1] = false;
+				this.bias.left = !this.bias.left;
+				if (this.bias.left && this.bias.right) this.bias.right = false;
 			},
 		});
 
@@ -237,10 +237,27 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			controls: [Enum.KeyCode.E, Enum.KeyCode.DPadRight],
 
 			onBegin: () => {
-				this.bias[1] = !this.bias[1];
-				if (this.bias[0] && this.bias[1]) this.bias[0] = false;
+				this.bias.right = !this.bias.right;
+				if (!this.bias.left && !this.bias.right) this.bias.left = false;
 			},
 		});
+	}
+
+	aimIn() {
+		this.loadedSounds.AimIn.play();
+
+		this.aiming = true;
+
+		// clientStore.setShiftLocked(true);
+		// clientStore.setCameraFlag("FirearmIsAiming", true);
+	}
+
+	aimOut() {
+		this.loadedSounds.AimOut.play();
+		this.aiming = false;
+		clientStore.setShiftLocked(false);
+		clientStore.setFovOffset(0);
+		clientStore.setCameraFlag("FirearmIsAiming", false);
 	}
 
 	unloadBinds() {
@@ -257,7 +274,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	onTick(dt: number) {
 		const state = clientStore.getState();
-		const targetAimOffset = new Vector3(1.25 * (this.bias[0] && !this.bias ? 1 : -1), 0, 0);
+
+		const zoom = this.character.Head.Position.sub(camera.CFrame.Position).Magnitude;
+		const targetAimOffset = new Vector3(1.75 * (this.bias.left && this.bias ? 1 : -1), 0.15, 0).add(
+			new Vector3(0, 0, -zoom),
+		);
 		if (this.aiming && selectCameraOffset(state) !== targetAimOffset && this.equipped) {
 			clientStore.setCameraOffset(targetAimOffset);
 		} else if (!this.aiming && selectCameraOffset(state) === targetAimOffset && this.equipped) {
