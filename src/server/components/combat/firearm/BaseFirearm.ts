@@ -83,7 +83,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			magazine: new FirearmMagazine(this.configuration.Magazine),
 			cooldown: false,
 			reloading: false,
-			bullets: 500,
+			reserve: 500,
 			mode: this.configuration.Barrel.fireModes[0],
 		};
 
@@ -189,12 +189,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	initRemotes() {
-		this.connections.fireRemote = Events.FireFirearm.connect((player, weapon, mousePoint) => {
-			if (player === this.wielder && weapon === this.tool) {
-				Log.Verbose("Firing firearm");
-				const direction = mousePoint.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
-				this.fire(direction);
+		this.connections.fireRemote = Events.FireFirearm.connect((player, weapon, mousePosition) => {
+			if (player !== this.wielder || weapon !== this.tool || !this.canFire) {
+				return;
 			}
+			const direction = mousePosition.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
+			this.fire(direction);
 		});
 
 		this.connections.reloadRemote = Events.ReloadFirearm.connect((player, weapon) => {
@@ -212,24 +212,48 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.connections.equipped = this.tool.Equipped.Connect(() => {
-			serverStore.setWeapon(this.wielder.UserId, this.state);
-			this.equipped = true;
+			this.equip();
 		});
 
 		this.connections.unequipped = this.tool.Unequipped.Connect(() => {
-			serverStore.setWeapon(this.wielder.UserId);
-			AnimationUtil.stopAll(this.loadedAnimations);
-			this.equipped = false;
+			this.unequip();
 		});
+	}
+
+	equip() {
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+		this.equipped = true;
+	}
+
+	unequip() {
+		this.updateState({ reloading: false });
+		serverStore.setWeapon(this.wielder.UserId, undefined);
+		AnimationUtil.stopAll(this.loadedAnimations);
+		this.loadedSounds.Reload.stop();
+		this.equipped = false;
 	}
 
 	getVelocity() {
 		return this.configuration.Barrel.velocity + this.configuration.Barrel.chambered.velocity;
 	}
 
+	updateState(update: Partial<FirearmState>) {
+		this.state = { ...this.state, ...update };
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+	}
+
+	updateMagazineHolding(holding: number) {
+		this.state.magazine.holding = holding;
+		serverStore.setWeapon(this.wielder.UserId, this.state);
+	}
+
 	fire(direction: Vector3) {
-		if (this.state.magazine === undefined) this.loadedSounds.ChamberEmpty.play();
-		if (!this.canFire()) return;
+		if (this.state.magazine === undefined || (this.state.magazine.holding <= 0 && this.state.reserve <= 0)) {
+			this.loadedSounds.ChamberEmpty.play();
+		}
+		if (!this.canFire()) {
+			return;
+		}
 
 		this.caster.Fire(
 			this.configuration.Barrel.firePoint.WorldPosition,
@@ -241,33 +265,34 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.state.cooldown = true;
 		serverStore.setWeapon(this.wielder.UserId, this.state);
 		task.delay(60 / this.configuration.Barrel.rpm, () => {
-			this.state.cooldown = false;
-			serverStore.setWeapon(this.wielder.UserId, this.state);
+			this.updateState({ cooldown: false });
 		});
 
 		this.loadedSounds.Fire.play();
+		this.loadedAnimations.Fire.Play();
 		this.state.magazine.take();
 	}
 
 	reload() {
-		if (this.state.reloading || this.state.bullets <= 0) return;
-		this.state.reloading = true;
-		serverStore.setWeapon(this.wielder.UserId, this.state);
+		if (this.state.reloading || this.state.reserve <= 0) {
+			return;
+		}
+
+		this.updateState({ reloading: true });
 		this.loadedSounds.Reload.play();
 		this.loadedAnimations.Reload.Play();
 
-		// Calculate bullets needed for a full mag
-		const bulletsNeeded = this.state.magazine.getCapacity() - this.state.magazine.getRemaining();
-		// Store how many bullets we will actually move from reserve to mag (either the bulletsNeeded, or the total bullets we have if they are less than bulletsNeeded)
-		const bulletsToMove = math.min(bulletsNeeded, this.state.bullets);
-
-		// Subtract needed bullets from bullet state and add it to the magBullets state
-		this.state.bullets -= bulletsToMove;
-		this.state.magazine.holding += bulletsToMove;
+		const bulletsNeededToFillMag = this.state.magazine.getCapacity() - this.state.magazine.getRemaining();
+		const bulletsToFill = math.min(bulletsNeededToFillMag, this.state.reserve);
 
 		this.loadedAnimations.Reload.Stopped.Wait();
-		this.state.reloading = false;
-		serverStore.setWeapon(this.wielder.UserId, this.state);
+
+		if (!this.state.reloading) {
+			return;
+		}
+
+		this.updateState({ reserve: this.state.reserve - bulletsToFill, reloading: false });
+		this.updateMagazineHolding(this.state.magazine.holding + bulletsToFill);
 	}
 
 	cycleFireModes() {

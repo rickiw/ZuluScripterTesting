@@ -134,7 +134,7 @@ export class CameraController implements OnStart, OnTick {
 		UserInputService.MouseBehavior = mouseBehavior;
 		UserInputService.MouseIconEnabled = !selectCameraLockedCenter(state);
 
-		this.additionalCameraOffset = new Vector3(0, 2, 0);
+		this.additionalCameraOffset = new Vector3(0, 2.15, 0);
 
 		const zoomDistance = selectCameraZoomDistance(state);
 

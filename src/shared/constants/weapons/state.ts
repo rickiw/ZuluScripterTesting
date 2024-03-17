@@ -2,7 +2,7 @@ import { FireMode, FirearmMagazine, WeaponState } from ".";
 
 export interface FirearmState extends WeaponState {
 	magazine: FirearmMagazine;
-	bullets: number;
+	reserve: number;
 
 	mode: FireMode;
 

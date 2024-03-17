@@ -30,7 +30,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	implements OnStart, OnTick
 {
 	configuration: FirearmLike;
-	wielder = player;
 	character = (player.Character ?? player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 
 	controls = new ControlSet();
@@ -47,7 +46,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	loaded = false;
 	equipped = false;
-	connections: Indexable<string, RBXScriptConnection> = {};
+	connections: Indexable<"activated" | "equipped" | "unequipped" | "loop", RBXScriptConnection> = {} as any;
 
 	state!: FirearmState | undefined;
 	loadedSounds: FirearmSounds<SoundCache>;
@@ -66,8 +65,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.connections.activated = this.instance.Activated.Connect(() => {
 			if (this.state?.cooldown || this.state?.magazine === undefined) return;
-			this.loadedAnimations.Fire.Play();
-			Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
+			this.fire();
 		});
 
 		this.connections.equipped = this.instance.Equipped.Connect(() => {
@@ -100,6 +98,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.subscribe(selectWeapon(player.UserId), (weapon) => {
 			this.state = weapon as FirearmState | undefined;
 		});
+
 		this.loaded = true;
 	}
 
@@ -115,8 +114,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	fire() {
-		this.loadedAnimations.Fire.Play();
-		Events.FireFirearm.fire(this.instance, this.wielder.GetMouse().Hit.Position);
+		Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
 	}
 
 	loadBinds() {
@@ -141,7 +139,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 					case "Burst": {
 						if (this.burstFiring) break;
 						this.burstFiring = true;
-						for (let i = 0; i < this.configuration.Barrel.burstCount; i++) this.fire();
+						for (let i = 0; i < this.configuration.Barrel.burstCount; i++) {
+							this.fire();
+						}
 						this.burstFiring = false;
 						break;
 					}
@@ -157,8 +157,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		if (UserInputService.TouchEnabled) {
 			UserInputService.TouchTap.Connect((touchPositions, gameProcessedEvent) => {
 				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) return;
-				this.loadedAnimations.Fire.Play();
-				Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
+				this.fire();
 			});
 		}
 
@@ -193,15 +192,28 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.controls.add({
-			ID: `switchShoulder-${this.instance.Name}`,
-			Name: "Toggle Lean",
+			ID: `switchShoulderLeft-${this.instance.Name}`,
+			Name: "Left Lean",
 			Enabled: false,
 			Mobile: false,
-			controls: [Enum.KeyCode.T, Enum.KeyCode.DPadLeft],
+			controls: [Enum.KeyCode.Q, Enum.KeyCode.DPadLeft],
 
 			onBegin: () => {
-				this.bias.left = !this.bias.left;
-				if (this.bias.left && this.bias.right) this.bias.right = false;
+				this.bias.right = false;
+				this.bias.left = true;
+			},
+		});
+
+		this.controls.add({
+			ID: `switchShoulderRight-${this.instance.Name}`,
+			Name: "Right Lean",
+			Enabled: false,
+			Mobile: false,
+			controls: [Enum.KeyCode.E, Enum.KeyCode.DPadRight],
+
+			onBegin: () => {
+				this.bias.left = false;
+				this.bias.right = true;
 			},
 		});
 	}
@@ -221,11 +233,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	unequip() {
 		this.unloadBinds();
 
-		this.loadedSounds.Reload.stop();
-		this.loadedAnimations.Idle.Stop();
-		this.loadedAnimations.Aim.Stop();
-		this.loadedAnimations.Reload.Stop();
-		this.loadedAnimations.Fire.Stop();
+		AnimationUtil.stopAll(this.loadedAnimations);
 
 		clientStore.setCameraLockedCenter(false);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
@@ -275,7 +283,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		const state = clientStore.getState();
 
 		const zoom = this.character.Head.Position.sub(camera.CFrame.Position).Magnitude;
-		const bias = CAMERA_X_OFFSET * (this.bias.left && this.bias ? 1 : -1);
+		const bias = CAMERA_X_OFFSET * (this.bias.right ? 1 : -1);
 		const targetAimOffset = new Vector3(bias, CAMERA_Z_OFFSET, 0).add(new Vector3(0, 0, -zoom));
 		const currentAimOffset = selectCameraOffset(state);
 

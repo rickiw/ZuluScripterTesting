@@ -55,7 +55,7 @@ export function WeaponProvider() {
 
 	const updateWeaponAmmo = (newWeapon: FirearmState) => {
 		setMagazineHolding(newWeapon.magazine.holding);
-		setBullets(newWeapon.bullets);
+		setBullets(newWeapon.reserve);
 	};
 
 	return (

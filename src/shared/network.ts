@@ -8,8 +8,8 @@ export interface ClientToServerEvents {
 	RoombaExplode(): void;
 
 	// BaseFirearm
-	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 	ReloadFirearm(weapon: Tool): void;
+	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 
 	// Objectives
 	StopObjective(objectiveId: ObjectiveID): void;
