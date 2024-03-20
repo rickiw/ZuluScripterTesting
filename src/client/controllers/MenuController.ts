@@ -52,19 +52,6 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			controls: this.inputs,
 		});
 
-		this.controlSet.add({
-			ID: `customization-toggle`,
-			Name: "Customize",
-			Enabled: true,
-			Mobile: false,
-
-			onBegin: () => {
-				clientStore.setCustomizationOpen(!selectCustomizationIsOpen(clientStore.getState()));
-			},
-
-			controls: [Enum.KeyCode.C, Enum.KeyCode.ButtonSelect],
-		});
-
 		Events.SetProfile.connect((profile: PlayerProfile) => {
 			clientStore.setSave(profile);
 		});
@@ -105,6 +92,12 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	}
 
 	toggleMenu() {
+		const state = clientStore.getState();
+		const customizationOpen = selectCustomizationIsOpen(state);
+		if (customizationOpen) {
+			return;
+		}
+
 		const camera = Workspace.CurrentCamera!;
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
 		const isAirborne = !Character.Humanoid.FloorMaterial || Character.Humanoid.FloorMaterial === Enum.Material.Air;

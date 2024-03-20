@@ -1,39 +1,39 @@
-import { useCamera } from "@rbxts/pretty-react-hooks";
-import Roact, { useEffect, useState } from "@rbxts/roact";
-import { ReplicatedStorage } from "@rbxts/services";
-import { FirearmInstance } from "client/components/BaseFirearm";
+import { useMountEffect } from "@rbxts/pretty-react-hooks";
+import { useSelector } from "@rbxts/react-reflex";
+import Roact from "@rbxts/roact";
+import { RunService } from "@rbxts/services";
+import { clientStore } from "client/store";
+import { selectCustomizationIsOpen } from "client/store/customization";
 import { CustomizationButton } from "client/ui/customization/customization-button";
-import { useRem } from "client/ui/hooks";
+import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame, ScrollingFrame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
-import { SelectedWeaponContext } from "../context/customization";
+import { springs } from "shared/constants/springs";
+
+const DEBUG = !RunService.IsRunning();
 
 export function Customization() {
 	const rem = useRem();
-	const camera = useCamera();
-	const screenSize = camera.ViewportSize;
 
-	const [selectedWeapon, setSelectedWeapon] = useState("");
-	const [weapon, setWeapon] = useState<FirearmInstance | undefined>(undefined);
+	const [menuPosition, menuPositionMotion] = useMotion(UDim2.fromScale(-1));
+	const menuOpen = DEBUG ? true : useSelector(selectCustomizationIsOpen);
 
-	useEffect(() => {
-		if (selectedWeapon !== "") {
-			const tool = ReplicatedStorage.Assets.Weapons.FindFirstChild(selectedWeapon);
-			if (tool) {
-				print("set " + tool.Name);
-				setWeapon(tool as FirearmInstance);
-			} else {
-				warn("No tool found with name " + selectedWeapon);
-			}
+	clientStore.subscribe(selectCustomizationIsOpen, (open) => {
+		menuPositionMotion.spring(open ? UDim2.fromScale() : UDim2.fromScale(-1), springs.stiff);
+	});
+
+	useMountEffect(() => {
+		if (!RunService.IsRunning()) {
+			menuPositionMotion.spring(UDim2.fromScale(), springs.stiff);
 		}
-	}, [selectedWeapon]);
+	});
 
 	return (
 		<>
-			<SelectedWeaponContext.Provider value={[selectedWeapon, setSelectedWeapon]}>
+			{menuOpen && (
 				<Frame
-					position={UDim2.fromScale(0)}
+					position={menuPosition}
 					size={new UDim2(0, rem(40), 1, 0)}
 					backgroundColor={Color3.fromRGB(0, 0, 0)}
 					borderSize={6}
@@ -176,30 +176,7 @@ export function Customization() {
 						<CustomizationButton name={"AK-105S"} previewImage={"rbxassetid://5124711907"} setContext />
 					</ScrollingFrame>
 				</Frame>
-				<Frame
-					backgroundTransparency={1}
-					position={UDim2.fromOffset(rem(40), 0)}
-					size={new UDim2(0, screenSize.X - rem(40), 1, 0)}
-				>
-					<Text
-						text={"PREVIEW"}
-						textSize={rem(2.5)}
-						textXAlignment={"Left"}
-						backgroundTransparency={1}
-						font={Font.fromEnum(Enum.Font.Highway)}
-						textColor={Color3.fromRGB(255, 255, 255)}
-						position={UDim2.fromOffset(rem(2), rem(2))}
-						size={UDim2.fromOffset(rem(30), rem(2))}
-					/>
-					<Frame
-						position={UDim2.fromOffset(rem(2), rem(5))}
-						size={UDim2.fromOffset(rem(80), rem(42.5))}
-						backgroundColor={Color3.fromRGB(255, 255, 255)}
-					>
-						{/* <WeaponPreview weapon={weapon} /> */}
-					</Frame>
-				</Frame>
-			</SelectedWeaponContext.Provider>
+			)}
 		</>
 	);
 }

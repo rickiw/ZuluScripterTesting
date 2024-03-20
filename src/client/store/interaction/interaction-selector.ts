@@ -5,6 +5,10 @@ export const selectInteractions = (state: RootState) => {
 	return state.interaction.interactions;
 };
 
+export const selectModifications = (state: RootState) => {
+	return state.interaction.modifications;
+};
+
 export const selectInteractionsVisible = (state: RootState) => {
 	return state.interaction.interactions.filter((interaction) => interaction.visible);
 };

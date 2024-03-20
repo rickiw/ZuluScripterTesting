@@ -42,7 +42,9 @@ export class CameraController implements OnStart, OnTick {
 	onStart() {
 		clientStore.setCameraFlag("FirearmIsAiming", false);
 		UserInputService.InputChanged.Connect((inputObject, gpe) => {
-			if (gpe) return;
+			if (gpe) {
+				return;
+			}
 
 			// Handle mouse movements
 			if (inputObject.UserInputType === Enum.UserInputType.MouseMovement) {
@@ -134,14 +136,19 @@ export class CameraController implements OnStart, OnTick {
 		UserInputService.MouseBehavior = mouseBehavior;
 		UserInputService.MouseIconEnabled = !selectCameraLockedCenter(state);
 
-		this.additionalCameraOffset = new Vector3(0, 2.15, 0);
+		this.additionalCameraOffset = new Vector3(0, 2.05, 0);
 
 		const zoomDistance = selectCameraZoomDistance(state);
 
+		// Log.Warn(
+		// 	"zDist: {@ZDist} {@CLamped}",
+		// 	zoomDistance * math.cos(this.phi),
+		// 	math.clamp(zoomDistance * math.cos(this.phi), -5, 5),
+		// );
 		// add spherical to cartesian conversion, phi is elevation, theta is azimuth
 		const targetCamRotation = new Vector3(
 			zoomDistance * math.sin(this.phi) * math.cos(this.theta),
-			zoomDistance * math.cos(this.phi),
+			math.clamp(zoomDistance * math.cos(this.phi), -5, 5),
 			zoomDistance * math.sin(this.phi) * math.sin(this.theta),
 		);
 
@@ -157,7 +164,9 @@ export class CameraController implements OnStart, OnTick {
 		const cameraBaseTarget = CFrame.lookAt(lookAtPosition, baseCameraPosition);
 		const cameraTarget = cameraBaseTarget.mul(new CFrame(this.currentCameraOffset));
 
-		Camera.CFrame = Camera.CFrame.Lerp(cameraTarget, CAMERA_SMOOTHING);
+		const finalCameraTarget = Camera.CFrame.Lerp(cameraTarget, CAMERA_SMOOTHING);
+
+		Camera.CFrame = finalCameraTarget;
 		Camera.FieldOfView = lerp(Camera.FieldOfView, this.currentCameraFOV, 0.1);
 
 		// Rotate body to face the camera

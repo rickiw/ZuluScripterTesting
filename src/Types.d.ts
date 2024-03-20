@@ -3,6 +3,10 @@ interface Workspace extends Instance {
 	SCPs: Folder & { [key: string]: BaseSCP };
 	Objectives: Folder & { [key: string]: Model };
 	Bullets: Folder;
+	CustomizationBox: Model & {
+		Mount: BasePart;
+		Weapons: Folder;
+	};
 }
 
 type FoodTypes = "Chicken";

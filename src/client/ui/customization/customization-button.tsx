@@ -1,8 +1,8 @@
-import Roact, { useContext } from "@rbxts/roact";
+import Roact from "@rbxts/roact";
+import { clientStore } from "client/store";
 import { Button } from "client/ui/library/button/button";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
-import { SelectedWeaponContext } from "../context/customization";
 import { useRem } from "../hooks";
 
 export interface GunButtonProps {
@@ -14,8 +14,6 @@ export interface GunButtonProps {
 export function CustomizationButton(props: GunButtonProps) {
 	const rem = useRem();
 
-	const [selectedWeapon, setSelectedWeapon] = useContext(SelectedWeaponContext);
-
 	return (
 		<Button
 			cornerRadius={new UDim(0, 8)}
@@ -23,7 +21,7 @@ export function CustomizationButton(props: GunButtonProps) {
 			event={{
 				MouseButton1Click: () => {
 					if (props.setContext) {
-						setSelectedWeapon(props.name);
+						clientStore.setSelectedWeapon(props.name);
 					}
 				},
 			}}
