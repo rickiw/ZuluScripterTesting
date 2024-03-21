@@ -1,5 +1,5 @@
 import Roact from "@rbxts/roact";
-import { Customization } from "./customization/customization";
+import { CustomizationProvider } from "./customization/customization-provider";
 import { AerialProvider } from "./library/aerial/aerial-provider";
 import { ErrorHandler } from "./library/error";
 import { InteractionProvider } from "./library/interaction/interaction-provider";
@@ -20,7 +20,7 @@ export function App() {
 
 			<Layer key="menu-layer">
 				<MenuProvider key="menu-provider" />
-				<Customization key="customization" />
+				<CustomizationProvider key="customization-provider" />
 			</Layer>
 
 			<Layer key="daily-rewards-layers"></Layer>

@@ -5,6 +5,7 @@ import { cameraSlice } from "./camera";
 import { characterSlice } from "./character";
 import { customizationSlice } from "./customization";
 import { interactionSlice } from "./interaction/interaction-slice";
+import { inventorySlice } from "./inventory";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
 import { perkSlice } from "./perks";
@@ -29,6 +30,7 @@ function createStore() {
 		camera: cameraSlice,
 		customization: customizationSlice,
 		vitals: vitalsSlice,
+		inventory: inventorySlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

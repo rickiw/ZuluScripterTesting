@@ -2,12 +2,13 @@ import { Controller, OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, ReplicatedStorage, UserInputService, Workspace } from "@rbxts/services";
+import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { FirearmInstance } from "client/components/BaseFirearm";
 import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
 import { selectCustomizationIsOpen, selectSelectedWeapon } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
+import { WeaponBase } from "shared/constants/weapons";
 
 const player = Players.LocalPlayer;
 
@@ -93,19 +94,13 @@ export class CustomizationController implements OnStart, OnTick {
 				Log.Warn("No attachment found for {@Modification}", modification);
 				continue;
 			}
-			clientStore.addModification({
-				part: guiMount,
-				attachment,
-			});
+			clientStore.addModification(guiMount as Modification);
 		}
 	}
 
-	setupViewport(weapon: string) {
-		const tool = ReplicatedStorage.Assets.Weapons.FindFirstChild(weapon);
-		if (tool) {
-			clientStore.clearModifications();
-			Workspace.CustomizationBox.Weapons.ClearAllChildren();
-			this.weapon = tool.Clone() as FirearmInstance;
+	setupViewport(weapon: WeaponBase) {
+		if (weapon.baseTool) {
+			this.weapon = weapon.baseTool.Clone() as FirearmInstance;
 			this.weapon.Parent = Workspace.CustomizationBox.Weapons;
 			this.populateModifications(this.weapon);
 			const cframe = new CFrame(
@@ -142,7 +137,13 @@ export class CustomizationController implements OnStart, OnTick {
 			this.setCameraPosition();
 			this.maid.GiveTask(
 				clientStore.subscribe(selectSelectedWeapon, (newWeapon) => {
-					this.setupViewport(newWeapon);
+					clientStore.clearModifications();
+					clientStore.setSelectedModification(undefined);
+					Workspace.CustomizationBox.Weapons.ClearAllChildren();
+
+					if (newWeapon) {
+						this.setupViewport(newWeapon);
+					}
 				}),
 			);
 		}

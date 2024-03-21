@@ -27,6 +27,12 @@ export interface SightConfig {
 	aimPoint: Attachment;
 }
 
+export interface FirearmSave {
+	equipped: boolean;
+	magazine: number;
+	ammo: number;
+}
+
 export interface FirearmLike extends WeaponLike {
 	Attachments: FirearmAttachment<keyof FirearmLike>[];
 	Barrel: BarrelConfig;

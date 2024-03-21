@@ -35,3 +35,5 @@ export const DAMAGE_MULTIPLIERS: Record<LimbType, number> = {
 	Head: 1.5,
 	Torso: 1,
 };
+
+export type FIREARM_TYPE = "Primary" | "Secondary";

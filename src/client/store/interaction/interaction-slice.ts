@@ -6,11 +6,6 @@ export interface Interaction extends Readonly<InteractionProps> {
 	readonly interactionComponent: BaseInteraction<any, any>;
 }
 
-export interface Modification {
-	readonly part: BasePart;
-	readonly attachment: Attachment;
-}
-
 export interface InteractionState {
 	readonly interactions: readonly Interaction[];
 	readonly modifications: readonly Modification[];

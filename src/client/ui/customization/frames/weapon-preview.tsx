@@ -1,12 +1,23 @@
+import Maid from "@rbxts/maid";
+import Roact, { useEffect, useState } from "@rbxts/roact";
 import { RunService, UserInputService } from "@rbxts/services";
 import { FirearmInstance } from "client/components/BaseFirearm";
-import { CFrameToAngles, constrainAngles, getModelCornerDistance, rotateCFrameCameraLike } from "shared/utils";
+import { useRem } from "client/ui/hooks";
+import { ViewportFrame } from "client/ui/library/viewport-frame";
+import {
+	CFrameToAngles,
+	changeClass,
+	constrainAngles,
+	getModelCornerDistance,
+	rotateCFrameCameraLike,
+} from "shared/utils";
 
 export interface WeaponPreviewProps {
 	weapon?: FirearmInstance;
 }
 
-export class Draggable {
+class Draggable {
+	private viewportFrame: ViewportFrame;
 	private camera: Camera;
 	private lastMousePosition?: Vector2;
 	private pitchLimits = new NumberRange(-90, 90);
@@ -15,13 +26,15 @@ export class Draggable {
 	private renderConn?: RBXScriptConnection;
 	private inputConn?: RBXScriptConnection;
 
-	constructor(camera: Camera) {
+	constructor(viewportFrame: ViewportFrame, camera: Camera) {
+		this.viewportFrame = viewportFrame;
 		this.camera = camera;
 	}
 
 	setModel(model: Model) {
 		this.model = model;
 
+		model.Parent = this.viewportFrame;
 		model.PivotTo(new CFrame());
 
 		this.setAngles(CFrame.Angles(math.rad(180), math.rad(-90) + math.pi, math.rad(180)));
@@ -97,42 +110,70 @@ export class Draggable {
 	}
 }
 
-// export function WeaponPreview({ weapon }: WeaponPreviewProps) {
-// 	const [viewportFrameRef, setViewportFrameRef] = useState<ViewportFrame | undefined>(undefined);
-// 	const [camera, setCamera] = useState<Camera | undefined>(undefined);
-// 	const [draggable, setDraggable] = useState<Draggable | undefined>(undefined);
-// 	const [maid] = useState(() => new Maid());
+export function WeaponPreview({ weapon }: WeaponPreviewProps) {
+	const rem = useRem();
 
-// 	useEffect(() => {
-// 		if (viewportFrameRef) {
-// 			const camera = new Instance("Camera");
-// 			camera.Parent = viewportFrameRef;
-// 			camera.CameraType = Enum.CameraType.Scriptable;
-// 			camera.CFrame = new CFrame(new Vector3(5, 0, 0), new Vector3(0, 0, 0));
-// 			setCamera(camera);
+	const [viewportFrameRef, setViewportFrameRef] = useState<ViewportFrame | undefined>(undefined);
+	const [camera, setCamera] = useState<Camera | undefined>(undefined);
+	const [draggable, setDraggable] = useState<Draggable | undefined>(undefined);
+	const [maid] = useState(() => new Maid());
 
-// 			const draggable = new Draggable(viewportFrameRef, camera);
-// 			setDraggable(draggable);
-// 			maid.GiveTask(
-// 				viewportFrameRef.InputBegan.Connect((input) => {
-// 					if (!draggable) return;
+	useEffect(() => {
+		if (viewportFrameRef) {
+			const camera = new Instance("Camera");
+			camera.Parent = viewportFrameRef;
+			camera.CameraType = Enum.CameraType.Scriptable;
+			camera.CFrame = new CFrame(new Vector3(5, 0, 0), new Vector3(0, 0, 0));
+			setCamera(camera);
 
-// 					if (input.UserInputType === Enum.UserInputType.MouseButton1) {
-// 						draggable.beginDragging();
+			const draggable = new Draggable(viewportFrameRef, camera);
+			setDraggable(draggable);
+			maid.GiveTask(
+				viewportFrameRef.InputBegan.Connect((input) => {
+					if (!draggable) return;
 
-// 						const conn = input.GetPropertyChangedSignal("UserInputState").Connect(() => {
-// 							if (input.UserInputState === Enum.UserInputState.End) {
-// 								draggable.stopDragging();
-// 								conn.Disconnect();
-// 							}
-// 						});
-// 					}
-// 				}),
-// 			);
+					if (input.UserInputType === Enum.UserInputType.MouseButton1) {
+						draggable.beginDragging();
 
-// 			return () => {
-// 				maid.DoCleaning();
-// 			};
-// 		}
-// 	}, [viewportFrameRef]);
-// }
+						const conn = input.GetPropertyChangedSignal("UserInputState").Connect(() => {
+							if (input.UserInputState === Enum.UserInputState.End) {
+								draggable.stopDragging();
+								conn.Disconnect();
+							}
+						});
+					}
+				}),
+			);
+
+			return () => {
+				maid.DoCleaning();
+			};
+		}
+	}, [viewportFrameRef]);
+
+	useEffect(() => {
+		if (!viewportFrameRef || !weapon || !draggable) return;
+		viewportFrameRef.GetChildren().forEach((child) => {
+			if (child.IsA("Model")) {
+				child.Destroy();
+			}
+		});
+
+		const tool = weapon.Clone();
+		tool.MoveTo(new Vector3(0, 0, 0));
+
+		const newTool = changeClass(tool, "Model");
+		draggable.setModel(newTool);
+	}, [weapon]);
+
+	return (
+		<ViewportFrame
+			ref={setViewportFrameRef}
+			backgroundTransparency={1}
+			anchorPoint={new Vector2(0.5, 0.5)}
+			position={UDim2.fromScale(0.5, 0.5)}
+			size={UDim2.fromScale(1, 1)}
+			currentCamera={camera}
+		/>
+	);
+}

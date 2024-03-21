@@ -1,6 +1,7 @@
 import Log from "@rbxts/log";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { GroupID } from "shared/constants/clans";
+import { FirearmSave } from "shared/constants/weapons";
 import { ObjectiveSave } from "shared/store/objectives";
 import { PerkInfo } from "shared/store/perks";
 
@@ -12,6 +13,7 @@ export interface PlayerProfile {
 	readonly clan: GroupID | undefined;
 	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
 	readonly objectiveCompletion: ReadonlyArray<ObjectiveSave>;
+	readonly weaponData: Map<string, FirearmSave>;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;
 }

@@ -31,8 +31,11 @@ interface ReplicatedStorage extends Instance {
 	};
 	Assets: Folder & {
 		Bullet: BasePart;
+		Attachments: Folder & {
+			[key in ATTACHMENT]: Modification;
+		};
 		Weapons: Folder & {
-			"AK-105": Tool;
+			[key in WEAPON]: Tool;
 		};
 	};
 }
@@ -40,6 +43,13 @@ interface ReplicatedStorage extends Instance {
 interface SoundService extends Instance {
 	Effects: SoundGroup;
 }
+
+type Modification = BasePart & {
+	Attachment: Attachment;
+};
+
+type ATTACHMENT = "MuzzleBreak" | "Suppressor" | "RedDot";
+type WEAPON = "AK-105" | "AK-105S";
 
 type BaseCharacter = Model & {
 	Humanoid: Humanoid;

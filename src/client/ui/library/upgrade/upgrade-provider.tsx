@@ -1,5 +1,6 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
+import { clientStore } from "client/store";
 import { selectModifications } from "client/store/interaction";
 import { UpgradeIndicator } from "./upgrade-indicator";
 
@@ -10,13 +11,18 @@ export function UpgradeProvider() {
 		<>
 			{modifications.map((modification) => (
 				<billboardgui
-					key={modification.part.Name}
-					Adornee={modification.attachment}
+					key={modification.Name}
+					Adornee={modification.Attachment}
 					Size={UDim2.fromScale(0.4, 0.4)}
 					AlwaysOnTop
 					Active
 				>
-					<UpgradeIndicator modification={modification} />
+					<UpgradeIndicator
+						modification={modification}
+						clicked={() => {
+							clientStore.setSelectedModification(modification);
+						}}
+					/>
 				</billboardgui>
 			))}
 		</>

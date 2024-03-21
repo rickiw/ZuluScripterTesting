@@ -1,13 +1,13 @@
 import Roact from "@rbxts/roact";
-import { Modification } from "client/store/interaction";
 import { useMotion, useRem } from "client/ui/hooks";
 import { springs } from "shared/constants/springs";
 
 interface UpgradeIndicatorProps {
 	modification: Modification;
+	clicked: () => void;
 }
 
-export function UpgradeIndicator({ modification }: UpgradeIndicatorProps) {
+export function UpgradeIndicator({ modification, clicked }: UpgradeIndicatorProps) {
 	const rem = useRem();
 
 	const [indicatorSize, indicatorSizeMotion] = useMotion(UDim2.fromScale(0.8, 0.8));
@@ -21,7 +21,7 @@ export function UpgradeIndicator({ modification }: UpgradeIndicatorProps) {
 				BackgroundColor3={Color3.fromRGB(22, 233, 56)}
 				Size={indicatorSize}
 				TextColor3={Color3.fromRGB(255, 255, 255)}
-				Text={modification.part.Name}
+				Text={modification.Name}
 				TextScaled
 				Event={{
 					MouseEnter: () => {
@@ -30,7 +30,9 @@ export function UpgradeIndicator({ modification }: UpgradeIndicatorProps) {
 					MouseLeave: () => {
 						indicatorSizeMotion.spring(UDim2.fromScale(0.8, 0.8), springs.bubbly);
 					},
-					MouseButton1Click: () => {},
+					MouseButton1Click: () => {
+						clicked();
+					},
 				}}
 			></textbutton>
 		</>

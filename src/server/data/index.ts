@@ -9,6 +9,7 @@ export const defaultPlayerProfile: PlayerProfile = {
 	scrap: new Map(),
 	purchasedPerks: [],
 	objectiveCompletion: [],
+	weaponData: new Map(),
 	credits: 0,
 };
 
