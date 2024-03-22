@@ -11,33 +11,34 @@ export interface FirearmAttachment<T extends keyof FirearmLike> {
 	model?: Model;
 }
 
-export const ModificationType = ["Sights", "Mag", "Handguard"] as const;
+export const ModificationType = ["Barrel"] as const;
 export type ModificationType = (typeof ModificationType)[number];
 
 export type IModification = { name: string; type: ModificationType; modification: Modification };
+const Attachments = ReplicatedStorage.Assets.Attachments;
 
-export const MuzzleBreak: IModification = {
-	name: "Muzzle Break",
-	modification: ReplicatedStorage.Assets.Attachments.MuzzleBreak,
-	type: "Handguard",
+export const Flashlight: IModification = {
+	name: "Flashlight",
+	modification: Attachments.Flashlight,
+	type: "Barrel",
 };
 
 export const Suppressor: IModification = {
 	name: "Suppressor",
-	modification: ReplicatedStorage.Assets.Attachments.Suppressor,
-	type: "Handguard",
+	modification: Attachments.Suppressor,
+	type: "Barrel",
 };
 
-export const RedDot: IModification = {
-	name: "Red Dot Sight",
-	modification: ReplicatedStorage.Assets.Attachments.RedDot,
-	type: "Sights",
-};
+// export const RedDot: IModification = {
+// 	name: "Red Dot Sight",
+// 	modification: Attachments.RedDot,
+// 	type: "Sights",
+// };
 
 export function getAllModifications() {
 	const modifications: Map<WEAPON, Array<IModification>> = new Map();
-	modifications.set("AK-105", [MuzzleBreak, Suppressor]);
-	modifications.set("AK-105S", [RedDot, MuzzleBreak]);
+	modifications.set("AK-105", [Flashlight, Suppressor]);
+	modifications.set("AK-105S", [Flashlight]);
 	return modifications;
 }
 

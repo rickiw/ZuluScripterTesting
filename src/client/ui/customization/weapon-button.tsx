@@ -27,6 +27,9 @@ export function WeaponButton(props: WeaponButtonProps) {
 			backgroundColor={Color3.fromRGB(52, 52, 52)}
 			event={{
 				MouseButton1Click: () => {
+					if (selectedWeapon !== props.weapon) {
+						clientStore.clearModificationPreviews();
+					}
 					clientStore.setSelectedWeapon(selectedWeapon === props.weapon ? undefined : props.weapon);
 					if (selectedWeapon === props.weapon) {
 						clientStore.setSelectedModification(undefined);

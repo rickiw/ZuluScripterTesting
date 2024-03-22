@@ -1,4 +1,5 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
+import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -6,9 +7,13 @@ import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { FirearmInstance } from "client/components/BaseFirearm";
 import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
-import { selectCustomizationIsOpen, selectSelectedWeapon } from "client/store/customization";
+import {
+	selectCustomizationIsOpen,
+	selectModificationPreviews,
+	selectSelectedWeapon,
+} from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
-import { WeaponBase } from "shared/constants/weapons";
+import { IModification, ModificationType, WeaponBase } from "shared/constants/weapons";
 
 const player = Players.LocalPlayer;
 
@@ -22,6 +27,7 @@ export class CustomizationController implements OnStart, OnTick {
 	openedCFrame?: CFrame;
 	lastMousePosition?: Vector2;
 	weapon?: FirearmInstance;
+	attachments: BasePart[] = [];
 
 	constructor() {}
 
@@ -81,20 +87,19 @@ export class CustomizationController implements OnStart, OnTick {
 	}
 
 	populateModifications(weapon: FirearmInstance) {
-		const toAdd: string[] = ["Mag", "Sights", "Handguard"];
-
-		for (const modification of toAdd) {
+		for (const modification of ModificationType) {
 			const guiMount = weapon.FindFirstChild(modification) as BasePart | undefined;
 			if (!guiMount) {
 				Log.Warn("No mount found for {@Modification}", modification);
 				continue;
 			}
-			const attachment = guiMount.FindFirstChildOfClass("Attachment");
-			if (!attachment) {
-				Log.Warn("No attachment found for {@Modification}", modification);
+			const attachment = guiMount.FindFirstChild("Attachment");
+			const modAttachment = guiMount.FindFirstChild("ModAttachment");
+			if (!attachment || !modAttachment) {
+				Log.Warn("Missing attachment point for {@Modification}", modification);
 				continue;
 			}
-			clientStore.addModification(guiMount as Modification);
+			clientStore.addModification(guiMount as WeaponModificationMount);
 		}
 	}
 
@@ -115,6 +120,43 @@ export class CustomizationController implements OnStart, OnTick {
 		}
 	}
 
+	handleModificationPreviews(modifications: IModification[]) {
+		if (!this.weapon) {
+			Log.Warn("No weapon found to attach modifications to");
+			return;
+		}
+
+		const clearAttachments = () => {
+			this.attachments.forEach((attachment) => {
+				attachment.Destroy();
+			});
+		};
+
+		clearAttachments();
+
+		modifications.forEach((modification) => {
+			const attachment = modification.modification.Clone();
+			const weapon = this.weapon!;
+
+			const modificationMount = weapon.FindFirstChild(modification.type) as WeaponModificationMount;
+			if (!modificationMount) {
+				Log.Warn("No modification found for {@Modification}", modification);
+				return;
+			}
+
+			const attachmentOffsetPosition = attachment.Attachment.CFrame.Inverse();
+			const modAttachment = modificationMount.ModAttachment;
+			attachment.Parent = modificationMount;
+			attachment.PivotTo(modAttachment.WorldCFrame.mul(attachmentOffsetPosition));
+			New("WeldConstraint")({
+				Parent: attachment,
+				Part0: modificationMount,
+				Part1: attachment,
+			});
+			this.attachments.push(attachment);
+		});
+	}
+
 	toggleCustomization() {
 		Log.Warn("Toggling customization");
 		const state = clientStore.getState();
@@ -132,6 +174,7 @@ export class CustomizationController implements OnStart, OnTick {
 			this.character.Humanoid.WalkSpeed = 1;
 			Workspace.CustomizationBox.Weapons.ClearAllChildren();
 		} else {
+			this.character.Humanoid.UnequipTools();
 			this.character.Humanoid.WalkSpeed = 0;
 			clientStore.setCameraLock(true);
 			this.setCameraPosition();
@@ -144,6 +187,11 @@ export class CustomizationController implements OnStart, OnTick {
 					if (newWeapon) {
 						this.setupViewport(newWeapon);
 					}
+				}),
+			);
+			this.maid.GiveTask(
+				clientStore.subscribe(selectModificationPreviews, (modifications) => {
+					this.handleModificationPreviews(modifications);
 				}),
 			);
 		}

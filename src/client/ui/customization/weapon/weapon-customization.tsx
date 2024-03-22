@@ -133,7 +133,7 @@ export function WeaponCustomization() {
 				{selectedWeapon && selectedModification && (
 					<>
 						<Text
-							text={selectedModification.Name}
+							text={selectedModification.Name.upper()}
 							textSize={rem(2.5)}
 							textXAlignment={"Left"}
 							backgroundTransparency={1}
@@ -176,6 +176,19 @@ export function WeaponCustomization() {
 						</ScrollingFrame>
 					</>
 				)}
+
+				{/* <Frame
+					backgroundTransparency={1}
+					position={UDim2.fromOffset(rem(19), rem(40))}
+					size={UDim2.fromOffset(100, 100)}
+				>
+					<UpgradeIndicator
+						modification={ReplicatedStorage.Assets.Attachments.Suppressor as WeaponModificationMount}
+						clicked={() => {
+							print("clicked");
+						}}
+					/>
+				</Frame> */}
 			</Frame>
 		</>
 	);

@@ -44,11 +44,16 @@ interface SoundService extends Instance {
 	Effects: SoundGroup;
 }
 
+type WeaponModificationMount = BasePart & {
+	Attachment: Attachment;
+	ModAttachment: Attachment;
+};
+
 type Modification = BasePart & {
 	Attachment: Attachment;
 };
 
-type ATTACHMENT = "MuzzleBreak" | "Suppressor" | "RedDot";
+type ATTACHMENT = "Flashlight" | "Suppressor" | "RedDot";
 type WEAPON = "AK-105" | "AK-105S";
 
 type BaseCharacter = Model & {

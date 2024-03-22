@@ -8,7 +8,7 @@ export interface Interaction extends Readonly<InteractionProps> {
 
 export interface InteractionState {
 	readonly interactions: readonly Interaction[];
-	readonly modifications: readonly Modification[];
+	readonly modifications: readonly WeaponModificationMount[];
 }
 
 const initialState: InteractionState = {
@@ -21,7 +21,7 @@ export const interactionSlice = createProducer(initialState, {
 		...state,
 		interactions: [interaction, ...state.interactions],
 	}),
-	addModification: (state, modification: Modification) => ({
+	addModification: (state, modification: WeaponModificationMount) => ({
 		...state,
 		modifications: [modification, ...state.modifications],
 	}),
