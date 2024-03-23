@@ -31,6 +31,9 @@ interface ReplicatedStorage extends Instance {
 	};
 	Assets: Folder & {
 		Bullet: BasePart;
+		Sounds: Folder & {
+			HitMarker: Sound;
+		};
 		Attachments: Folder & {
 			[key in ATTACHMENT]: Modification;
 		};

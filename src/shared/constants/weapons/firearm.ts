@@ -27,8 +27,23 @@ export interface SightConfig {
 	aimPoint: Attachment;
 }
 
+export type FirearmDataSave = {
+	[K in WEAPON]: FirearmSave & { weaponName: K };
+};
+
+export function getWeaponEntry(weapon: WEAPON, weaponData: FirearmDataSave) {
+	return weaponData[weapon];
+}
+
+export function getNewWeaponEntry(weapon: WEAPON, weaponData: FirearmDataSave, entry: FirearmSave) {
+	const newWeaponData: FirearmDataSave = {
+		...weaponData,
+		[weapon]: entry,
+	};
+	return newWeaponData;
+}
+
 export interface FirearmSave {
-	weaponName: string;
 	equipped: boolean;
 	magazine: number;
 	ammo: number;

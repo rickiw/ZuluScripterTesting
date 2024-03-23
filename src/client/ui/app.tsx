@@ -8,6 +8,7 @@ import { Stamina } from "./library/stamina";
 import { UpgradeProvider } from "./library/upgrade/upgrade-provider";
 import { Vitals } from "./library/vitals";
 import { Crosshair } from "./library/weapon/crosshair";
+import { KillEffect } from "./library/weapon/kill-effect";
 import { MenuProvider } from "./menu/menu-provider";
 
 export function App() {
@@ -30,6 +31,7 @@ export function App() {
 				<Stamina key="stamina" />
 				{/* <WeaponProvider key="weapon" /> */}
 				<Crosshair key="crosshair" />
+				<KillEffect />
 			</Layer>
 
 			<Layer key="aerial-layer">

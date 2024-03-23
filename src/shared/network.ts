@@ -32,6 +32,9 @@ export interface ServerToClientEvents {
 	RoombaLoaded(): void;
 	RoombaUnloaded(): void;
 
+	PlayHitmarker: Networking.Unreliable<() => void>;
+	EnemyKilled(): void;
+
 	// AerialIndicator
 	AreaEntered(title: string, description: string): void;
 }

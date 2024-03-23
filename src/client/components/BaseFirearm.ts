@@ -56,7 +56,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.configuration = this.getConfiguration();
 		this.loadedSounds = SoundUtil.convertDictToSoundCacheDict(
 			this.configuration.sounds as SoundDict<number | string>,
-			{ parent: this.instance, volume: 3 },
+			{ parent: this.instance, volume: 1, lifetime: 5 },
 		) as FirearmSounds<SoundCache>;
 	}
 
@@ -115,7 +115,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	recoil() {
 		const { intensity, increment, time } = this.configuration.recoil ?? {
-			intensity: 1.5,
+			intensity: 3,
 			increment: 0.1,
 			time: 60 / this.configuration.Barrel.rpm,
 		};

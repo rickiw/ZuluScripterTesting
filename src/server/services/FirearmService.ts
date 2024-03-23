@@ -1,42 +1,28 @@
 import { Components } from "@flamework/components";
 import { Dependency, OnStart, Service } from "@flamework/core";
 import Log from "@rbxts/log";
+import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { CollectionService, ReplicatedStorage } from "@rbxts/services";
 import { BaseFirearm } from "server/components/combat/firearm/BaseFirearm";
+import { defaultWeaponData } from "server/data";
 import { Events } from "server/network";
 import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
-import { FirearmSave, IModification, IModificationSave } from "shared/constants/weapons";
-
-export class WeaponData {
-	weaponData: Map<string, FirearmSave>;
-
-	constructor(weaponData: readonly FirearmSave[]) {
-		this.weaponData = new Map(weaponData.map((data) => [data.weaponName, data]));
-	}
-
-	toWeaponData() {
-		const firearmSave: FirearmSave[] = [];
-		this.weaponData.forEach((value) => {
-			firearmSave.push(value);
-		});
-		return firearmSave;
-	}
-}
+import { FirearmDataSave, FirearmSave, IModification, IModificationSave } from "shared/constants/weapons";
+import { CharacterRemoving } from "./PlayerService";
 
 @Service()
-export class FirearmService implements OnStart {
+export class FirearmService implements OnStart, CharacterRemoving {
 	constructor() {}
 
 	getPlayerWeaponData(playerId: PlayerID) {
 		const state = serverStore.getState();
 		const playerSave = selectPlayerSave(playerId)(state);
-		assert(playerSave, "Couldn't find player save | FirearmService->GetPlayerWeaponData");
-		return playerSave.weaponData
-			? new WeaponData(playerSave.weaponData).weaponData
-			: new Map<string, FirearmSave>();
+		assert(playerSave, "Player save not found | FirearmService->GetPlayerWeaponData");
+		const weaponData = playerSave.weaponData;
+		return weaponData ?? defaultWeaponData;
 	}
 
 	onStart() {
@@ -62,7 +48,7 @@ export class FirearmService implements OnStart {
 
 		const components = Dependency<Components>();
 		const firearmClass = components.getComponent<BaseFirearm<any, any>>(weaponClone);
-		const modifications = weaponData.get(weapon.Name)?.attachments ?? ([] as IModificationSave[]);
+		const modifications = weaponData[weapon.Name as WEAPON].attachments ?? ([] as IModificationSave[]);
 
 		if (!firearmClass) {
 			Log.Warn(
@@ -72,29 +58,11 @@ export class FirearmService implements OnStart {
 			);
 			return;
 		}
-		firearmClass.updateToolAttachmentsByName(weaponClone, modifications);
-	}
-
-	updateWeaponData(playerId: PlayerID, key: string, update: FirearmSave) {
-		const newWeaponData: FirearmSave[] = [];
-		const state = serverStore.getState();
-		const playerSave = selectPlayerSave(playerId)(state);
-		if (!playerSave) {
-			Log.Warn("Player save not found | BaseFirearm->updateWeaponData");
-			return;
-		}
-		const weaponData = this.getPlayerWeaponData(playerId);
-		weaponData.forEach((value, k) => {
-			if (k === key) {
-				Log.Warn("Found {@Weapon}, updating with {@Update}", key, update);
-				newWeaponData.push(update);
-			} else {
-				Log.Warn("Not updating {@Key}, setting to normal value {@Value}", k, value);
-				newWeaponData.push(value);
-			}
+		firearmClass.updateState({
+			reserve: weaponData[weapon.Name as WEAPON].ammo,
 		});
-		Log.Warn("New Weapon Data Size: {@Size}", newWeaponData.size());
-		serverStore.updatePlayerSave(playerId, { weaponData: newWeaponData });
+		firearmClass.updateMagazineHolding(weaponData[weapon.Name as WEAPON].magazine);
+		firearmClass.updateToolAttachmentsByName(weaponClone, modifications);
 	}
 
 	serializeModifications(modifications: IModification[]) {
@@ -108,6 +76,17 @@ export class FirearmService implements OnStart {
 		return serialized;
 	}
 
+	getUpdatedWeaponData<T extends WEAPON>(weaponData: FirearmDataSave, weaponName: T, update: Partial<FirearmSave>) {
+		const newWeaponData: FirearmDataSave = {
+			...weaponData,
+			[weaponName]: {
+				...weaponData[weaponName],
+				...update,
+			},
+		};
+		return newWeaponData;
+	}
+
 	updateAttachments(player: Player, weapon: Tool, modifications: IModification[]) {
 		const state = serverStore.getState();
 		const playerSave = selectPlayerSave(player.UserId)(state);
@@ -116,24 +95,11 @@ export class FirearmService implements OnStart {
 			return;
 		}
 		const weaponData = this.getPlayerWeaponData(player.UserId);
-		const newWeaponData: FirearmSave[] = [];
-		weaponData.forEach((value, key) => {
-			if (key === weapon.Name) {
-				newWeaponData.push({
-					...value,
-					attachments: this.serializeModifications(modifications),
-				});
-			} else {
-				newWeaponData.push(value);
-			}
+		const newWeaponData = this.getUpdatedWeaponData(weaponData, weapon.Name as WEAPON, {
+			attachments: this.serializeModifications(modifications),
 		});
+
 		serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
-		Log.Warn(
-			"Updated attachments for {@Player}'s {@Weapon} {@Data} | FirearmService->UpdateAttachments",
-			player.Name,
-			weapon.Name,
-			newWeaponData,
-		);
 
 		const backpack = player.FindFirstChildOfClass("Backpack")!;
 		const character = player.Character as CharacterRigR15;
@@ -160,11 +126,46 @@ export class FirearmService implements OnStart {
 			return;
 		}
 
-		Log.Warn(
-			"Player {@Player} has {@Weapon} in inventory | BaseFirearm->UpdateToolAttachments",
-			player.Name,
-			weapon.Name,
-		);
 		firearmClass.updateToolAttachments(playerWeapon as Tool, modifications);
+	}
+
+	characterRemoving(player: Player, character: CharacterRigR15) {
+		const state = serverStore.getState();
+		const data = selectPlayerSave(player.UserId)(state);
+		if (!data) {
+			Log.Warn("Player {@Player} doesn't have save data | FirearmService->PlayerDataRemoving", player.Name);
+			return;
+		}
+		const weaponData = data.weaponData;
+		const backpack = player.FindFirstChildOfClass("Backpack")!;
+		if (!character || !backpack) {
+			Log.Warn(
+				"Player {@Player} doesn't have character or missing backpack | FirearmService->PlayerDataRemoving",
+				player.Name,
+			);
+			return;
+		}
+		for (const key of Object.keys(weaponData)) {
+			const playerWeapon = character.FindFirstChild(key) || backpack.FindFirstChild(key);
+			if (!playerWeapon || !playerWeapon.IsA("Tool")) {
+				return;
+			}
+			const components = Dependency<Components>();
+			const firearmClass = components.getComponent<BaseFirearm<any, any>>(playerWeapon);
+			if (!firearmClass) {
+				Log.Warn(
+					"Player {@Player}'s {@Weapon} doesn't have firearm component | FirearmService->PlayerDataRemoving",
+					player.Name,
+					playerWeapon.Name,
+				);
+				return;
+			}
+			const newWeaponData = this.getUpdatedWeaponData(weaponData, key, {
+				ammo: firearmClass.state.reserve,
+				magazine: firearmClass.state.magazine.holding,
+				equipped: true,
+			});
+			serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
+		}
 	}
 }

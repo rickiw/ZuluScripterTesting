@@ -19,12 +19,17 @@ export interface PlayerDataLoaded {
 	playerDataLoaded(player: Player, data: PlayerProfile): void;
 }
 
+export interface PlayerDataRemoving {
+	playerDataRemoving(player: Player, data: PlayerProfile): void;
+}
+
 @Service()
 export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 	private profileStorage = new Map<PlayerID, ProfileInstance>();
 
 	private profileStore: ProfileStore<PlayerProfile>;
 	private dataLoadedListeners = new Set<PlayerDataLoaded>();
+	private dataRemovingListeners = new Set<PlayerDataRemoving>();
 
 	constructor() {
 		this.profileStore = ProfileService.GetProfileStore(PLAYER_DATA_KEY, defaultPlayerProfile);
@@ -33,6 +38,8 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 	onStart() {
 		Modding.onListenerAdded<PlayerDataLoaded>((object) => this.dataLoadedListeners.add(object));
 		Modding.onListenerRemoved<PlayerDataLoaded>((object) => this.dataLoadedListeners.delete(object));
+		Modding.onListenerAdded<PlayerDataRemoving>((object) => this.dataRemovingListeners.add(object));
+		Modding.onListenerRemoved<PlayerDataRemoving>((object) => this.dataRemovingListeners.delete(object));
 	}
 
 	private async loadProfile(player: Player) {
@@ -62,18 +69,25 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 		);
 
 		profile.ListenToRelease(() => {
+			task.spawn(() =>
+				this.dataRemovingListeners.forEach((listener) => listener.playerDataRemoving(player, profile.Data)),
+			);
 			this.profileStorage.delete(player.UserId);
 			player.Kick("Session was terminated");
 		});
 
-		if (!player.IsDescendantOf(Players)) return;
+		if (!player.IsDescendantOf(Players)) {
+			return;
+		}
 		serverStore.setPlayerSave(player.UserId, profile.Data);
 
 		Events.SetProfile.fire(player, profile.Data);
 
 		const selectPlayerData = selectPlayerSave(player.UserId);
 		serverStore.subscribe(selectPlayerData, (data, oldData) => {
-			if (!data || !oldData) return;
+			if (!data || !oldData) {
+				return;
+			}
 			profile.Data = data;
 			Events.SetProfile.fire(player, profile.Data);
 		});

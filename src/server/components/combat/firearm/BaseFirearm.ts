@@ -82,7 +82,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.loadedSounds = SoundUtil.convertDictToSoundCacheDict(
 			this.configuration.sounds as SoundDict<number | string>,
-			{ parent: this.tool, volume: 1 },
+			{ parent: this.tool, volume: 0.5, lifetime: 5 },
 		) as FirearmSounds<SoundCache>;
 
 		this.state = {
@@ -90,7 +90,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			magazine: new FirearmMagazine(this.configuration.Magazine),
 			cooldown: false,
 			reloading: false,
-			reserve: 500,
+			reserve: 90,
 			mode: this.configuration.Barrel.fireModes[0],
 		};
 
@@ -377,6 +377,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const character = getCharacterFromHit(result.Instance)!;
 			const humanoid = character.Humanoid;
 			const projectileData = this.makeProjectile(result);
+			const healthBefore = humanoid.Health;
 			const damage = getLimbProjectileDamage(result.Instance, projectileData);
 
 			const invincible = character.GetAttribute("invincible") as boolean;
@@ -385,6 +386,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			}
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
 			humanoid.TakeDamage(damage);
+			Events.PlayHitmarker.fire(this.wielder);
 			if (characterEntityId === undefined) {
 				Log.Warn(
 					"Character {@Character} does not have an entityId attribute | BaseFirearm->OnHit",
@@ -402,7 +404,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				time: tick(),
 				crit,
 			};
-
+			if (crit && healthBefore > 0) {
+				Events.EnemyKilled.fire(this.wielder);
+			}
 			this.enemyService.handleDamage(characterEntityId, healthChange);
 		}
 	}

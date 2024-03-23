@@ -1,11 +1,6 @@
-import { Components } from "@flamework/components";
-import { Dependency, Modding, OnStart, Service } from "@flamework/core";
-import Log from "@rbxts/log";
+import { Modding, OnStart, Service } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
-import { BaseFirearm } from "server/components/combat/firearm/BaseFirearm";
-import { serverStore } from "server/store";
-import { FirearmSave } from "shared/constants/weapons";
 import { FirearmService } from "./FirearmService";
 
 export interface PlayerRemoving {
@@ -20,6 +15,10 @@ export interface CharacterAdded {
 	characterAdded(character: CharacterRigR15): void;
 }
 
+export interface CharacterRemoving {
+	characterRemoving(player: Player, character: CharacterRigR15): void;
+}
+
 @Service()
 export class PlayerService implements OnStart, PlayerAdded {
 	constructor(private firearmService: FirearmService) {}
@@ -27,10 +26,13 @@ export class PlayerService implements OnStart, PlayerAdded {
 	onStart() {
 		const playerAddedListeners = new Set<PlayerAdded>();
 		const characterAddedListeners = new Set<CharacterAdded>();
+		const characterRemovingListeners = new Set<CharacterRemoving>();
 		Modding.onListenerAdded<PlayerAdded>((object) => playerAddedListeners.add(object));
-		Modding.onListenerAdded<CharacterAdded>((object) => characterAddedListeners.add(object));
 		Modding.onListenerRemoved<PlayerAdded>((object) => playerAddedListeners.delete(object));
+		Modding.onListenerAdded<CharacterAdded>((object) => characterAddedListeners.add(object));
 		Modding.onListenerRemoved<CharacterAdded>((object) => characterAddedListeners.delete(object));
+		Modding.onListenerAdded<CharacterRemoving>((object) => characterRemovingListeners.add(object));
+		Modding.onListenerRemoved<CharacterRemoving>((object) => characterRemovingListeners.delete(object));
 		Players.PlayerAdded.Connect((player) => {
 			for (const listener of playerAddedListeners) {
 				task.spawn(() => listener.playerAdded(player));
@@ -39,6 +41,13 @@ export class PlayerService implements OnStart, PlayerAdded {
 					for (const listener of characterAddedListeners) {
 						task.spawn(() => listener.characterAdded(character as CharacterRigR15));
 					}
+				});
+				task.spawn(() => {
+					player.CharacterRemoving.Connect((character) => {
+						for (const listener of characterRemovingListeners) {
+							listener.characterRemoving(player, character as CharacterRigR15);
+						}
+					});
 				});
 			}
 		});
@@ -76,42 +85,5 @@ export class PlayerService implements OnStart, PlayerAdded {
 		player.CharacterAdded.Connect((character) => {
 			this.characterAdded(character as BaseCharacter);
 		});
-	}
-
-	playerRemoving(player: Player) {
-		const weapons = new Set<Tool>();
-		const character = player.Character!;
-		character.GetChildren().forEach((child) => {
-			if (child.IsA("Tool")) {
-				weapons.add(child);
-			}
-		});
-		player
-			.FindFirstChildOfClass("Backpack")!
-			.GetChildren()
-			.forEach((child) => {
-				if (child.IsA("Tool")) {
-					weapons.add(child);
-				}
-			});
-		const weaponData = this.firearmService.getPlayerWeaponData(player.UserId);
-		const newWeaponData: FirearmSave[] = [];
-		const components = Dependency<Components>();
-		weapons.forEach((weapon) => {
-			const firearmClass = components.getComponent<BaseFirearm<any, any>>(weapon);
-			if (!firearmClass) {
-				Log.Warn("Failed to find firearm class for {@Tool} | PlayerService->WeaponSaving", weapon);
-				return;
-			}
-			const weaponDataEntry = weaponData.get(weapon.Name);
-			newWeaponData.push({
-				weaponName: weapon.Name,
-				attachments: weaponDataEntry ? weaponDataEntry.attachments : [],
-				ammo: firearmClass.state.reserve,
-				magazine: firearmClass.state.magazine.holding,
-				equipped: true,
-			});
-		});
-		serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
 	}
 }

@@ -2,7 +2,7 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { selectSelectedWeapon } from "client/store/customization";
-import { selectActiveWeapon } from "client/store/inventory";
+import { selectIsHoldingItemByName } from "client/store/inventory";
 import { Button } from "client/ui/library/button/button";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
@@ -19,7 +19,7 @@ export function WeaponButton(props: WeaponButtonProps) {
 	const rem = useRem();
 
 	const selectedWeapon = useSelector(selectSelectedWeapon);
-	const activeWeapon = useSelector(selectActiveWeapon);
+	const activeWeapon = useSelector(selectIsHoldingItemByName(props.weapon.baseTool.Name));
 
 	return (
 		<Button
@@ -66,7 +66,7 @@ export function WeaponButton(props: WeaponButtonProps) {
 				textSize={rem(2.5)}
 			/>
 
-			{activeWeapon === props.weapon.baseTool && (
+			{activeWeapon && (
 				<>
 					<Text
 						text={"EQUIPPED"}

@@ -2,9 +2,8 @@ import { Modding, OnStart, Service } from "@flamework/core";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Option } from "@rbxts/rust-classes";
 import { EntityID, IDService } from "./IDService";
-import { DamageContributor, DamageSource, HealthChange } from "./variants";
+import { HealthChange } from "./variants";
 
 // FOR TESTING ONLY UNTIL GUN SYSTEM IS FINISHED
 interface Bullet {
@@ -40,7 +39,9 @@ export class EnemyService implements OnStart {
 			Log.Warn("Enemy ID {@Enemy} took {@Damage}hp dmg but no model was found", enemy, healthChange.amount);
 			return;
 		}
-		if (healthChange.crit) this.handleDeath(enemy, healthChange);
+		if (healthChange.crit) {
+			this.handleDeath(enemy, healthChange);
+		}
 	}
 
 	handleDeath(enemy: EntityID, healthChange: HealthChange) {
@@ -62,30 +63,5 @@ export class EnemyService implements OnStart {
 		} else {
 			this.scpKilledListeners.forEach((listener) => listener.scpKilled(model as BaseHumanoidSCP, healthChange));
 		}
-	}
-
-	// Simulate bullet hit until gun system is finished
-	bulletHit(shooter: EntityID, enemy: EntityID, bullet: Bullet) {
-		const shooterModel = this.idService.getModelFromID(shooter);
-		if (!shooterModel) {
-			Log.Warn("Enemy ID {@Enemy} took a bullet hit but no model was found", enemy);
-			return;
-		}
-		const enemyModel = this.idService.getModelFromID(enemy);
-		if (!enemyModel) {
-			Log.Warn("Enemy ID {@Enemy} took a bullet hit but no model was found", enemy);
-			return;
-		}
-
-		const crit = enemyModel.Humanoid.Health <= 0;
-		const healthChange: HealthChange = {
-			amount: bullet.Damage,
-			by: Option.wrap(DamageContributor.Solo(shooterModel)),
-			cause: Option.wrap(DamageSource.Projectile()),
-			time: tick(),
-			crit,
-		};
-
-		this.handleDamage(enemy, healthChange);
 	}
 }

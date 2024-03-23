@@ -13,7 +13,7 @@ export type EntityID = number & {
 	/**
 	 * @hidden
 	 */
-	readonly __nominal_id: unique symbol;
+	readonly _nominal_id: unique symbol;
 };
 
 @Service()

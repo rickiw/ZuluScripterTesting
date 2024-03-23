@@ -13,7 +13,7 @@ import {
 	selectSelectedWeapon,
 } from "client/store/customization";
 import { selectMenuOpen, selectPlayerSave } from "client/store/menu";
-import { IModification, ModificationType, WeaponBase } from "shared/constants/weapons";
+import { IModification, ModificationType, WeaponBase, getWeaponEntry } from "shared/constants/weapons";
 
 const player = Players.LocalPlayer;
 
@@ -110,7 +110,7 @@ export class CustomizationController implements OnStart, OnTick {
 	getWeaponModifications(weapon: Tool) {
 		const state = clientStore.getState();
 		const playerSave = selectPlayerSave(state)!;
-		const weaponData = playerSave.weaponData.find((data) => data.weaponName === weapon.Name);
+		const weaponData = getWeaponEntry(weapon.Name as WEAPON, playerSave.weaponData);
 		if (weaponData) {
 			const modifications: IModification[] = [];
 			weaponData.attachments.forEach((modification) => {
