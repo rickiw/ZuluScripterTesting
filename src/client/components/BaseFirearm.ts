@@ -113,7 +113,27 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
+	recoil() {
+		const { intensity, increment, time } = this.configuration.recoil ?? {
+			intensity: 1.5,
+			increment: 0.1,
+			time: 60 / this.configuration.Barrel.rpm,
+		};
+		task.spawn(() => {
+			for (let i = 0; i < time; i += increment) {
+				clientStore.setCameraLock(true);
+				const camera = Workspace.CurrentCamera!;
+				const goal = camera.CFrame.mul(CFrame.Angles(math.rad(intensity), math.rad(intensity / 2), 0));
+				const newCFrame = camera.CFrame.Lerp(goal, i);
+				camera.CFrame = newCFrame;
+				clientStore.setCameraLock(false);
+				RunService.RenderStepped.Wait();
+			}
+		});
+	}
+
 	fire() {
+		this.recoil();
 		Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
 	}
 

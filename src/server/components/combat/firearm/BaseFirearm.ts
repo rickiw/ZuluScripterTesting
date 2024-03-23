@@ -380,10 +380,18 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const damage = getLimbProjectileDamage(result.Instance, projectileData);
 
 			const invincible = character.GetAttribute("invincible") as boolean;
-			if (invincible) return;
+			if (invincible) {
+				return;
+			}
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
 			humanoid.TakeDamage(damage);
-			assert(characterEntityId, "Character entity ID not found");
+			if (characterEntityId === undefined) {
+				Log.Warn(
+					"Character {@Character} does not have an entityId attribute | BaseFirearm->OnHit",
+					character.Name,
+				);
+				return;
+			}
 
 			const shooter = this.wielder.Character!;
 			const crit = humanoid.Health <= 0;

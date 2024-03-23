@@ -1,7 +1,7 @@
 import { WeaponLike, WeaponType } from "shared/constants/weapons/weapon";
 import { AnimationDict, SoundDict } from "shared/utils";
 
-export interface MeleeLike extends WeaponLike {
+export interface MeleeLike extends Omit<WeaponLike, "recoil"> {
 	damage: number;
 	critDamage: number;
 }
