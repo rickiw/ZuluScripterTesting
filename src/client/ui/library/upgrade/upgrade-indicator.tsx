@@ -52,7 +52,7 @@ export function UpgradeIndicator({ modification, clicked }: UpgradeIndicatorProp
 					backgroundTransparency={indicatorTransparency}
 					anchorPoint={new Vector2(0.5, 0.5)}
 					position={UDim2.fromScale(0.5, 0.5)}
-					backgroundColor={Color3.fromRGB(22, 233, 56)}
+					backgroundColor={Color3.fromRGB(255, 242, 13)}
 					size={indicatorSize}
 					rotation={indicatorRotation}
 				/>
@@ -71,7 +71,7 @@ export function UpgradeIndicator({ modification, clicked }: UpgradeIndicatorProp
 					anchorPoint={new Vector2(0.5, 0.5)}
 					backgroundTransparency={0.5}
 					zIndex={0}
-					backgroundColor={Color3.fromRGB(212, 41, 41)}
+					backgroundColor={Color3.fromRGB(255, 255, 255)}
 					position={UDim2.fromScale(0.5, 0.5)}
 				>
 					<uicorner CornerRadius={new UDim(1, 0)} />

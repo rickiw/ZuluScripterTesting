@@ -3,7 +3,7 @@ import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, UserInputService, Workspace } from "@rbxts/services";
+import { Players, ReplicatedStorage, UserInputService, Workspace } from "@rbxts/services";
 import { FirearmInstance } from "client/components/BaseFirearm";
 import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
@@ -12,7 +12,7 @@ import {
 	selectModificationPreviews,
 	selectSelectedWeapon,
 } from "client/store/customization";
-import { selectMenuOpen } from "client/store/menu";
+import { selectMenuOpen, selectPlayerSave } from "client/store/menu";
 import { IModification, ModificationType, WeaponBase } from "shared/constants/weapons";
 
 const player = Players.LocalPlayer;
@@ -43,6 +43,10 @@ export class CustomizationController implements OnStart, OnTick {
 			},
 
 			controls: [Enum.KeyCode.C, Enum.KeyCode.DPadUp],
+		});
+
+		clientStore.subscribe(selectCustomizationIsOpen, () => {
+			clientStore.resetPreview();
 		});
 	}
 
@@ -99,15 +103,43 @@ export class CustomizationController implements OnStart, OnTick {
 				Log.Warn("Missing attachment point for {@Modification}", modification);
 				continue;
 			}
-			clientStore.addModification(guiMount as WeaponModificationMount);
+			clientStore.addModificationMount(guiMount as WeaponModificationMount);
 		}
+	}
+
+	getWeaponModifications(weapon: Tool) {
+		const state = clientStore.getState();
+		const playerSave = selectPlayerSave(state)!;
+		const weaponData = playerSave.weaponData.find((data) => data.weaponName === weapon.Name);
+		if (weaponData) {
+			const modifications: IModification[] = [];
+			weaponData.attachments.forEach((modification) => {
+				modifications.push({
+					...modification,
+					modification: ReplicatedStorage.Assets.Attachments.FindFirstChild(
+						modification.modification,
+					) as Modification,
+				});
+			});
+			return modifications;
+		}
+		return [] as IModification[];
 	}
 
 	setupViewport(weapon: WeaponBase) {
 		if (weapon.baseTool) {
 			this.weapon = weapon.baseTool.Clone() as FirearmInstance;
+			this.weapon.GetChildren().forEach((child) => {
+				if (child.IsA("BasePart")) {
+					child.Anchored = true;
+				}
+			});
 			this.weapon.Parent = Workspace.CustomizationBox.Weapons;
 			this.populateModifications(this.weapon);
+			const savedWeaponModifications = this.getWeaponModifications(weapon.baseTool);
+			savedWeaponModifications.forEach((modification) => {
+				clientStore.addModificationPreview(modification);
+			});
 			const cframe = new CFrame(
 				Workspace.CustomizationBox.Mount.Position.add(
 					Workspace.CustomizationBox.Mount.CFrame.LookVector.mul(4),
@@ -158,7 +190,6 @@ export class CustomizationController implements OnStart, OnTick {
 	}
 
 	toggleCustomization() {
-		Log.Warn("Toggling customization");
 		const state = clientStore.getState();
 		const menuOpen = selectMenuOpen(state);
 		if (menuOpen) {
@@ -167,6 +198,11 @@ export class CustomizationController implements OnStart, OnTick {
 
 		const camera = game.Workspace.CurrentCamera!;
 		const open = selectCustomizationIsOpen(state);
+		clientStore.resetPreview();
+		clientStore.setSelectedWeapon(undefined);
+
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
+		UserInputService.MouseIconEnabled = true;
 
 		if (open) {
 			camera.CFrame = this.openedCFrame!;
@@ -180,8 +216,8 @@ export class CustomizationController implements OnStart, OnTick {
 			this.setCameraPosition();
 			this.maid.GiveTask(
 				clientStore.subscribe(selectSelectedWeapon, (newWeapon) => {
-					clientStore.clearModifications();
-					clientStore.setSelectedModification(undefined);
+					clientStore.resetPreview();
+					clientStore.clearModificationMounts();
 					Workspace.CustomizationBox.Weapons.ClearAllChildren();
 
 					if (newWeapon) {

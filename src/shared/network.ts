@@ -1,5 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { Clan, GroupID } from "./constants/clans";
+import { IModification } from "./constants/weapons";
 import { Objective, ObjectiveID } from "./store/objectives";
 import { PlayerProfile } from "./utils";
 
@@ -10,6 +11,9 @@ export interface ClientToServerEvents {
 	// BaseFirearm
 	ReloadFirearm(weapon: Tool): void;
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
+	EquipFirearm(weapon: Tool): void;
+	UnequipFirearm(weapon: Tool): void;
+	UpdateFirearm(weapon: Tool, modifications: IModification[]): void;
 
 	// Objectives
 	StopObjective(objectiveId: ObjectiveID): void;

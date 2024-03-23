@@ -14,7 +14,15 @@ export interface FirearmAttachment<T extends keyof FirearmLike> {
 export const ModificationType = ["Barrel"] as const;
 export type ModificationType = (typeof ModificationType)[number];
 
-export type IModification = { name: string; type: ModificationType; modification: Modification };
+export type IModificationSave = Omit<IModification, "modification"> & {
+	modification: string;
+};
+
+export type IModification = {
+	name: string;
+	type: ModificationType;
+	modification: Modification;
+};
 const Attachments = ReplicatedStorage.Assets.Attachments;
 
 export const Flashlight: IModification = {

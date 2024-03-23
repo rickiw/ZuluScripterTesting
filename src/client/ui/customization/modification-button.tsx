@@ -26,14 +26,14 @@ export function ModificationButton(props: ModificationButtonProps) {
 			backgroundColor={Color3.fromRGB(52, 52, 52)}
 			event={{
 				MouseButton1Click: () => {
-					if (
-						modificationPreviews.find(
-							(preview) =>
-								preview.name !== props.modification.name && preview.type === props.modification.type,
-						)
-					) {
-						return;
-					}
+					// TODO: Have weapon set maximum attachments per attachment type
+					modificationPreviews.forEach((preview) => {
+						if (preview.type === props.modification.type && preview.name !== props.modification.name) {
+							clientStore.removeModificationPreview(preview);
+						}
+					});
+
+					clientStore.addUnsavedModification(props.modification);
 					clientStore.toggleModificationPreview(props.modification);
 				},
 			}}

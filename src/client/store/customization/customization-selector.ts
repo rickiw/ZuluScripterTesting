@@ -6,6 +6,7 @@ export const selectCustomizationIsOpen = (state: RootState) => state.customizati
 export const selectIsCustomizingWeapon = (state: RootState) => state.customization.isCustomizingWeapon;
 export const selectSelectedWeapon = (state: RootState) => state.customization.selectedWeapon;
 export const selectSelectedModification = (state: RootState) => state.customization.selectedModification;
+export const selectUnsavedModifications = (state: RootState) => state.customization.unsavedModifications;
 export const selectModificationPreviews = (state: RootState) => state.customization.modificationPreviews;
 export const selectIsPreviewingModification = (modificationName: string) => (state: RootState) => {
 	let isPreviewing = false;

@@ -1,12 +1,11 @@
 import { createProducer } from "@rbxts/reflex";
 import { ReplicatedStorage } from "@rbxts/services";
-import { BaseFirearm } from "client/components/BaseFirearm";
 import { WeaponBase } from "shared/constants/weapons";
 
 export interface InventoryState {
 	readonly inventoryOpen: boolean;
 	readonly activeWeapon: Tool | undefined;
-	readonly inventoryItems: BaseFirearm<any, any>[];
+	readonly inventoryItems: Tool[];
 	readonly allWeapons: WeaponBase[];
 }
 
@@ -29,11 +28,11 @@ export const inventorySlice = createProducer(initialState, {
 		...state,
 		activeWeapon,
 	}),
-	addInventoryItem: (state, item: BaseFirearm<any, any>) => ({
+	addInventoryItem: (state, item: Tool) => ({
 		...state,
 		inventoryItems: [...state.inventoryItems, item],
 	}),
-	removeInventoryItem: (state, item: BaseFirearm<any, any>) => ({
+	removeInventoryItem: (state, item: Tool) => ({
 		...state,
 		inventoryItems: state.inventoryItems.filter((inventoryItem) => inventoryItem !== item),
 	}),

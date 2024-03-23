@@ -7,6 +7,7 @@ export interface CustomizationState {
 	selectedWeapon: WeaponBase | undefined;
 	selectedModification: BasePart | undefined;
 	modificationPreviews: IModification[];
+	unsavedModifications: IModification[];
 }
 
 const initialState: CustomizationState = {
@@ -15,12 +16,21 @@ const initialState: CustomizationState = {
 	selectedWeapon: undefined,
 	selectedModification: undefined,
 	modificationPreviews: [],
+	unsavedModifications: [],
 };
 
 export const customizationSlice = createProducer(initialState, {
 	setCustomizationOpen: (state, isOpen: boolean) => ({ ...state, isOpen }),
 	setCustomizingWeapon: (state, isCustomizingWeapon: boolean) => ({ ...state, isCustomizingWeapon }),
 	setSelectedWeapon: (state, selectedWeapon: WeaponBase | undefined) => ({ ...state, selectedWeapon }),
+	addUnsavedModification: (state, modification: IModification) => ({
+		...state,
+		unsavedModifications: [...state.unsavedModifications, modification],
+	}),
+	removeUnsavedModification: (state, modification: IModification) => ({
+		...state,
+		unsavedModifications: state.unsavedModifications.filter((unsaved) => unsaved.name !== modification.name),
+	}),
 	setSelectedModification: (state, selectedModification: BasePart | undefined) => ({
 		...state,
 		selectedModification,
@@ -42,8 +52,19 @@ export const customizationSlice = createProducer(initialState, {
 				: [...state.modificationPreviews, modification],
 		};
 	},
+	clearUnsavedModifications: (state) => ({
+		...state,
+		unsavedModifications: [],
+	}),
 	clearModificationPreviews: (state) => ({
 		...state,
 		modificationPreviews: [],
+	}),
+
+	resetPreview: (state) => ({
+		...state,
+		selectedModification: undefined,
+		modificationPreviews: [],
+		unsavedModifications: [],
 	}),
 });

@@ -1,5 +1,5 @@
 import { AnimationDict, SoundCache, SoundDict } from "shared/utils";
-import { FirearmAttachment, WeaponLike } from ".";
+import { IModificationSave, WeaponLike } from ".";
 import { FirearmProjectileLike } from "./projectile";
 
 export type FireMode = "Automatic" | "Semi-Automatic" | "Single" | "Burst" | "Safety";
@@ -28,13 +28,14 @@ export interface SightConfig {
 }
 
 export interface FirearmSave {
+	weaponName: string;
 	equipped: boolean;
 	magazine: number;
 	ammo: number;
+	attachments: IModificationSave[];
 }
 
 export interface FirearmLike extends WeaponLike {
-	Attachments: FirearmAttachment<keyof FirearmLike>[];
 	Barrel: BarrelConfig;
 	Magazine: MagazineConfig;
 	Sight: SightConfig;

@@ -13,7 +13,7 @@ export interface PlayerProfile {
 	readonly clan: GroupID | undefined;
 	readonly purchasedPerks: ReadonlyArray<PerkInfo>;
 	readonly objectiveCompletion: ReadonlyArray<ObjectiveSave>;
-	readonly weaponData: Map<string, FirearmSave>;
+	readonly weaponData: ReadonlyArray<FirearmSave>;
 	readonly scrap: Map<string, number>;
 	readonly credits: number;
 }

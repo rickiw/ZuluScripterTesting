@@ -8,12 +8,12 @@ export interface Interaction extends Readonly<InteractionProps> {
 
 export interface InteractionState {
 	readonly interactions: readonly Interaction[];
-	readonly modifications: readonly WeaponModificationMount[];
+	readonly modificationMounts: readonly WeaponModificationMount[];
 }
 
 const initialState: InteractionState = {
 	interactions: [],
-	modifications: [],
+	modificationMounts: [],
 };
 
 export const interactionSlice = createProducer(initialState, {
@@ -21,17 +21,17 @@ export const interactionSlice = createProducer(initialState, {
 		...state,
 		interactions: [interaction, ...state.interactions],
 	}),
-	addModification: (state, modification: WeaponModificationMount) => ({
+	addModificationMount: (state, modificationMount: WeaponModificationMount) => ({
 		...state,
-		modifications: [modification, ...state.modifications],
+		modificationMounts: [...state.modificationMounts, modificationMount],
 	}),
 	removeInteraction: (state, id: string) => ({
 		...state,
 		interactions: state.interactions.filter((interaction) => interaction.id !== id),
 	}),
-	clearModifications: (state) => ({
+	clearModificationMounts: (state) => ({
 		...state,
-		modifications: [],
+		modificationMounts: [],
 	}),
 	setInteractionVisible: (state, id: string, visible: boolean) => ({
 		...state,

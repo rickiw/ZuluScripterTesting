@@ -6,7 +6,7 @@ export const selectInteractions = (state: RootState) => {
 };
 
 export const selectModifications = (state: RootState) => {
-	return state.interaction.modifications;
+	return state.interaction.modificationMounts;
 };
 
 export const selectInteractionsVisible = (state: RootState) => {

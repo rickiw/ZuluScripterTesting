@@ -1,13 +1,15 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import FastCast, { Caster, FastCastBehavior } from "@rbxts/fastcast";
+import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Option } from "@rbxts/rust-classes";
-import { Players, RunService, Workspace } from "@rbxts/services";
+import { Players, ReplicatedStorage, RunService, Workspace } from "@rbxts/services";
 import { Events } from "server/network";
 import { EnemyService } from "server/services/EnemyService";
+import { FirearmService } from "server/services/FirearmService";
 import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
@@ -18,6 +20,8 @@ import {
 	FirearmMagazine,
 	FirearmProjectile,
 	FirearmSounds,
+	IModification,
+	IModificationSave,
 } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import {
@@ -26,7 +30,6 @@ import {
 	SoundCache,
 	SoundDict,
 	SoundUtil,
-	deepMerge,
 	getCharacterFromHit,
 	getLimbProjectileDamage,
 	isLimb,
@@ -57,15 +60,19 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	behavior!: FastCastBehavior;
 
 	configuration: FirearmLike;
+	attachments: IModification[] = [];
 
 	loadedSounds: FirearmSounds<SoundCache>;
 
 	connections: Indexable<string, RBXScriptConnection> = {};
 	state: FirearmState;
 
-	constructor(private enemyService: EnemyService) {
+	constructor(
+		private firearmService: FirearmService,
+		private enemyService: EnemyService,
+	) {
 		super();
-		this.configuration = this.getConfiguration(this.getRawConfiguration());
+		this.configuration = this.getRawConfiguration();
 		this.wielder = this.getWielder();
 		this.tool = this.instance;
 		this.equipped = false;
@@ -91,6 +98,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			serverStore.setWeapon(this.wielder.UserId, this.state);
 		});
 
+		Events.UnequipFirearm.connect((player, weapon) => {
+			if (weapon === this.tool) {
+				this.instance.Destroy();
+			}
+		});
+
 		this.character = this.wielder.Character as CharacterRigR15;
 	}
 
@@ -113,19 +126,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	private getRawConfiguration() {
 		return require(this.instance.FindFirstChildOfClass("ModuleScript")!) as FirearmLike;
-	}
-
-	private getConfiguration(raw: FirearmLike) {
-		const fmtConfig: Indexable<string, any> = { ...raw };
-
-		for (const attachment of raw.Attachments) {
-			fmtConfig[attachment.type] = deepMerge(
-				fmtConfig[attachment.type],
-				attachment.modifiers as Indexable<string, any>,
-			);
-		}
-
-		return fmtConfig as FirearmLike;
 	}
 
 	private getWielder() {
@@ -245,6 +245,64 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	updateMagazineHolding(holding: number) {
 		this.state.magazine.holding = holding;
 		serverStore.setWeapon(this.wielder.UserId, this.state);
+	}
+
+	updateToolAttachmentsByName(weapon: Tool, modifications: IModificationSave[]) {
+		const newModifications: IModification[] = [];
+		modifications.forEach((modification) => {
+			const mod = ReplicatedStorage.Assets.Attachments.FindFirstChild(modification.modification) as
+				| Modification
+				| undefined;
+			if (!mod) {
+				Log.Warn(
+					"Modification {@Modification} not found | BaseFirearm->UpdateToolAttachmentsByName",
+					modification,
+				);
+				return;
+			}
+			newModifications.push({
+				modification: mod,
+				name: modification.name,
+				type: modification.type,
+			});
+		});
+		this.updateToolAttachments(weapon, newModifications);
+	}
+
+	updateToolAttachments(weapon: Tool, modifications: IModification[]) {
+		this.attachments.forEach((attachment) => {
+			attachment.modification.Destroy();
+		});
+		this.attachments.clear();
+		modifications.forEach((modification) => {
+			const weaponMount = weapon.FindFirstChild(modification.type) as WeaponModificationMount | undefined;
+			if (!weaponMount) {
+				Log.Warn(
+					"No mount found on {@Weapon} for {@Modification} | BaseFirearm->UpdateToolAttachments",
+					weapon.Name,
+					modification.type,
+				);
+				return;
+			}
+
+			const modificationClone = modification.modification.Clone();
+			const attachmentOffsetPosition = modificationClone.Attachment.CFrame.Inverse();
+			const modAttachment = weaponMount.ModAttachment;
+			modificationClone.Parent = weaponMount;
+			modificationClone.PivotTo(modAttachment.WorldCFrame.mul(attachmentOffsetPosition));
+			New("WeldConstraint")({
+				Parent: modificationClone,
+				Part0: weaponMount,
+				Part1: modificationClone,
+			});
+
+			const newModification: IModification = {
+				modification: modificationClone,
+				name: modification.name,
+				type: modification.type,
+			};
+			this.attachments.push(newModification);
+		});
 	}
 
 	fire(direction: Vector3) {

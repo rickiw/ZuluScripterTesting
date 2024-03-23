@@ -37,32 +37,33 @@ export class InventoryController extends HandlesInput implements OnStart {
 			.GetChildren()
 			.filter((item) => item.IsA("Tool"))
 			.forEach((item) => {
+				clientStore.addInventoryItem(item as Tool);
 				const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
 				if (baseFirearmComponent) {
-					clientStore.addInventoryItem(baseFirearmComponent);
+					// clientStore.addInventoryItem(baseFirearmComponent);
 				} else {
 					Log.Warn("No BaseFirearm component found on tool");
 				}
 			});
 
 		backpack.ChildAdded.Connect((item) => {
-			Log.Warn("Item added from backpack");
 			if (!item.IsA("Tool")) {
 				return;
 			}
 			const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
+			clientStore.addInventoryItem(item);
 			if (baseFirearmComponent) {
-				clientStore.addInventoryItem(baseFirearmComponent);
+				// clientStore.addInventoryItem(baseFirearmComponent);
 			}
 		});
 		backpack.ChildRemoved.Connect((item) => {
-			Log.Warn("Item removed from backpack");
 			if (!item.IsA("Tool")) {
 				return;
 			}
 			const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
+			clientStore.removeInventoryItem(item);
 			if (baseFirearmComponent) {
-				clientStore.removeInventoryItem(baseFirearmComponent);
+				// clientStore.removeInventoryItem(baseFirearmComponent);
 			}
 		});
 	}

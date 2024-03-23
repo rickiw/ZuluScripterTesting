@@ -2,7 +2,6 @@ import { useMountEffect } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect, useState } from "@rbxts/roact";
 import { RunService } from "@rbxts/services";
-import { clientStore } from "client/store";
 import {
 	selectCustomizationIsOpen,
 	selectSelectedModification,
@@ -10,7 +9,6 @@ import {
 } from "client/store/customization";
 import { selectWeapons } from "client/store/inventory";
 import { useMotion, useRem } from "client/ui/hooks";
-import { Button } from "client/ui/library/button/button";
 import { Frame, ScrollingFrame } from "client/ui/library/frame";
 import { SmallButton } from "client/ui/library/menu/small-button";
 import { Text } from "client/ui/library/text";
@@ -19,6 +17,7 @@ import { springs } from "shared/constants/springs";
 import { IModification, getModifications } from "shared/constants/weapons";
 import { ModificationButton } from "../modification-button";
 import { WeaponButton } from "../weapon-button";
+import { ActionButton } from "./action-button";
 
 const DEBUG = !RunService.IsRunning();
 
@@ -29,6 +28,7 @@ export function WeaponCustomization() {
 	const [menuPosition, menuPositionMotion] = useMotion(UDim2.fromScale(-1));
 
 	const selectedWeapon = useSelector(selectSelectedWeapon);
+
 	const allWeapons = useSelector(selectWeapons);
 	const matchingModifications = selectedWeapon
 		? getModifications(selectedWeapon.baseTool.Name as WEAPON)!
@@ -57,25 +57,7 @@ export function WeaponCustomization() {
 				borderColor={Color3.fromRGB(52, 72, 98)}
 				backgroundTransparency={0}
 			>
-				{selectedWeapon && (
-					<Button
-						text={"Modify " + selectedWeapon.baseTool.Name}
-						position={new UDim2(0, rem(45), 0.9, 0)}
-						backgroundTransparency={0}
-						backgroundColor={Color3.fromRGB(0, 0, 0)}
-						borderColor={Color3.fromRGB(255, 255, 255)}
-						borderSize={1}
-						textColor={Color3.fromRGB(255, 255, 255)}
-						fontFace={Font.fromEnum(Enum.Font.Highway)}
-						textSize={rem(2)}
-						size={UDim2.fromOffset(rem(10), rem(2.5))}
-						event={{
-							MouseButton1Click: () => {
-								clientStore.setCustomizingWeapon(false);
-							},
-						}}
-					/>
-				)}
+				{selectedWeapon && <ActionButton />}
 
 				<Text
 					text={"WEAPON CUSTOMIZATION"}
