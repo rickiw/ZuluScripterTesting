@@ -1,5 +1,6 @@
-import { AnimationDict, SoundDict } from "shared/utils";
+import { AnimationDict } from "shared/utils";
 import { FIREARM_TYPE } from "../firearm";
+import { FirearmSounds } from "./firearm";
 
 export type WeaponType = "Firearm" | "Melee";
 
@@ -14,7 +15,7 @@ export interface WeaponLike {
 	recoil: WeaponRecoil;
 	type: WeaponType;
 	animations: AnimationDict<string | number>;
-	sounds: SoundDict<string | number>;
+	sounds: FirearmSounds;
 	tool: Tool;
 }
 

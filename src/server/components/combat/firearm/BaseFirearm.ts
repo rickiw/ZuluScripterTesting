@@ -19,21 +19,13 @@ import {
 	FirearmLike,
 	FirearmMagazine,
 	FirearmProjectile,
+	FirearmSoundManager,
 	FirearmSounds,
 	IModification,
 	IModificationSave,
 } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
-import {
-	AnimationUtil,
-	Indexable,
-	SoundCache,
-	SoundDict,
-	SoundUtil,
-	getCharacterFromHit,
-	getLimbProjectileDamage,
-	isLimb,
-} from "shared/utils";
+import { AnimationUtil, Indexable, getCharacterFromHit, getLimbProjectileDamage, isLimb } from "shared/utils";
 
 export interface FirearmInstance extends Tool {}
 
@@ -62,7 +54,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	configuration: FirearmLike;
 	attachments: IModification[] = [];
 
-	loadedSounds: FirearmSounds<SoundCache>;
+	soundManager: FirearmSoundManager<FirearmSounds>;
 
 	connections: Indexable<string, RBXScriptConnection> = {};
 	state: FirearmState;
@@ -80,10 +72,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.caster = new FastCast();
 		this.loaded = false;
 
-		this.loadedSounds = SoundUtil.convertDictToSoundCacheDict(
-			this.configuration.sounds as SoundDict<number | string>,
-			{ parent: this.tool, volume: 0.5, lifetime: 5 },
-		) as FirearmSounds<SoundCache>;
+		this.soundManager = new FirearmSoundManager(this.configuration.sounds, this.instance);
 
 		this.state = {
 			configuration: this.configuration,
@@ -105,6 +94,13 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.character = this.wielder.Character as CharacterRigR15;
+
+		Events.Help.connect((player) => {
+			if (player === this.wielder) {
+				Log.Warn("Giving extra 30 bullets to {@Player}", this.wielder.Name);
+				this.updateState({ reserve: this.state.reserve + 30 });
+			}
+		});
 	}
 
 	onStart() {
@@ -229,7 +225,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.updateState({ reloading: false });
 		serverStore.setWeapon(this.wielder.UserId, undefined);
 		AnimationUtil.stopAll(this.loadedAnimations);
-		this.loadedSounds.Reload.stop();
+		this.soundManager.play("AimOut");
 		this.equipped = false;
 	}
 
@@ -307,7 +303,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	fire(direction: Vector3) {
 		if (this.state.magazine === undefined || (this.state.magazine.holding <= 0 && this.state.reserve <= 0)) {
-			this.loadedSounds.ChamberEmpty.play();
+			this.soundManager.play("ChamberEmpty");
 		}
 		if (!this.canFire()) {
 			return;
@@ -326,18 +322,22 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.updateState({ cooldown: false });
 		});
 
-		this.loadedSounds.Fire.play();
+		this.soundManager.play("Fire", { volume: 0.6 });
 		this.loadedAnimations.Fire.Play();
 		this.state.magazine.take();
 	}
 
 	reload() {
-		if (this.state.reloading || this.state.reserve <= 0) {
+		if (this.state.reloading) {
+			return;
+		}
+		if (this.state.reserve <= 0) {
+			this.soundManager.play("ChamberEmpty");
 			return;
 		}
 
 		this.updateState({ reloading: true });
-		this.loadedSounds.Reload.play();
+		this.soundManager.play("Reload");
 		this.loadedAnimations.Reload.Play();
 
 		const bulletsNeededToFillMag = this.state.magazine.getCapacity() - this.state.magazine.getRemaining();
@@ -386,7 +386,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			}
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
 			humanoid.TakeDamage(damage);
-			Events.PlayHitmarker.fire(this.wielder);
+			if (humanoid.Health > 0) {
+				Events.PlayHitmarker.fire(this.wielder);
+			}
 			if (characterEntityId === undefined) {
 				Log.Warn(
 					"Character {@Character} does not have an entityId attribute | BaseFirearm->OnHit",

@@ -5,10 +5,10 @@ import { Players, RunService, UserInputService, Workspace } from "@rbxts/service
 import { Events } from "client/network";
 import { clientStore } from "client/store";
 import { selectCameraOffset } from "client/store/camera";
-import { FirearmAnimations, FirearmLike, FirearmSounds } from "shared/constants/weapons";
+import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
-import { AnimationUtil, Indexable, SoundCache, SoundDict, SoundUtil } from "shared/utils";
+import { AnimationUtil, Indexable } from "shared/utils";
 import { ControlSet } from "./controls";
 
 export interface FirearmInstance extends Tool {}
@@ -49,15 +49,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	connections: Indexable<"activated" | "equipped" | "unequipped" | "loop", RBXScriptConnection> = {} as any;
 
 	state!: FirearmState | undefined;
-	loadedSounds: FirearmSounds<SoundCache>;
+	soundManager: FirearmSoundManager<FirearmSounds>;
 
 	constructor() {
 		super();
 		this.configuration = this.getConfiguration();
-		this.loadedSounds = SoundUtil.convertDictToSoundCacheDict(
-			this.configuration.sounds as SoundDict<number | string>,
-			{ parent: this.instance, volume: 1, lifetime: 5 },
-		) as FirearmSounds<SoundCache>;
+		this.soundManager = new FirearmSoundManager(this.configuration.sounds, this.instance);
 	}
 
 	onStart() {
@@ -117,19 +114,19 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		const { intensity, increment, time } = this.configuration.recoil ?? {
 			intensity: 3,
 			increment: 0.1,
-			time: 60 / this.configuration.Barrel.rpm,
+			time: 0.1,
 		};
-		task.spawn(() => {
-			for (let i = 0; i < time; i += increment) {
-				clientStore.setCameraLock(true);
-				const camera = Workspace.CurrentCamera!;
-				const goal = camera.CFrame.mul(CFrame.Angles(math.rad(intensity), math.rad(intensity / 2), 0));
-				const newCFrame = camera.CFrame.Lerp(goal, i);
-				camera.CFrame = newCFrame;
-				clientStore.setCameraLock(false);
-				RunService.RenderStepped.Wait();
-			}
-		});
+		for (let i = 0; i < time; i += increment) {
+			clientStore.setCameraLock(true);
+			const camera = Workspace.CurrentCamera!;
+			const x = math.random(-intensity, intensity);
+			const y = math.random(-intensity, intensity);
+			const goal = camera.CFrame.mul(CFrame.Angles(math.rad(x), math.rad(y), 0));
+			const newCFrame = camera.CFrame.Lerp(goal, i);
+			camera.CFrame = newCFrame;
+			clientStore.setCameraLock(false);
+			RunService.RenderStepped.Wait();
+		}
 	}
 
 	fire() {
@@ -267,7 +264,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	aimIn() {
-		this.loadedSounds.AimIn.play();
+		this.soundManager.play("AimIn");
 
 		clientStore.setShiftLocked(true);
 		clientStore.setCameraFlag("FirearmIsAiming", true);
@@ -276,7 +273,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	aimOut() {
-		this.loadedSounds.AimOut.play();
+		this.soundManager.play("AimOut");
 
 		clientStore.setShiftLocked(false);
 		clientStore.setCameraFlag("FirearmIsAiming", false);

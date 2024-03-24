@@ -13,6 +13,7 @@ export interface ClientToServerEvents {
 	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 	EquipFirearm(weapon: Tool): void;
 	UnequipFirearm(weapon: Tool): void;
+	Help(): void;
 	UpdateFirearm(weapon: Tool, modifications: IModification[]): void;
 
 	// Objectives
