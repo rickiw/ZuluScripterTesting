@@ -1,5 +1,5 @@
 import { BaseComponent, Component } from "@flamework/components";
-import { OnStart, OnTick } from "@flamework/core";
+import { OnRender, OnStart } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, RunService, UserInputService, Workspace } from "@rbxts/services";
 import { Events } from "client/network";
@@ -27,7 +27,7 @@ const CAMERA_Z_OFFSET = 0.2;
 })
 export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	extends BaseComponent<A, I>
-	implements OnStart, OnTick
+	implements OnStart, OnRender
 {
 	configuration: FirearmLike;
 	character = (player.Character ?? player.CharacterAdded.Wait()[0]) as CharacterRigR15;
@@ -294,8 +294,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setFovOffset(0);
 	}
 
-	onTick(dt: number) {
-		if (!this.equipped) return;
+	onRender(dt: number) {
+		if (!this.equipped) {
+			return;
+		}
 
 		const state = clientStore.getState();
 

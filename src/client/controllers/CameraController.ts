@@ -1,10 +1,10 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { createMotion } from "@rbxts/ripple";
 import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
 import {
-	selectCameraFOVOffset,
 	selectCameraFlag,
 	selectCameraLock,
 	selectCameraLockedCenter,
@@ -12,180 +12,163 @@ import {
 	selectCameraShiftLocked,
 	selectCameraZoomDistance,
 } from "client/store/camera";
-import { lerp } from "shared/utils";
+import { springs } from "shared/constants/springs";
 
 let SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
 const SCROLL_SENSITIVITY = 1;
-const CAMERA_SMOOTHING = 0.5;
+const SCROLL_MINIMUM = 3;
+const SCROLL_MAXIMUM = 15;
+const CAMERA_SMOOTHING = 0.4;
 const FIELD_OF_VIEW = 70;
-const Camera = Workspace.CurrentCamera!;
 
 const player = Players.LocalPlayer;
+const camera = Workspace.CurrentCamera!;
 const character = (player.Character ?? player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 
 @Controller()
 export class CameraController implements OnStart, OnTick {
-	currentCameraOffset = Vector3.zero;
 	additionalCameraOffset = Vector3.zero;
-	controlSet = new ControlSet();
-
-	currentCameraFOV = 0;
-
-	lastMousePos = Vector2.zero;
-	mouseDelta = Vector2.zero;
+	currentCameraOffset = Vector3.zero;
 
 	gamepadState = Vector2.zero;
-
-	theta = math.pi;
+	lastMousePosition = Vector2.zero;
+	mouseDelta = Vector2.zero;
 	phi = math.pi / 2;
+	theta = math.pi;
+
+	offsetSpring = createMotion(new Vector3(), { start: true });
+	zoomSpring = createMotion(SCROLL_MINIMUM, { start: true });
+
+	controlSet = new ControlSet();
 
 	onStart() {
 		clientStore.setCameraFlag("FirearmIsAiming", false);
-		UserInputService.InputChanged.Connect((inputObject, gpe) => {
-			if (gpe) {
-				return;
-			}
 
-			// Handle mouse movements
-			if (inputObject.UserInputType === Enum.UserInputType.MouseMovement) {
-				this.handleMouseInput(inputObject);
-			}
-
-			const state = clientStore.getState();
-
-			if (inputObject.UserInputType === Enum.UserInputType.MouseWheel) {
-				clientStore.setCameraZoomDistance(
-					math.clamp(selectCameraZoomDistance(state) - inputObject.Position.Z * SCROLL_SENSITIVITY, 3, 15),
-				);
-			}
-
-			// Handle touch movements
-			if (inputObject.UserInputType === Enum.UserInputType.Touch) {
-				this.handleTouchInput(inputObject);
-			}
-
-			// Update gamepad state when thumbstick movement is detected
-			if (
-				inputObject.UserInputType === Enum.UserInputType.Gamepad1 &&
-				inputObject.KeyCode === Enum.KeyCode.Thumbstick2
-			) {
-				this.gamepadState = new Vector2(inputObject.Position.X, inputObject.Position.Y);
-			}
+		clientStore.subscribe(selectCameraOffset, (offset) => {
+			this.offsetSpring.spring(offset, springs.gentle);
 		});
 
-		const Distances = [3, 5, 15];
-		let DistIdx = 1;
-
-		this.controlSet.add({
-			ID: "gamepad-zoom",
-			Name: "GamepadZoom",
-			Enabled: true,
-			Mobile: false,
-
-			onBegin: () => {
-				DistIdx = (DistIdx + 1) % (Distances.size() - 1);
-				clientStore.setCameraZoomDistance(Distances[DistIdx]);
-			},
-			controls: [Enum.KeyCode.ButtonR3],
-		});
-
-		// Zoom for touch devices (pinch-to-zoom)
-		UserInputService.TouchPinch.Connect((touches: Vector2[]) => {
-			const state = clientStore.getState();
-			const zoomSpeed = touches[0].Magnitude - touches[1].Magnitude;
-			const currentZoom = selectCameraZoomDistance(state);
-
-			clientStore.setCameraZoomDistance(math.clamp(currentZoom + zoomSpeed, 0, 15));
+		UserInputService.InputChanged.Connect((input, gpe) => {
+			this.cameraInput(input, gpe);
 		});
 	}
 
-	handleMouseInput(inputObject: InputObject) {
-		if (
-			!UserInputService.IsMouseButtonPressed(Enum.UserInputType.MouseButton2) &&
-			!selectCameraLockedCenter(clientStore.getState())
-		) {
-			this.lastMousePos = new Vector2(inputObject.Position.X, inputObject.Position.Y);
+	cameraInput(input: InputObject, gpe: boolean) {
+		if (gpe) {
+			return;
+		}
+		if (input.UserInputType === Enum.UserInputType.MouseMovement) {
+			this.handleMouseInput(input);
+		} else if (input.UserInputType === Enum.UserInputType.MouseWheel) {
+			this.handleZoom(input.Position.Z);
+		}
+	}
+
+	handleMouseInput(input: InputObject) {
+		const state = clientStore.getState();
+		const rmbPressed = UserInputService.IsMouseButtonPressed(Enum.UserInputType.MouseButton2);
+		const cameraLockedCenter = selectCameraLockedCenter(state);
+		if (!rmbPressed && !cameraLockedCenter) {
+			this.lastMousePosition = new Vector2(input.Position.X, input.Position.Y);
 			return;
 		}
 
-		this.mouseDelta = !selectCameraLockedCenter(clientStore.getState())
-			? new Vector2(this.lastMousePos.X - inputObject.Position.X, this.lastMousePos.Y - inputObject.Position.Y)
-			: new Vector2(-inputObject.Delta.X, -inputObject.Delta.Y);
-		this.phi = math.clamp(this.phi - this.mouseDelta.Y * SENSITIVITY, 0, math.rad(160));
-		this.theta -= this.mouseDelta.X * SENSITIVITY;
-		this.lastMousePos = new Vector2(inputObject.Position.X, inputObject.Position.Y);
+		this.mouseDelta = !cameraLockedCenter
+			? new Vector2(this.lastMousePosition.X - input.Position.X, this.lastMousePosition.Y - input.Position.Y)
+			: new Vector2(-input.Delta.X, -input.Delta.Y);
+		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
+		const finalSensitivity = isAiming ? SENSITIVITY * 0.5 : SENSITIVITY;
+		this.phi = math.clamp(this.phi - this.mouseDelta.Y * finalSensitivity, 0, math.rad(160));
+		this.theta -= this.mouseDelta.X * finalSensitivity;
+		this.lastMousePosition = new Vector2(input.Position.X, input.Position.Y);
 	}
 
-	// Our assumed deltaTouch represents the relative movement of touch input
-	handleTouchInput(inputObject: InputObject) {
-		const deltaTouch = new Vector2(inputObject.Delta.X, inputObject.Delta.Y);
-		this.phi = math.clamp(this.phi + deltaTouch.Y * SENSITIVITY * math.pi, 0, math.rad(160));
-		this.theta -= -deltaTouch.X * SENSITIVITY * math.pi;
-	}
-
-	onTick(dt: number) {
+	handleZoom(Z: number) {
 		const state = clientStore.getState();
-		if (selectCameraLock(state)) return;
+		const newPosition = Z * SCROLL_SENSITIVITY;
+		const currentZoom = selectCameraZoomDistance(state);
+		const newZoom = math.clamp(currentZoom - newPosition, SCROLL_MINIMUM, SCROLL_MAXIMUM);
+		this.zoomSpring.spring(newZoom, { damping: 0.78 });
+		clientStore.setCameraZoomDistance(newZoom);
+	}
 
-		const humanoidRootPart = character.HumanoidRootPart;
-		Camera.CameraType = !humanoidRootPart ? Enum.CameraType.Follow : Enum.CameraType.Scriptable;
+	getRaycastedMaxDistance(center: Vector3, newCFrame: CFrame) {
+		const parameters = new RaycastParams();
+		parameters.FilterDescendantsInstances = [
+			character,
+			...character.GetDescendants().filter((instance) => instance.IsA("BasePart")),
+		];
+		parameters.FilterType = Enum.RaycastFilterType.Exclude;
 
-		const mouseBehavior = !selectCameraLockedCenter(state)
+		const raycast = Workspace.Raycast(center, newCFrame.Position.sub(center), parameters);
+
+		if (raycast) {
+			return raycast.Position.add(raycast.Normal);
+		} else {
+			return center.add(newCFrame.Position.sub(center));
+		}
+	}
+
+	matchCharacterRotation() {
+		const state = clientStore.getState();
+		const rootPart = character.HumanoidRootPart;
+		const [pitch, yaw, roll] = camera.CFrame.ToEulerAnglesYXZ();
+		const isShiftLocked = selectCameraShiftLocked(state);
+		if (isShiftLocked && rootPart) {
+			rootPart.CFrame = new CFrame(rootPart.Position).mul(CFrame.Angles(0, yaw, 0));
+		}
+	}
+
+	updateCamera() {
+		const state = clientStore.getState();
+		const rootPart = character.HumanoidRootPart;
+		if (selectCameraLock(state)) {
+			return;
+		}
+
+		camera.CameraType = !rootPart ? Enum.CameraType.Follow : Enum.CameraType.Scriptable;
+
+		const cameraLockedCenter = selectCameraLockedCenter(state);
+		UserInputService.MouseBehavior = !cameraLockedCenter
 			? Enum.MouseBehavior.Default
 			: Enum.MouseBehavior.LockCenter;
-		UserInputService.MouseBehavior = mouseBehavior;
-		UserInputService.MouseIconEnabled = !selectCameraLockedCenter(state);
+		UserInputService.MouseIconEnabled = !cameraLockedCenter;
 
-		this.additionalCameraOffset = new Vector3(0, 2.05, 0);
+		this.additionalCameraOffset = new Vector3(0, 2, 0);
 
-		const zoomDistance = selectCameraZoomDistance(state);
+		const zoomDistance = this.zoomSpring.get();
+		const cameraOffset = this.offsetSpring.get();
 
-		// Log.Warn(
-		// 	"zDist: {@ZDist} {@CLamped}",
-		// 	zoomDistance * math.cos(this.phi),
-		// 	math.clamp(zoomDistance * math.cos(this.phi), -5, 5),
-		// );
-		// add spherical to cartesian conversion, phi is elevation, theta is azimuth
-		const targetCamRotation = new Vector3(
+		const targetCameraRotation = new Vector3(
 			zoomDistance * math.sin(this.phi) * math.cos(this.theta),
 			math.clamp(zoomDistance * math.cos(this.phi), -5, 5),
 			zoomDistance * math.sin(this.phi) * math.sin(this.theta),
 		);
 
-		this.currentCameraOffset = this.currentCameraOffset.Lerp(
-			selectCameraOffset(state).add(this.additionalCameraOffset),
-			0.1,
-		);
+		this.currentCameraOffset = this.currentCameraOffset.Lerp(cameraOffset.add(this.additionalCameraOffset), 0.1);
 
-		this.currentCameraFOV = FIELD_OF_VIEW + selectCameraFOVOffset(state);
-		const baseCameraPosition = humanoidRootPart.Position;
-		const lookAtPosition = baseCameraPosition.sub(targetCamRotation);
+		const baseCameraPosition = rootPart.Position;
+		const lookAtPosition = baseCameraPosition.sub(targetCameraRotation);
 
 		const cameraBaseTarget = CFrame.lookAt(lookAtPosition, baseCameraPosition);
 		const cameraTarget = cameraBaseTarget.mul(new CFrame(this.currentCameraOffset));
 
-		const finalCameraTarget = Camera.CFrame.Lerp(cameraTarget, CAMERA_SMOOTHING);
+		const position = this.getRaycastedMaxDistance(baseCameraPosition, cameraTarget);
+		const finalCFrame = new CFrame(position).mul(cameraTarget.sub(cameraTarget.Position));
 
-		Camera.CFrame = finalCameraTarget;
-		Camera.FieldOfView = lerp(Camera.FieldOfView, this.currentCameraFOV, 0.1);
+		const finalCameraTarget = camera.CFrame.Lerp(finalCFrame, CAMERA_SMOOTHING);
 
-		// Rotate body to face the camera
-		const [pitch, yaw, roll] = Camera.CFrame.ToEulerAnglesYXZ();
-		const isShiftLocked = selectCameraShiftLocked(state);
-		if (isShiftLocked && humanoidRootPart) {
-			humanoidRootPart.CFrame = new CFrame(humanoidRootPart.Position).mul(CFrame.Angles(0, yaw, 0));
-		}
+		camera.CFrame = finalCameraTarget;
+
+		this.matchCharacterRotation();
 
 		SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
 
-		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
-		const aimMultiplier = isAiming ? 0.5 : 1;
+		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY * math.pi, 0, math.rad(160));
+		this.theta += this.gamepadState.X * SENSITIVITY * math.pi;
+	}
 
-		this.phi = math.clamp(
-			this.phi - this.gamepadState.Y * (SENSITIVITY * aimMultiplier) * math.pi,
-			0,
-			math.rad(160),
-		);
-		this.theta += this.gamepadState.X * (SENSITIVITY * aimMultiplier) * math.pi;
+	onTick(dt: number) {
+		this.updateCamera();
 	}
 }

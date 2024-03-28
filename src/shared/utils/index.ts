@@ -8,3 +8,4 @@ export * from "./misc";
 export * from "./object";
 export * from "./player";
 export * from "./sound";
+export * from "./spring";
