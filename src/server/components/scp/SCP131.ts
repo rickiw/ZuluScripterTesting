@@ -1,8 +1,10 @@
 import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 import SimplePath from "@rbxts/simplepath";
 import { SCPKilled } from "server/services/EnemyService";
+import { CharacterRemoving } from "server/services/PlayerService";
 import { HealthChange } from "server/services/variants";
 import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
 
@@ -24,7 +26,7 @@ interface SCPAttributes {
 })
 export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	extends BaseSCP<A, I>
-	implements OnStart, OnTick, OnPathfind, SCPKilled
+	implements OnStart, OnTick, OnPathfind, SCPKilled, CharacterRemoving
 {
 	status: "idle" | "wandering" | "following" = "idle";
 	target?: Player;
@@ -41,7 +43,9 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 		this.path.Blocked.Connect(() => this.pathfindBlocked());
 		this.path.Error.Connect((errorType) => this.pathfindError(errorType));
 
-		if (this.attributes.visualize) this.path.Visualize = true;
+		if (this.attributes.visualize) {
+			this.path.Visualize = true;
+		}
 	}
 
 	onStart() {
@@ -54,14 +58,18 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 			case "idle":
 			case "wandering": {
 				const character = player.Character;
-				if (!character || !character.PrimaryPart) return false;
+				if (!character || !character.PrimaryPart) {
+					return false;
+				}
 				this.target = player;
 				this.status = "following";
 				this.path.Run(character.PrimaryPart.Position);
 				break;
 			}
 			case "following": {
-				if (this.path.Status === "Active") this.path.Stop();
+				if (this.path.Status === "Active") {
+					this.path.Stop();
+				}
 				this.nextWanderPoint = undefined;
 				this.status = "wandering";
 				break;
@@ -70,28 +78,44 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 		return true;
 	}
 
+	characterRemoving(player: Player, character: CharacterRigR15) {
+		if (this.target === player) {
+			this.target = undefined;
+			if (this.path.Status === "Active") {
+				this.path.Stop();
+			}
+			this.status = "idle";
+		}
+	}
+
 	onTick(dt: number) {
-		if (!this.alive) return;
+		if (!this.alive) {
+			return;
+		}
 		switch (this.status) {
 			case "wandering": {
-				if (!this.nextWanderPoint) this.nextWanderPoint = this.getNextWanderPoint();
-				if (this.path.Status !== "Active") this.path.Run(this.nextWanderPoint);
+				if (!this.nextWanderPoint) {
+					this.nextWanderPoint = this.getNextWanderPoint();
+				}
+				if (this.path.Status !== "Active") {
+					this.path.Run(this.nextWanderPoint);
+				}
 				break;
 			}
 			case "following": {
 				if (!this.target) {
-					if (this.attributes.visualize)
-						Log.Warn("SCP131 | Target is undefined but is following, probably left game");
-					if (this.path.Status === "Active") this.path.Stop();
+					if (this.path.Status === "Active") {
+						this.path.Stop();
+					}
 					this.status = "idle";
 					return;
 				}
 				const character = this.target.Character;
 				if (!character || !character.PrimaryPart) {
 					this.target = undefined;
-					if (this.attributes.visualize)
-						Log.Warn("SCP131 | Target character is undefined but is following, probably left game");
-					if (this.path.Status === "Active") this.path.Stop();
+					if (this.path.Status === "Active") {
+						this.path.Stop();
+					}
 					this.status = "idle";
 					return;
 				}

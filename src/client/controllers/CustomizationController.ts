@@ -1,4 +1,4 @@
-import { Controller, OnStart, OnTick } from "@flamework/core";
+import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
@@ -18,7 +18,7 @@ import { IModification, ModificationType, WeaponBase, getWeaponEntry } from "sha
 const player = Players.LocalPlayer;
 
 @Controller()
-export class CustomizationController implements OnStart, OnTick {
+export class CustomizationController implements OnStart, OnRender {
 	controlSet = new ControlSet();
 	character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 	maid = new Maid();
@@ -235,8 +235,13 @@ export class CustomizationController implements OnStart, OnTick {
 		clientStore.setCustomizationOpen(!open);
 	}
 
-	onTick(dt: number) {
-		if (!this.dragging) {
+	onRender(dt: number) {
+		const currentlyOpen = clientStore.getState(selectCustomizationIsOpen);
+		if (currentlyOpen) {
+			this.character.Humanoid.UnequipTools();
+		}
+
+		if (!this.dragging || !currentlyOpen) {
 			return;
 		}
 

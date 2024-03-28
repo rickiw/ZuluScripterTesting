@@ -9,9 +9,12 @@ import { selectCustomizationIsOpen } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
 import { PlayerProfile } from "shared/utils";
 import { HandlesInput } from "./BaseInput";
+import { CameraController } from "./CameraController";
 
 const Player = Players.LocalPlayer;
 const Character = (Player.Character || Player.CharacterAdded.Wait()[0]) as CharacterRigR15;
+
+const camera = Workspace.CurrentCamera!;
 
 @Controller()
 export class MenuController extends HandlesInput implements OnStart, OnRender {
@@ -21,7 +24,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	inputs = [Enum.KeyCode.M, Enum.KeyCode.ButtonL3];
 	controlSet = new ControlSet();
 
-	constructor() {
+	constructor(private cameraController: CameraController) {
 		super();
 		this.menuPanel = New("Part")({
 			Parent: Workspace.CurrentCamera,
@@ -58,24 +61,29 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 	}
 
 	getCameraOffsetCFrame() {
-		const hrp = Character.HumanoidRootPart;
-		const offset = hrp.Position.add(hrp.CFrame.RightVector.mul(3)).add(hrp.CFrame.LookVector.mul(-3));
+		const rootPart = Character.HumanoidRootPart;
+		const offset = rootPart.Position.add(rootPart.CFrame.RightVector.mul(3)).add(
+			rootPart.CFrame.LookVector.mul(-3),
+		);
+		const menuPanelCFrame = this.getMenuPanelCFrame();
+		const cameraTarget = new CFrame(offset.add(new Vector3(0, 3, 0)), menuPanelCFrame.Position);
 
-		return new CFrame(offset.add(new Vector3(0, 3, 0)), this.getMenuPanelCFrame().Position);
+		const position = this.cameraController.getRaycastedMaxDistance(rootPart.Position, cameraTarget);
+		const finalCFrame = new CFrame(position).mul(cameraTarget.sub(cameraTarget.Position));
+		return finalCFrame;
 	}
 
 	setCamera() {
-		const camera = Workspace.CurrentCamera!;
 		const CFrame = this.getCameraOffsetCFrame();
 		this.currentTween = TweenService.Create(camera, new TweenInfo(0.6, Enum.EasingStyle.Quart), { CFrame });
 		this.currentTween.Play();
 	}
 
 	getMenuPanelCFrame() {
-		const hrp = Character.HumanoidRootPart;
-		const position = hrp.CFrame.LookVector.mul(8);
+		const rootPart = Character.HumanoidRootPart;
+		const position = rootPart.CFrame.LookVector.mul(8);
 		const offset = new Vector3(0, 2, 0);
-		return new CFrame(hrp.Position.add(position).add(offset), hrp.Position.add(offset));
+		return new CFrame(rootPart.Position.add(position).add(offset), rootPart.Position.add(offset));
 	}
 
 	setMenuPanel() {
@@ -98,7 +106,6 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			return;
 		}
 
-		const camera = Workspace.CurrentCamera!;
 		const currentlyOpen = clientStore.getState(selectMenuOpen);
 		const isAirborne = !Character.Humanoid.FloorMaterial || Character.Humanoid.FloorMaterial === Enum.Material.Air;
 		if (isAirborne) {

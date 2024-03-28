@@ -1,4 +1,4 @@
-import { Controller, OnStart, OnTick } from "@flamework/core";
+import { Controller, OnRender, OnStart } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { createMotion } from "@rbxts/ripple";
 import { Players, UserInputService, Workspace } from "@rbxts/services";
@@ -26,7 +26,7 @@ const camera = Workspace.CurrentCamera!;
 const character = (player.Character ?? player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 
 @Controller()
-export class CameraController implements OnStart, OnTick {
+export class CameraController implements OnStart, OnRender {
 	additionalCameraOffset = Vector3.zero;
 	currentCameraOffset = Vector3.zero;
 
@@ -37,7 +37,7 @@ export class CameraController implements OnStart, OnTick {
 	theta = math.pi;
 
 	offsetSpring = createMotion(new Vector3(), { start: true });
-	zoomSpring = createMotion(SCROLL_MINIMUM, { start: true });
+	zoomSpring = createMotion(SCROLL_MAXIMUM / 2, { start: true });
 
 	controlSet = new ControlSet();
 
@@ -45,7 +45,7 @@ export class CameraController implements OnStart, OnTick {
 		clientStore.setCameraFlag("FirearmIsAiming", false);
 
 		clientStore.subscribe(selectCameraOffset, (offset) => {
-			this.offsetSpring.spring(offset, springs.gentle);
+			this.offsetSpring.spring(offset, springs.world);
 		});
 
 		UserInputService.InputChanged.Connect((input, gpe) => {
@@ -102,7 +102,7 @@ export class CameraController implements OnStart, OnTick {
 
 		const raycast = Workspace.Raycast(center, newCFrame.Position.sub(center), parameters);
 
-		if (raycast) {
+		if (raycast && raycast.Instance.Transparency <= 0.05) {
 			return raycast.Position.add(raycast.Normal);
 		} else {
 			return center.add(newCFrame.Position.sub(center));
@@ -168,7 +168,7 @@ export class CameraController implements OnStart, OnTick {
 		this.theta += this.gamepadState.X * SENSITIVITY * math.pi;
 	}
 
-	onTick(dt: number) {
+	onRender(dt: number) {
 		this.updateCamera();
 	}
 }
