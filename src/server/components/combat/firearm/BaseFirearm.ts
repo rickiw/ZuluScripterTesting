@@ -386,7 +386,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			}
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
 			humanoid.TakeDamage(damage);
-			if (humanoid.Health > 0) {
+			if (healthBefore > 0) {
 				Events.PlayHitmarker.fire(this.wielder);
 			}
 			if (characterEntityId === undefined) {

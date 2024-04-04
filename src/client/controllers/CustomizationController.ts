@@ -29,8 +29,6 @@ export class CustomizationController implements OnStart, OnRender {
 	weapon?: FirearmInstance;
 	attachments: BasePart[] = [];
 
-	constructor() {}
-
 	onStart() {
 		this.controlSet.add({
 			ID: `customization-toggle`,
@@ -154,7 +152,6 @@ export class CustomizationController implements OnStart, OnRender {
 
 	handleModificationPreviews(modifications: IModification[]) {
 		if (!this.weapon) {
-			Log.Warn("No weapon found to attach modifications to");
 			return;
 		}
 

@@ -1,6 +1,7 @@
 import { useMountEffect } from "@rbxts/pretty-react-hooks";
-import Roact from "@rbxts/roact";
-import { RunService, UserInputService } from "@rbxts/services";
+import { useSelector } from "@rbxts/react-reflex";
+import Roact, { useMemo } from "@rbxts/roact";
+import { RunService } from "@rbxts/services";
 import { clientStore } from "client/store";
 import { selectHasKilledEnemy } from "client/store/inventory";
 import { useMotion } from "client/ui/hooks";
@@ -14,16 +15,11 @@ const DEBUG = !RunService.IsRunning();
 
 export function KillEffect() {
 	const [transparency, transparencyMotion] = useMotion(STARTING_TRANSPARENCY);
+	const hasKilledEnemy = useSelector(selectHasKilledEnemy);
 
 	useMountEffect(() => {
-		UserInputService.InputBegan.Connect((input) => {
-			if (input.KeyCode === Enum.KeyCode.LeftControl) {
-				transparencyMotion.tween(ENDING_TRANSPARENCY, { time: WAIT_TIME, style: Enum.EasingStyle.Quint });
-			}
-		});
 		transparencyMotion.onComplete((value) => {
 			if (value === ENDING_TRANSPARENCY) {
-				warn("complete");
 				transparencyMotion.tween(STARTING_TRANSPARENCY, {
 					time: WAIT_TIME * 5,
 					style: Enum.EasingStyle.Exponential,
@@ -32,12 +28,12 @@ export function KillEffect() {
 		});
 	});
 
-	clientStore.subscribe(selectHasKilledEnemy, (hasKilledEnemy) => {
+	useMemo(() => {
 		if (hasKilledEnemy) {
 			transparencyMotion.tween(ENDING_TRANSPARENCY, { time: WAIT_TIME });
 			clientStore.setHasKilledEnemy(false);
 		}
-	});
+	}, [hasKilledEnemy]);
 
 	return (
 		<>

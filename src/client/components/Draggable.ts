@@ -10,7 +10,7 @@ export interface DraggableInstance extends ViewportFrame {
 @Component({
 	tag: "draggableViewport",
 })
-export class BaseDraggable<A extends DraggableAttributes, I extends DraggableInstance>
+export class Draggable<A extends DraggableAttributes, I extends DraggableInstance>
 	extends BaseComponent<A, I>
 	implements OnStart
 {

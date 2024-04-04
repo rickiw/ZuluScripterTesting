@@ -14,7 +14,7 @@ import {
 } from "client/store/camera";
 import { springs } from "shared/constants/springs";
 
-let SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
+const SENSITIVITY = () => UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
 const SCROLL_SENSITIVITY = 1;
 const SCROLL_MINIMUM = 3;
 const SCROLL_MAXIMUM = 15;
@@ -77,7 +77,7 @@ export class CameraController implements OnStart, OnRender {
 			? new Vector2(this.lastMousePosition.X - input.Position.X, this.lastMousePosition.Y - input.Position.Y)
 			: new Vector2(-input.Delta.X, -input.Delta.Y);
 		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
-		const finalSensitivity = isAiming ? SENSITIVITY * 0.5 : SENSITIVITY;
+		const finalSensitivity = isAiming ? SENSITIVITY() * 0.5 : SENSITIVITY();
 		this.phi = math.clamp(this.phi - this.mouseDelta.Y * finalSensitivity, 0, math.rad(160));
 		this.theta -= this.mouseDelta.X * finalSensitivity;
 		this.lastMousePosition = new Vector2(input.Position.X, input.Position.Y);
@@ -162,10 +162,8 @@ export class CameraController implements OnStart, OnRender {
 
 		this.matchCharacterRotation();
 
-		SENSITIVITY = UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
-
-		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY * math.pi, 0, math.rad(160));
-		this.theta += this.gamepadState.X * SENSITIVITY * math.pi;
+		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, 0, math.rad(160));
+		this.theta += this.gamepadState.X * SENSITIVITY() * math.pi;
 	}
 
 	onRender(dt: number) {

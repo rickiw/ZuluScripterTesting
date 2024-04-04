@@ -5,6 +5,7 @@
 .DS_Store
 pnpm-lock.yaml
 yarn.lock
+bun.lockb
 package-lock.json
 .idea/*
 flamework.build
