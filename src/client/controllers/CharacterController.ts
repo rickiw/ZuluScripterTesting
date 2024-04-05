@@ -4,7 +4,7 @@ import { Players, UserInputService } from "@rbxts/services";
 import { setInterval, setTimeout } from "@rbxts/set-timeout";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
-import { selectExhausted, selectRecovering, selectSprinting } from "client/store/character";
+import { selectExhausted, selectRecovering, selectSprinting, selectWalkspeedMultiplier } from "client/store/character";
 import { selectMenuOpen } from "client/store/menu";
 import { selectHealth, selectHunger, selectThirst } from "client/store/vitals";
 import {
@@ -88,7 +88,9 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 		}, 0.1);
 
 		setInterval(() => {
-			if (time() < nextRecovery) return;
+			if (time() < nextRecovery) {
+				return;
+			}
 			clientStore.incrementHunger(HUNGER_RECOVER_PER_SECOND);
 			clientStore.incrementThirst(THIRST_RECOVER_PER_SECOND);
 		}, 1);
@@ -125,7 +127,9 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 
 		clientStore.observeWhile(selectRecovering, () => {
 			return setInterval(() => {
-				if (time() < nextRecovery) return;
+				if (time() < nextRecovery) {
+					return;
+				}
 				clientStore.incrementStamina(STAMINA_RECOVER_PER_SECOND * 0.1);
 			}, 0.1);
 		});
@@ -133,7 +137,9 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 
 	getSpeedOffset() {
 		const humanoid = this.getHumanoid();
-		if (!humanoid) return 0;
+		if (!humanoid) {
+			return 0;
+		}
 		const offset = humanoid.GetAttribute("SpeedOffset");
 		return typeIs(offset, "number") ? offset : 0;
 	}
@@ -142,23 +148,22 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 		const humanoid = this.getHumanoid();
 		const offset = this.getSpeedOffset();
 
-		if (!humanoid) return;
+		if (!humanoid) {
+			return;
+		}
 
-		const sprinting = clientStore.getState(selectSprinting);
-		const inMenu = clientStore.getState(selectMenuOpen);
-
-		// TODO: Wait until not in menu and set back to speed
-		// if (inMenu) {
-		// 	humanoid.WalkSpeed = 0;
-		// 	return;
-		// }
+		const state = clientStore.getState();
+		const sprinting = selectSprinting(state);
+		const walkspeedMultiplier = selectWalkspeedMultiplier(state);
 
 		if (offset <= SPEED_CROUCH - SPEED_WALK && sprinting) {
 			clientStore.setSprinting(false);
 		}
 
 		humanoid.WalkSpeed =
-			humanoid.WalkSpeed === 0 ? 0 : lerp(humanoid.WalkSpeed, this.getSpeed() + offset, damp(2, dt));
+			humanoid.WalkSpeed === 0
+				? 0
+				: lerp(humanoid.WalkSpeed, (this.getSpeed() + offset) * walkspeedMultiplier, damp(2, dt));
 	}
 
 	getSpeed() {

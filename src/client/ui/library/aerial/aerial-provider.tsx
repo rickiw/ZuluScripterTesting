@@ -18,7 +18,9 @@ export function AerialProvider() {
 	let AreaInEffect = false;
 
 	useEventListener(Net.AreaEntered, (title, desc) => {
-		while (AreaInEffect) wait();
+		while (AreaInEffect) {
+			wait();
+		}
 		AreaInEffect = true;
 		setTitle(title);
 		setDesc(desc);
@@ -60,7 +62,7 @@ export function AerialProvider() {
 					text={titleBinding}
 					size={UDim2.fromScale(1, 1)}
 					textScaled={true}
-					font={Font.fromEnum(Enum.Font.MontserratMedium)}
+					font={Font.fromEnum(Enum.Font.GothamMedium)}
 					richText={true}
 					textColor={Color3.fromRGB(255, 255, 255)}
 					position={easeTitle.map((v) => UDim2.fromScale(0.5, 1.5 - v))}
@@ -79,7 +81,7 @@ export function AerialProvider() {
 					text={descBinding}
 					size={UDim2.fromScale(1, 1)}
 					textScaled={true}
-					font={Font.fromEnum(Enum.Font.MontserratMedium)}
+					font={Font.fromEnum(Enum.Font.GothamMedium)}
 					richText={true}
 					textColor={Color3.fromRGB(255, 255, 255)}
 					position={easeDesc.map((v) => UDim2.fromScale(0.5, -0.5 + v))}

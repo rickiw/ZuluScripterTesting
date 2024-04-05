@@ -5,10 +5,13 @@ import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
 import { clientStore } from "client/store";
 import {
+	selectCameraBias,
+	selectCameraExtraOffset,
 	selectCameraFlag,
 	selectCameraLock,
 	selectCameraLockedCenter,
 	selectCameraOffset,
+	selectCameraRecoil,
 	selectCameraShiftLocked,
 	selectCameraZoomDistance,
 } from "client/store/camera";
@@ -17,7 +20,7 @@ import { springs } from "shared/constants/springs";
 const SENSITIVITY = () => UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
 const SCROLL_SENSITIVITY = 1;
 const SCROLL_MINIMUM = 3;
-const SCROLL_MAXIMUM = 15;
+const SCROLL_MAXIMUM = 10;
 const CAMERA_SMOOTHING = 0.4;
 const FIELD_OF_VIEW = 70;
 
@@ -38,6 +41,7 @@ export class CameraController implements OnStart, OnRender {
 
 	offsetSpring = createMotion(new Vector3(), { start: true });
 	zoomSpring = createMotion(SCROLL_MAXIMUM / 2, { start: true });
+	characterSpring = createMotion(new CFrame(), { start: true });
 
 	controlSet = new ControlSet();
 
@@ -46,6 +50,13 @@ export class CameraController implements OnStart, OnRender {
 
 		clientStore.subscribe(selectCameraOffset, (offset) => {
 			this.offsetSpring.spring(offset, springs.world);
+		});
+
+		clientStore.subscribe(selectCameraBias, (bias) => {
+			const aiming = clientStore.getState(selectCameraFlag("FirearmIsAiming"));
+			if (aiming) {
+				this.handleZoomAimOffset();
+			}
 		});
 
 		UserInputService.InputChanged.Connect((input, gpe) => {
@@ -83,13 +94,28 @@ export class CameraController implements OnStart, OnRender {
 		this.lastMousePosition = new Vector2(input.Position.X, input.Position.Y);
 	}
 
+	handleZoomAimOffset() {
+		const state = clientStore.getState();
+		const bias = selectCameraBias(state).right ? 1 : -1;
+		const zoom = selectCameraZoomDistance(state);
+		const extraOffset = new Vector3(bias * (zoom / 5), 0, 0);
+		clientStore.setExtraCameraOffset(extraOffset);
+	}
+
 	handleZoom(Z: number) {
 		const state = clientStore.getState();
 		const newPosition = Z * SCROLL_SENSITIVITY;
 		const currentZoom = selectCameraZoomDistance(state);
+		const aiming = selectCameraFlag("FirearmIsAiming")(state);
 		const newZoom = math.clamp(currentZoom - newPosition, SCROLL_MINIMUM, SCROLL_MAXIMUM);
 		this.zoomSpring.spring(newZoom, { damping: 0.78 });
 		clientStore.setCameraZoomDistance(newZoom);
+
+		if (aiming) {
+			this.handleZoomAimOffset();
+		} else {
+			clientStore.setExtraCameraOffset(Vector3.zero);
+		}
 	}
 
 	getRaycastedMaxDistance(center: Vector3, newCFrame: CFrame) {
@@ -115,7 +141,49 @@ export class CameraController implements OnStart, OnRender {
 		const [pitch, yaw, roll] = camera.CFrame.ToEulerAnglesYXZ();
 		const isShiftLocked = selectCameraShiftLocked(state);
 		if (isShiftLocked && rootPart) {
-			rootPart.CFrame = new CFrame(rootPart.Position).mul(CFrame.Angles(0, yaw, 0));
+			this.characterSpring.spring(CFrame.Angles(0, yaw, 0), springs.gentle);
+			rootPart.CFrame = new CFrame(rootPart.Position).mul(this.characterSpring.get());
+		}
+	}
+
+	matchCharacterCamera(recoil: CFrame, newCFrame: CFrame) {
+		const state = clientStore.getState();
+		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
+		if (!isAiming) {
+			return;
+		}
+
+		if (
+			character.FindFirstChild("Neck", true) &&
+			character.FindFirstChild("Waist", true) &&
+			character.FindFirstChild("LeftShoulder", true) &&
+			character.FindFirstChild("RightShoulder", true)
+		) {
+			character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame.Lerp(
+				new CFrame(
+					character.HumanoidRootPart.CFrame.Position,
+					character.HumanoidRootPart.CFrame.Position.add(newCFrame.LookVector.mul(new Vector3(1, 0, 1))),
+				),
+				0.15,
+			);
+			character.UpperTorso.Waist.C0 = character.UpperTorso.Waist.C0.Lerp(
+				new CFrame(character.UpperTorso.Waist.C0.Position).mul(
+					CFrame.Angles(camera.CFrame.LookVector.Y * 0.8 + recoil.Position.Y * 0.1, 0, 0),
+				),
+				0.4,
+			);
+			character.RightUpperArm.RightShoulder.C0 = character.RightUpperArm.RightShoulder.C0.Lerp(
+				new CFrame(character.RightUpperArm.RightShoulder.C0.Position).mul(
+					CFrame.Angles(camera.CFrame.LookVector.Y * 0.3 + recoil.Position.Y * 0.8, 0, 0),
+				),
+				0.1,
+			);
+			character.LeftUpperArm.LeftShoulder.C0 = character.LeftUpperArm.LeftShoulder.C0.Lerp(
+				new CFrame(character.LeftUpperArm.LeftShoulder.C0.Position).mul(
+					CFrame.Angles(camera.CFrame.LookVector.Y * 0.3 + recoil.Position.Y * 0.8, 0, 0),
+				),
+				0.1,
+			);
 		}
 	}
 
@@ -137,7 +205,8 @@ export class CameraController implements OnStart, OnRender {
 		this.additionalCameraOffset = new Vector3(0, 2, 0);
 
 		const zoomDistance = this.zoomSpring.get();
-		const cameraOffset = this.offsetSpring.get();
+		const extraCameraOffset = selectCameraExtraOffset(state);
+		const cameraOffset = this.offsetSpring.get().add(extraCameraOffset);
 
 		const targetCameraRotation = new Vector3(
 			zoomDistance * math.sin(this.phi) * math.cos(this.theta),
@@ -148,7 +217,8 @@ export class CameraController implements OnStart, OnRender {
 		this.currentCameraOffset = this.currentCameraOffset.Lerp(cameraOffset.add(this.additionalCameraOffset), 0.1);
 
 		const baseCameraPosition = rootPart.Position;
-		const lookAtPosition = baseCameraPosition.sub(targetCameraRotation);
+		const recoil = selectCameraRecoil(state);
+		const lookAtPosition = baseCameraPosition.sub(targetCameraRotation).add(recoil.Position);
 
 		const cameraBaseTarget = CFrame.lookAt(lookAtPosition, baseCameraPosition);
 		const cameraTarget = cameraBaseTarget.mul(new CFrame(this.currentCameraOffset));
@@ -160,6 +230,7 @@ export class CameraController implements OnStart, OnRender {
 
 		camera.CFrame = finalCameraTarget;
 
+		this.matchCharacterCamera(recoil, finalCameraTarget);
 		this.matchCharacterRotation();
 
 		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, 0, math.rad(160));

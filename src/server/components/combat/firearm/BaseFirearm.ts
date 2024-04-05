@@ -7,7 +7,7 @@ import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Option } from "@rbxts/rust-classes";
 import { Players, ReplicatedStorage, RunService, Workspace } from "@rbxts/services";
-import { Events } from "server/network";
+import { Events, Functions } from "server/network";
 import { EnemyService } from "server/services/EnemyService";
 import { FirearmService } from "server/services/FirearmService";
 import { EntityID } from "server/services/IDService";
@@ -110,8 +110,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			if (parent && (parent.IsA("Model") || parent.IsA("Backpack"))) {
 				const player = parent.IsA("Model") ? Players.GetPlayerFromCharacter(parent) : parent.Parent;
 				if (player && player.IsA("Player")) {
-					if (player === this.wielder) return;
-					else {
+					if (player === this.wielder) {
+						return;
+					} else {
 						this.unload();
 						this.load();
 					}
@@ -151,7 +152,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	unload() {
-		for (const key of Object.keys(this.connections)) this.connections[key].Disconnect();
+		for (const key of Object.keys(this.connections)) {
+			this.connections[key].Disconnect();
+		}
 		this.loaded = false;
 	}
 
@@ -185,12 +188,13 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	initRemotes() {
-		this.connections.fireRemote = Events.FireFirearm.connect((player, weapon, mousePosition) => {
-			if (player !== this.wielder || weapon !== this.tool || !this.canFire) {
-				return;
+		Functions.FireFirearm.setCallback((player, weapon, mousePosition) => {
+			if (player !== this.wielder || weapon !== this.tool || !this.canFire()) {
+				return false;
 			}
 			const direction = mousePosition.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
 			this.fire(direction);
+			return true;
 		});
 
 		this.connections.reloadRemote = Events.ReloadFirearm.connect((player, weapon) => {

@@ -1,10 +1,11 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnRender, OnStart } from "@flamework/core";
+import CameraShaker from "@rbxts/camera-shaker";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, RunService, UserInputService, Workspace } from "@rbxts/services";
-import { Events } from "client/network";
+import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
-import { selectCameraOffset } from "client/store/camera";
+import { selectCameraBias, selectCameraOffset } from "client/store/camera";
 import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
@@ -18,7 +19,7 @@ export interface FirearmAttributes {}
 const player = Players.LocalPlayer;
 const camera = Workspace.CurrentCamera!;
 
-const CAMERA_X_OFFSET = 1.75;
+const CAMERA_X_OFFSET = 1;
 const CAMERA_Z_OFFSET = 0.2;
 
 @Component({
@@ -39,14 +40,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	burstFiring = false;
 
 	aiming = false;
-	bias: { left: boolean; right: boolean } = {
-		left: true,
-		right: false,
-	};
 
 	loaded = false;
 	equipped = false;
 	connections: Indexable<"activated" | "equipped" | "unequipped" | "loop", RBXScriptConnection> = {} as any;
+
+	recoil = new CameraShaker(Enum.RenderPriority.Camera.Value, (shakeCFrame) => clientStore.setRecoil(shakeCFrame));
 
 	state!: FirearmState | undefined;
 	soundManager: FirearmSoundManager<FirearmSounds>;
@@ -61,7 +60,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.load();
 
 		this.connections.activated = this.instance.Activated.Connect(() => {
-			if (this.state?.cooldown || this.state?.magazine === undefined) return;
+			if (this.state?.cooldown || this.state?.magazine === undefined) {
+				return;
+			}
 			this.fire();
 		});
 
@@ -74,15 +75,21 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.connections.loop = RunService.RenderStepped.Connect(() => {
-			if (!this.state) return;
+			if (!this.state) {
+				return;
+			}
 			this.configuration = this.state.configuration as FirearmLike;
 		});
 
 		coroutine.resume(
 			coroutine.create(() => {
 				while (wait(60 / this.configuration.Barrel.rpm)[0]) {
-					if (this.state?.cooldown || this.state?.magazine === undefined) continue;
-					if (!this.firing || this.state.mode !== "Automatic") continue;
+					if (this.state?.cooldown || this.state?.magazine === undefined) {
+						continue;
+					}
+					if (!this.firing || this.state.mode !== "Automatic") {
+						continue;
+					}
 					this.fire();
 				}
 			}),
@@ -110,28 +117,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
-	recoil() {
-		const { intensity, increment, time } = this.configuration.recoil ?? {
-			intensity: 3,
-			increment: 0.1,
-			time: 0.1,
-		};
-		for (let i = 0; i < time; i += increment) {
-			clientStore.setCameraLock(true);
-			const camera = Workspace.CurrentCamera!;
-			const x = math.random(-intensity, intensity);
-			const y = math.random(-intensity, intensity);
-			const goal = camera.CFrame.mul(CFrame.Angles(math.rad(x), math.rad(y), 0));
-			const newCFrame = camera.CFrame.Lerp(goal, i);
-			camera.CFrame = newCFrame;
-			clientStore.setCameraLock(false);
-			RunService.RenderStepped.Wait();
-		}
-	}
-
 	fire() {
-		this.recoil();
-		Events.FireFirearm.fire(this.instance, player.GetMouse().Hit.Position);
+		const fired = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).expect();
+		if (fired) {
+			this.recoil.ShakeOnce(math.random(1, 2.5), math.random(3, 5), 0.1, 0.05);
+		}
 	}
 
 	loadBinds() {
@@ -145,7 +135,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			once: (state) => (this.firing = state === Enum.UserInputState.Begin),
 
 			onBegin: () => {
-				if (this.state?.cooldown || this.state?.magazine === undefined) return;
+				if (this.state?.cooldown || this.state?.magazine === undefined) {
+					return;
+				}
 
 				switch (this.state.mode) {
 					case "Semi-Automatic": {
@@ -154,7 +146,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 					}
 
 					case "Burst": {
-						if (this.burstFiring) break;
+						if (this.burstFiring) {
+							break;
+						}
 						this.burstFiring = true;
 						for (let i = 0; i < this.configuration.Barrel.burstCount; i++) {
 							this.fire();
@@ -173,7 +167,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		if (UserInputService.TouchEnabled) {
 			UserInputService.TouchTap.Connect((touchPositions, gameProcessedEvent) => {
-				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) return;
+				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) {
+					return;
+				}
 				this.fire();
 			});
 		}
@@ -216,8 +212,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			controls: [Enum.KeyCode.Q, Enum.KeyCode.DPadLeft],
 
 			onBegin: () => {
-				this.bias.right = false;
-				this.bias.left = true;
+				if (this.aiming) {
+					clientStore.setCameraBias({ left: true, right: false });
+				}
 			},
 		});
 
@@ -229,8 +226,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			controls: [Enum.KeyCode.E, Enum.KeyCode.DPadRight],
 
 			onBegin: () => {
-				this.bias.left = false;
-				this.bias.right = true;
+				if (this.aiming) {
+					clientStore.setCameraBias({ left: false, right: true });
+				}
 			},
 		});
 	}
@@ -243,6 +241,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setShiftLocked(false);
 		clientStore.setFovOffset(0);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
+		this.recoil.Start();
 
 		this.equipped = true;
 	}
@@ -258,7 +257,10 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.aiming = false;
 		clientStore.setShiftLocked(false);
 		clientStore.setCameraOffset(Vector3.zero);
+		clientStore.setExtraCameraOffset(Vector3.zero);
 		clientStore.setFovOffset(0);
+		clientStore.setWalkspeedMultiplier(1);
+		this.recoil.Stop();
 
 		this.equipped = false;
 	}
@@ -268,6 +270,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		clientStore.setShiftLocked(true);
 		clientStore.setCameraFlag("FirearmIsAiming", true);
+		this.character.Humanoid.WalkSpeed = this.character.Humanoid.WalkSpeed * 0.25;
+		clientStore.setWalkspeedMultiplier(0.25);
 
 		this.aiming = true;
 	}
@@ -278,6 +282,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setShiftLocked(false);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
 		clientStore.setFovOffset(0);
+		clientStore.setWalkspeedMultiplier(1);
 
 		this.aiming = false;
 	}
@@ -301,9 +306,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		const state = clientStore.getState();
 
-		const zoom = this.character.Head.Position.sub(camera.CFrame.Position).Magnitude;
-		const bias = CAMERA_X_OFFSET * (this.bias.right ? 1 : -1);
-		const targetAimOffset = new Vector3(bias, CAMERA_Z_OFFSET, 0).add(new Vector3(0, 0, -zoom));
+		const bias = CAMERA_X_OFFSET * (selectCameraBias(state).right ? 1 : -1);
+		const targetAimOffset = new Vector3(bias, CAMERA_Z_OFFSET, -1.8);
 		const currentAimOffset = selectCameraOffset(state);
 
 		const aimOffsetIsDifferent = currentAimOffset !== targetAimOffset;

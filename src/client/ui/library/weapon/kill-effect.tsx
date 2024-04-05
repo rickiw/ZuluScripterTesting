@@ -21,7 +21,7 @@ export function KillEffect() {
 		transparencyMotion.onComplete((value) => {
 			if (value === ENDING_TRANSPARENCY) {
 				transparencyMotion.tween(STARTING_TRANSPARENCY, {
-					time: WAIT_TIME * 5,
+					time: WAIT_TIME * 2.5,
 					style: Enum.EasingStyle.Exponential,
 				});
 			}

@@ -10,7 +10,6 @@ export interface ClientToServerEvents {
 
 	// BaseFirearm
 	ReloadFirearm(weapon: Tool): void;
-	FireFirearm(weapon: Tool, mousePosition: Vector3): void;
 	EquipFirearm(weapon: Tool): void;
 	UnequipFirearm(weapon: Tool): void;
 	Help(): void;
@@ -53,6 +52,7 @@ interface ClientToServerFunctions {
 	WithdrawClanFunds(amount: number): ClanWithdrawStatus;
 	GetClans(): readonly Clan[];
 	IngestFood(food: Tool): boolean;
+	FireFirearm(weapon: Tool, mousePosition: Vector3): boolean;
 	BeginObjective(objectiveId: ObjectiveID): false | Objective;
 }
 
