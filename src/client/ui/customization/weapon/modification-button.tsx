@@ -6,8 +6,8 @@ import { Button } from "client/ui/library/button/button";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { IModification } from "shared/constants/weapons";
-import { useRem } from "../hooks";
-import { Frame } from "../library/frame";
+import { useRem } from "../../hooks";
+import { Frame } from "../../library/frame";
 
 export interface ModificationButtonProps {
 	modification: IModification;

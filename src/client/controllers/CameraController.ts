@@ -49,7 +49,7 @@ export class CameraController implements OnStart, OnRender {
 		clientStore.setCameraFlag("FirearmIsAiming", false);
 
 		clientStore.subscribe(selectCameraOffset, (offset) => {
-			this.offsetSpring.spring(offset, springs.world);
+			this.offsetSpring.spring(offset, springs.orbit);
 		});
 
 		clientStore.subscribe(selectCameraBias, (bias) => {
@@ -141,7 +141,7 @@ export class CameraController implements OnStart, OnRender {
 		const [pitch, yaw, roll] = camera.CFrame.ToEulerAnglesYXZ();
 		const isShiftLocked = selectCameraShiftLocked(state);
 		if (isShiftLocked && rootPart) {
-			this.characterSpring.spring(CFrame.Angles(0, yaw, 0), springs.gentle);
+			this.characterSpring.spring(CFrame.Angles(0, yaw, 0), springs.orbit);
 			rootPart.CFrame = new CFrame(rootPart.Position).mul(this.characterSpring.get());
 		}
 	}

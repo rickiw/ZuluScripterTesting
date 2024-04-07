@@ -1,14 +1,14 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { RunService } from "@rbxts/services";
-import { selectCustomizationIsOpen } from "client/store/customization";
-import { Customization } from "./customization";
+import { selectCustomizationIsOpen, selectIsCustomizingWeapon } from "client/store/customization";
+import { CharacterCustomization } from "./character/character-customization";
 import { WeaponCustomization } from "./weapon/weapon-customization";
 
 const DEBUG = !RunService.IsRunning();
 
 export function CustomizationProvider() {
-	const isCustomizingWeapon = true; //useSelector(selectIsCustomizingWeapon);
+	const isCustomizingWeapon = useSelector(selectIsCustomizingWeapon);
 	const customizationOpen = DEBUG || useSelector(selectCustomizationIsOpen);
 
 	return (
@@ -18,7 +18,7 @@ export function CustomizationProvider() {
 					{isCustomizingWeapon ? (
 						<WeaponCustomization key={"weapon-customization-layer"} />
 					) : (
-						<Customization key={"customization-layer"} />
+						<CharacterCustomization key={"customization-layer"} />
 					)}
 				</>
 			)}

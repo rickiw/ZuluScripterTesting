@@ -15,9 +15,9 @@ import { Text } from "client/ui/library/text";
 import { FIREARM_TYPE } from "shared/constants/firearm";
 import { springs } from "shared/constants/springs";
 import { IModification, getModifications } from "shared/constants/weapons";
-import { ModificationButton } from "../modification-button";
 import { WeaponButton } from "../weapon-button";
 import { ActionButton } from "./action-button";
+import { ModificationButton } from "./modification-button";
 
 const DEBUG = !RunService.IsRunning();
 
