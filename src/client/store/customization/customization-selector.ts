@@ -8,6 +8,7 @@ export const selectSelectedWeapon = (state: RootState) => state.customization.se
 export const selectSelectedModification = (state: RootState) => state.customization.selectedModification;
 export const selectUnsavedModifications = (state: RootState) => state.customization.unsavedModifications;
 export const selectModificationPreviews = (state: RootState) => state.customization.modificationPreviews;
+export const selectSelectedCustomizationPage = (state: RootState) => state.customization.selectedPage;
 export const selectIsPreviewingModification = (modificationName: string) => (state: RootState) => {
 	let isPreviewing = false;
 	state.customization.modificationPreviews.forEach((modification: IModification) => {

@@ -1,6 +1,5 @@
 import { composeBindings } from "@rbxts/pretty-react-hooks";
 import Roact from "@rbxts/roact";
-import { images } from "shared/assets/images";
 import { useRem } from "../hooks";
 import { Image } from "./image";
 
@@ -31,7 +30,7 @@ export function Shadow({
 
 	return (
 		<Image
-			image={images.ui.blur}
+			image="rbxassetid://15235528727"
 			imageTransparency={shadowTransparency}
 			imageColor={shadowColor}
 			anchorPoint={new Vector2(0.5, 0.5)}

@@ -2,7 +2,6 @@ import { blend, composeBindings, lerpBinding } from "@rbxts/pretty-react-hooks";
 import Roact from "@rbxts/roact";
 import { palette } from "shared/constants/palette";
 
-import { images } from "shared/assets/images";
 import { useMotion, useRem } from "../../hooks";
 import { Frame } from "../frame";
 import { Image } from "../image";
@@ -76,7 +75,7 @@ export function PrimaryButton({
 
 			<Image
 				key="glow-overlay"
-				image={images.ui.button_glow_top}
+				image="rbxassetid://15235692725"
 				imageTransparency={composeBindings(overlayTransparency, lerpBinding(hover, 0.3, 0), blend)}
 				cornerRadius={new UDim(0, rem(1))}
 				size={new UDim2(1, 0, 1, 0)}

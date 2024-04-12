@@ -1,0 +1,7 @@
+name = "tarmac"
+
+[[inputs]]
+glob = "assets/images/**/*.png"
+codegen = true
+codegen-path = "src/shared/assets/images/init.lua"
+codegen-base-path = "assets"

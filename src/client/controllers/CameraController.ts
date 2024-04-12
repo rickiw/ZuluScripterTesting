@@ -45,6 +45,12 @@ export class CameraController implements OnStart, OnRender {
 
 	controlSet = new ControlSet();
 
+	originalCFrames: { upperTorso: CFrame; rightArm: CFrame; leftArm: CFrame } = {
+		upperTorso: new CFrame(),
+		rightArm: new CFrame(),
+		leftArm: new CFrame(),
+	};
+
 	onStart() {
 		clientStore.setCameraFlag("FirearmIsAiming", false);
 
@@ -62,6 +68,10 @@ export class CameraController implements OnStart, OnRender {
 		UserInputService.InputChanged.Connect((input, gpe) => {
 			this.cameraInput(input, gpe);
 		});
+
+		this.originalCFrames.leftArm = character.LeftUpperArm.LeftShoulder.C0;
+		this.originalCFrames.rightArm = character.RightUpperArm.RightShoulder.C0;
+		this.originalCFrames.upperTorso = character.UpperTorso.Waist.C0;
 	}
 
 	cameraInput(input: InputObject, gpe: boolean) {
@@ -150,6 +160,15 @@ export class CameraController implements OnStart, OnRender {
 		const state = clientStore.getState();
 		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
 		if (!isAiming) {
+			character.UpperTorso.Waist.C0 = character.UpperTorso.Waist.C0.Lerp(this.originalCFrames.upperTorso, 0.15);
+			character.RightUpperArm.RightShoulder.C0 = character.RightUpperArm.RightShoulder.C0.Lerp(
+				this.originalCFrames.rightArm,
+				0.15,
+			);
+			character.LeftUpperArm.LeftShoulder.C0 = character.LeftUpperArm.LeftShoulder.C0.Lerp(
+				this.originalCFrames.leftArm,
+				0.15,
+			);
 			return;
 		}
 

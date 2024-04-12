@@ -2,6 +2,7 @@ import { Networking } from "@flamework/networking";
 import { Clan, GroupID } from "./constants/clans";
 import { IModification } from "./constants/weapons";
 import { Objective, ObjectiveID } from "./store/objectives";
+import { TeamAbbreviation } from "./store/teams";
 import { PlayerProfile } from "./utils";
 
 export interface ClientToServerEvents {
@@ -54,6 +55,7 @@ interface ClientToServerFunctions {
 	IngestFood(food: Tool): boolean;
 	FireFirearm(weapon: Tool, mousePosition: Vector3): boolean;
 	BeginObjective(objectiveId: ObjectiveID): false | Objective;
+	JoinTeam(team: TeamAbbreviation): boolean;
 }
 
 interface ServerToClientFunctions {}

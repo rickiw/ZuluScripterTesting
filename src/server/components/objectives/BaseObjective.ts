@@ -8,10 +8,11 @@ import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
 import { objectives } from "shared/constants/objectives";
-import { Objective, ObjectiveCategory, ObjectiveID } from "shared/store/objectives";
+import { Objective, ObjectiveID } from "shared/store/objectives";
+import { TeamAbbreviation } from "shared/store/teams";
 
 export interface ObjectiveAttributes {
-	category: ObjectiveCategory;
+	category: TeamAbbreviation;
 	name: string;
 }
 

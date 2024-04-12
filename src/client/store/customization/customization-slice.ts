@@ -8,6 +8,7 @@ export interface CustomizationState {
 	selectedModification: BasePart | undefined;
 	modificationPreviews: IModification[];
 	unsavedModifications: IModification[];
+	selectedPage: "character" | "teams" | "uniform" | "other";
 }
 
 const initialState: CustomizationState = {
@@ -17,12 +18,17 @@ const initialState: CustomizationState = {
 	selectedModification: undefined,
 	modificationPreviews: [],
 	unsavedModifications: [],
+	selectedPage: "teams",
 };
 
 export const customizationSlice = createProducer(initialState, {
 	setCustomizationOpen: (state, isOpen: boolean) => ({ ...state, isOpen }),
 	setCustomizingWeapon: (state, isCustomizingWeapon: boolean) => ({ ...state, isCustomizingWeapon }),
 	setSelectedWeapon: (state, selectedWeapon: WeaponBase | undefined) => ({ ...state, selectedWeapon }),
+	setCustomizationSelectedPage: (state, selectedPage: "character" | "teams" | "uniform" | "other") => ({
+		...state,
+		selectedPage,
+	}),
 	addUnsavedModification: (state, modification: IModification) => ({
 		...state,
 		unsavedModifications: [...state.unsavedModifications, modification],

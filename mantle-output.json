@@ -1,0 +1,10 @@
+Load outputs:
+  ╷
+  │  Loaded config file [36m.\mantle.yml[0m
+  │  Selected provided environment configuration [36mdev[0m
+  │  Loading previous state from local file [36m.\.mantle-state.yml[0m
+  │  No previous state for environment [36mdev[0m
+  │  
+  ╰─ Succeeded
+
+{}

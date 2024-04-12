@@ -1,5 +1,6 @@
 import { createProducer } from "@rbxts/reflex";
 import { objectives } from "shared/constants/objectives";
+import { TeamAbbreviation } from "../teams";
 
 type ObjectiveNamesByCategory = {
 	FP:
@@ -20,13 +21,12 @@ type ObjectiveNamesByCategory = {
 	LOGISTICS: "Deliver crates" | "Restock supplies";
 };
 
-export type ObjectiveCategory = Prettify<keyof ObjectiveNamesByCategory>;
-export type ObjectiveName = ObjectiveNamesByCategory[ObjectiveCategory];
+export type ObjectiveName = ObjectiveNamesByCategory[TeamAbbreviation];
 export type ObjectiveID = number;
 
 export interface Objective extends Partial<ObjectiveSave> {
 	readonly id: ObjectiveID;
-	readonly category: ObjectiveCategory;
+	readonly category: TeamAbbreviation;
 	readonly objectiveClass: string;
 	readonly name: ObjectiveName;
 	readonly priority: 1 | 2 | 3;
@@ -41,7 +41,7 @@ export interface ObjectiveSave {
 	readonly completion: Record<string, unknown>;
 }
 
-export interface SpecifiedObjective<T extends ObjectiveCategory> extends Objective {
+export interface SpecifiedObjective<T extends TeamAbbreviation> extends Objective {
 	readonly category: T;
 	readonly name: ObjectiveNamesByCategory[T];
 }

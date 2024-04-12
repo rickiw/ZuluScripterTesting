@@ -1,0 +1,94 @@
+[inputs."assets/images/ui/administrativedepartment.png"]
+hash = "d383a34d988cfd0b709804f3e00ad7f6dcddf3405ace1f2852dbc8f416ea50e2"
+id = 17097322150
+packable = false
+
+[inputs."assets/images/ui/classd.png"]
+hash = "bdb353a904d848148c12e47d0d40460aebe02084b6acd864d30627b4a22d41cc"
+id = 17097328973
+packable = false
+
+[inputs."assets/images/ui/dividergradient.png"]
+hash = "f157590b9913c9bab0f24e19b3e118cbebec5da3cef91debb10581b18655f4f4"
+id = 17095962411
+packable = false
+
+[inputs."assets/images/ui/downeffect.png"]
+hash = "aa476fc0eb3e3514e75d4aeb9c8475a30aa61e0bc4e74c1898c536653f199d64"
+id = 17096718670
+packable = false
+
+[inputs."assets/images/ui/downeffectfull.png"]
+hash = "f0b663106b74d73fc616ea1a268b30a4ddbeba100dd39f40155103795e33bf85"
+id = 17096739418
+packable = false
+
+[inputs."assets/images/ui/engineeringservices.png"]
+hash = "8832345681fdff8aba9aa8a3993fd30f597baaf1597e86726b7fdb8e8251a31d"
+id = 17097322223
+packable = false
+
+[inputs."assets/images/ui/ethicscommittee.png"]
+hash = "3c7d71f0a6ca08d9bf74f7f862ae8d746527ef0142b14bb7f9dd2f989dfe1ec5"
+id = 17097322279
+packable = false
+
+[inputs."assets/images/ui/foundationpersonnel.png"]
+hash = "42c9e8bd13729fb7060505633372ed5d8ad2cc38fee9f53094590355f30a65d1"
+id = 17097322340
+packable = false
+
+[inputs."assets/images/ui/group.png"]
+hash = "a86305c031cfab86790a8fc2d878f4397c6e0ecfa1646a310214e97342f79e48"
+id = 17095845153
+packable = false
+
+[inputs."assets/images/ui/headericon.png"]
+hash = "64457afc6619b52ff983a64601dbe371451043f275298114a504708273f221f5"
+id = 17095892780
+packable = false
+
+[inputs."assets/images/ui/logisticsdepartment.png"]
+hash = "40ff18524c22379f8433447471c277f858e768f86e963ef30142862825568876"
+id = 17097322391
+packable = false
+
+[inputs."assets/images/ui/medicaldepartment.png"]
+hash = "f4fd2384d88364f4a40ca2c81f1a14fc4a808fd727c25c4bc756be292fbcab64"
+id = 17097322428
+packable = false
+
+[inputs."assets/images/ui/mobiletaskforces.png"]
+hash = "c9e5b64a915c16aa40253ebbf3684380027e56d450f15226029edae37aafc3bd"
+id = 17097322499
+packable = false
+
+[inputs."assets/images/ui/pencil.png"]
+hash = "4dd1bd853d45cc56f94d3518ac737bf9219fbc910e0f6366b676fe0678f91f75"
+id = 17095845207
+packable = false
+
+[inputs."assets/images/ui/pencil2.png"]
+hash = "5528e14aa3eba387964a29815be63a3e60e9ba48389ffc94fdfeab43452cf3a5"
+id = 17096077643
+packable = false
+
+[inputs."assets/images/ui/scientificdepartment.png"]
+hash = "e4d76bf4ba8d113630e008598a8cf70cca3f0fe889a2354452c4963f93407981"
+id = 17097322580
+packable = false
+
+[inputs."assets/images/ui/securitydepartment.png"]
+hash = "9337094dc67b96a066261de34601fc20f04bdd2c69c5c423fb46e40904d3498e"
+id = 17096699811
+packable = false
+
+[inputs."assets/images/ui/shirt.png"]
+hash = "bad0c1cacc6ca63657b409039fe15431b5a03123cbadae2c1b4e42af88a42003"
+id = 17095845305
+packable = false
+
+[inputs."assets/images/ui/vest.png"]
+hash = "6662d7d484757fd4c6fdcbc3a7f8bbe3a8ff58ff494c814d392e067d0643e4f0"
+id = 17095845398
+packable = false
