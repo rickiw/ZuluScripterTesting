@@ -7,7 +7,7 @@ import { slices } from "shared/data";
 import { characterSlice } from "./character";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
-
+import { operatingSystemSlice } from "./operating-system";
 type Store = typeof clientStore;
 
 export type RootState = InferState<Store>;
@@ -23,6 +23,7 @@ function createStore() {
 		character: characterSlice,
 		camera: cameraSlice,
 		customization: customizationSlice,
+		operatingSystem: operatingSystemSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;
