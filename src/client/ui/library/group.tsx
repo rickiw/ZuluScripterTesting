@@ -1,6 +1,6 @@
 import Roact, { forwardRef } from "@rbxts/roact";
 
-interface GroupProps extends Roact.PropsWithChildren {
+export interface GroupProps extends Roact.PropsWithChildren {
 	ref?: Roact.Ref<Frame>;
 	event?: Roact.JsxInstanceEvents<Frame>;
 	change?: Roact.JsxInstanceChangeEvents<Frame>;

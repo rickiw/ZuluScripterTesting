@@ -3,6 +3,7 @@ import { InferState, combineProducers } from "@rbxts/reflex";
 import { slices } from "shared/store";
 import { cameraSlice } from "./camera";
 import { characterSlice } from "./character";
+import { cookingSlice } from "./cooking";
 import { customizationSlice } from "./customization";
 import { interactionSlice } from "./interaction/interaction-slice";
 import { inventorySlice } from "./inventory";
@@ -31,6 +32,7 @@ function createStore() {
 		customization: customizationSlice,
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
+		cooking: cookingSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

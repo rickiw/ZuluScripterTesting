@@ -33,6 +33,11 @@ hash = "3c7d71f0a6ca08d9bf74f7f862ae8d746527ef0142b14bb7f9dd2f989dfe1ec5"
 id = 17097322279
 packable = false
 
+[inputs."assets/images/ui/foundationlogo.png"]
+hash = "2128b52518ed0b8a69b9ced0c894f09ad5755101498e16043fe1e2d883e51b7b"
+id = 17134896666
+packable = false
+
 [inputs."assets/images/ui/foundationpersonnel.png"]
 hash = "42c9e8bd13729fb7060505633372ed5d8ad2cc38fee9f53094590355f30a65d1"
 id = 17097322340

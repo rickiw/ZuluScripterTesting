@@ -12,6 +12,7 @@ export const images: {
 		readonly administrativedepartment: string;
 		readonly engineeringservices: string;
 		readonly ethicscommittee: string;
+		readonly foundationlogo: string;
 		readonly foundationpersonnel: string;
 		readonly medicaldepartment: string;
 		readonly mobiletaskforces: string;

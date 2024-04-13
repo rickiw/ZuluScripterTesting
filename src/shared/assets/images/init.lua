@@ -9,6 +9,7 @@ return {
 			downeffectfull = "rbxassetid://17096739418",
 			engineeringservices = "rbxassetid://17097322223",
 			ethicscommittee = "rbxassetid://17097322279",
+			foundationlogo = "rbxassetid://17134896666",
 			foundationpersonnel = "rbxassetid://17097322340",
 			group = "rbxassetid://17095845153",
 			headericon = "rbxassetid://17095892780",
