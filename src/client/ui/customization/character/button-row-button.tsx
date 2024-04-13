@@ -46,23 +46,35 @@ export function ButtonRowButton({ title, page, icon }: ButtonRowButtonProps) {
 				<Frame
 					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 0.95)}
+					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0, 0)}
 				/>
 				<Frame
 					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 0.95)}
+					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0.9, 0)}
 				/>
+				{selectedPage === page && (
+					<Frame
+						rotation={45}
+						size={UDim2.fromOffset(rem(1), rem(1))}
+						position={UDim2.fromScale(0.5, 1)}
+						anchorPoint={new Vector2(0.5, 0.5)}
+						zIndex={2}
+						backgroundColor={Color3.fromRGB(143, 149, 111)}
+					/>
+				)}
 				<Text
 					size={new UDim2(1, 0, 0, rem(2))}
-					position={UDim2.fromScale(0, 0.95)}
+					position={UDim2.fromScale(0, 1)}
 					text={title}
 					textSize={rem(1)}
+					textColor={Color3.fromRGB(106, 109, 81)}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
 					borderSize={0}
-					font={fonts.inter.medium}
+					zIndex={4}
+					font={fonts.inter.bold}
 					textTransparency={selectedPage === page ? 0 : effectTransparency}
 					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
 				/>

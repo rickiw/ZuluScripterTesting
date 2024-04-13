@@ -79,7 +79,7 @@ export function TeamSelector<T extends TeamAbbreviation>({ team }: TeamSelectorP
 					<Image
 						position={UDim2.fromOffset(rem(5), rem(0))}
 						size={UDim2.fromOffset(rem(4), rem(4))}
-						image={images.ui.downeffectfull}
+						image={images.ui.down}
 					/>
 					<Text
 						position={UDim2.fromOffset(rem(12.5), rem(0))}

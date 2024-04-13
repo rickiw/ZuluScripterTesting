@@ -23,21 +23,21 @@ const initialState: TeamState = {
 		FP: {
 			abbreviation: "FP",
 			name: "Foundation Personnel",
-			image: images.ui.foundationpersonnel,
+			image: images.glyphs.FP,
 			description: "Foundation Personnel are responsible for the day-to-day operations of the facility.",
 			members: [],
 		},
 		SCD: {
 			abbreviation: "SCD",
 			name: "Scientific Department",
-			image: images.ui.scientificdepartment,
+			image: images.glyphs.SCD,
 			description: "The Scientific Department is responsible for studying all contained and new SCP objects.",
 			members: [],
 		},
 		SD: {
 			abbreviation: "SD",
 			name: "Security Department",
-			image: images.ui.securitydepartment,
+			image: images.glyphs.SD,
 			description:
 				"The Security Department ensures the safety of facility staff by protecting against hostile forces and anomalies.",
 			members: [],
@@ -45,7 +45,7 @@ const initialState: TeamState = {
 		"E&T": {
 			abbreviation: "E&T",
 			name: "Engineering & Technical Services",
-			image: images.ui.engineeringservices,
+			image: images.glyphs["E&T"],
 			description:
 				"Engineering & Technical Services are responsible for maintaining the facility's infrastructure.",
 			members: [],
@@ -53,21 +53,21 @@ const initialState: TeamState = {
 		"CLASS-D": {
 			abbreviation: "CLASS-D",
 			name: "Class-D Personnel",
-			image: images.ui.classd,
+			image: images.glyphs.CD,
 			description: "Class-D Personnel are used for testing purposes and are considered expendable.",
 			members: [],
 		},
 		MD: {
 			abbreviation: "MD",
 			name: "Medical Department",
-			image: images.ui.medicaldepartment,
+			image: images.glyphs.MD,
 			description: "The Medical Department is responsible for the health and well-being of facility staff.",
 			members: [],
 		},
 		LOGISTICS: {
 			abbreviation: "LOGISTICS",
 			name: "Logistics Department",
-			image: images.ui.logisticsdepartment,
+			image: images.glyphs.LD,
 			description: "The Logistics Department is responsible for the transportation and delivery of goods.",
 			members: [],
 		},
