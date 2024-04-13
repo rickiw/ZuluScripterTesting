@@ -23,21 +23,21 @@ const initialState: TeamState = {
 		FP: {
 			abbreviation: "FP",
 			name: "Foundation Personnel",
-			image: images.glyphs.FP,
+			image: images.ui.glyphs.FP,
 			description: "Foundation Personnel are responsible for the day-to-day operations of the facility.",
 			members: [],
 		},
 		SCD: {
 			abbreviation: "SCD",
 			name: "Scientific Department",
-			image: images.glyphs.SCD,
+			image: images.ui.glyphs.SCD,
 			description: "The Scientific Department is responsible for studying all contained and new SCP objects.",
 			members: [],
 		},
 		SD: {
 			abbreviation: "SD",
 			name: "Security Department",
-			image: images.glyphs.SD,
+			image: images.ui.glyphs.SD,
 			description:
 				"The Security Department ensures the safety of facility staff by protecting against hostile forces and anomalies.",
 			members: [],
@@ -45,7 +45,7 @@ const initialState: TeamState = {
 		"E&T": {
 			abbreviation: "E&T",
 			name: "Engineering & Technical Services",
-			image: images.glyphs["E&T"],
+			image: images.ui.glyphs["E&T"],
 			description:
 				"Engineering & Technical Services are responsible for maintaining the facility's infrastructure.",
 			members: [],
@@ -53,21 +53,21 @@ const initialState: TeamState = {
 		"CLASS-D": {
 			abbreviation: "CLASS-D",
 			name: "Class-D Personnel",
-			image: images.glyphs.CD,
+			image: images.ui.glyphs.CD,
 			description: "Class-D Personnel are used for testing purposes and are considered expendable.",
 			members: [],
 		},
 		MD: {
 			abbreviation: "MD",
 			name: "Medical Department",
-			image: images.glyphs.MD,
+			image: images.ui.glyphs.MD,
 			description: "The Medical Department is responsible for the health and well-being of facility staff.",
 			members: [],
 		},
 		LOGISTICS: {
 			abbreviation: "LOGISTICS",
 			name: "Logistics Department",
-			image: images.glyphs.LD,
+			image: images.ui.glyphs.LD,
 			description: "The Logistics Department is responsible for the transportation and delivery of goods.",
 			members: [],
 		},
