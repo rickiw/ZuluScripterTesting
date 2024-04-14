@@ -12,6 +12,7 @@ export interface ImageProps extends FrameProps<ImageLabel> {
 	sliceScale?: number | Roact.Binding<number>;
 	sliceCenter?: Rect | Roact.Binding<Rect>;
 	tileSize?: UDim2 | Roact.Binding<UDim2>;
+	borderMode?: Enum.BorderMode | Roact.Binding<Enum.BorderMode>;
 }
 
 export function Image(props: ImageProps) {
@@ -30,6 +31,7 @@ export function Image(props: ImageProps) {
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}
 			Rotation={props.rotation}
+			BorderMode={props.borderMode}
 			BackgroundColor3={props.backgroundColor}
 			BackgroundTransparency={props.backgroundTransparency ?? 1}
 			ClipsDescendants={props.clipsDescendants}

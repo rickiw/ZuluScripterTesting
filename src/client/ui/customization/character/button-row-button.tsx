@@ -7,16 +7,18 @@ import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
+import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
 import { springs } from "shared/constants/springs";
 
 interface ButtonRowButtonProps {
 	title: string;
 	page: "character" | "teams" | "uniform" | "other";
-	icon: string;
+	icon: keyof typeof images.ui.icons;
+	selectedIcon?: keyof typeof images.ui.icons;
 }
 
-export function ButtonRowButton({ title, page, icon }: ButtonRowButtonProps) {
+export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowButtonProps) {
 	const rem = useRem();
 
 	const [hovered, setHovered] = useState(false);
@@ -46,32 +48,66 @@ export function ButtonRowButton({ title, page, icon }: ButtonRowButtonProps) {
 				<Frame
 					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 0.95)}
+					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0, 0)}
 				/>
 				<Frame
 					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 0.95)}
+					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0.9, 0)}
 				/>
-				<Text
-					size={new UDim2(1, 0, 0, rem(2))}
-					position={UDim2.fromScale(0, 0.95)}
-					text={title}
-					textSize={rem(1)}
-					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					borderSize={0}
-					font={fonts.inter.medium}
-					textTransparency={selectedPage === page ? 0 : effectTransparency}
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-				/>
+				{selectedPage === page && (
+					<>
+						<Image
+							anchorPoint={new Vector2(0.5, 0.5)}
+							size={UDim2.fromOffset(rem(1.5), rem(1.5))}
+							scaleType="Fit"
+							position={UDim2.fromScale(0.5, 0.95)}
+							image={images.ui.icons.toparrow}
+						/>
+						<Frame
+							size={new UDim2(1.15, 0, 0, rem(2))}
+							position={UDim2.fromScale(0, 1)}
+							backgroundColor={Color3.fromRGB(61, 65, 42)}
+							backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
+						>
+							<Text
+								size={UDim2.fromScale(0.75, 1)}
+								text={title.split(" ")[0]}
+								textSize={rem(1.15)}
+								textXAlignment="Center"
+								textColor={Color3.fromRGB(106, 109, 81)}
+								font={fonts.inter.bold}
+								textTransparency={selectedPage === page ? 0 : effectTransparency}
+							/>
+							<Text
+								size={UDim2.fromScale(0.25, 1)}
+								position={UDim2.fromScale(0.75, 0)}
+								text={title.split(" ")[1] ?? "N/A"}
+								textXAlignment="Right"
+								textSize={rem(1.15)}
+								textColor={Color3.fromRGB(106, 109, 81)}
+								borderSize={0}
+								zIndex={3}
+								font={fonts.inter.bold}
+								textTransparency={selectedPage === page ? 0 : effectTransparency}
+							/>
+						</Frame>
+					</>
+				)}
+
 				<Image
 					anchorPoint={new Vector2(0.5, 0.5)}
 					size={UDim2.fromOffset(rem(2.5), rem(2.5))}
 					position={UDim2.fromScale(0.5, 0.5)}
-					imageColor={selectedPage === page ? Color3.fromRGB(222, 242, 115) : Color3.fromRGB(255, 255, 255)}
-					image={icon}
+					image={
+						!selectedIcon
+							? images.ui.icons[icon]
+							: selectedPage === page || hovered
+								? images.ui.icons[selectedIcon]
+								: images.ui.icons[icon]
+					}
 				/>
 			</Button>
 		</>

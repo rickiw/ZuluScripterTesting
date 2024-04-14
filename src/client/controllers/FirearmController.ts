@@ -3,7 +3,7 @@ import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, UserInputService } from "@rbxts/services";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
-import { playSound } from "shared/assets/sounds";
+import { playSound } from "shared/utils/sounds";
 
 const player = Players.LocalPlayer!;
 const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;

@@ -3,9 +3,9 @@ import Roact from "@rbxts/roact";
 import { useMotion } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
-import { playSound } from "shared/assets/sounds/play-sound";
 import { springs } from "shared/constants/springs";
 import { GlobalEvents } from "shared/network";
+import { playSound } from "shared/utils/sounds/play-sound";
 
 export function AerialProvider() {
 	const [titleBinding, setTitle] = Roact.createBinding("");

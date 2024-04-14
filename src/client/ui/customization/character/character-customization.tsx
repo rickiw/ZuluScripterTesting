@@ -17,7 +17,7 @@ export function CharacterCustomization() {
 				<Image
 					size={UDim2.fromOffset(rem(5), rem(5))}
 					position={UDim2.fromOffset(rem(1), rem(4))}
-					image={images.ui.headericon}
+					image={images.ui.icons.customize}
 				/>
 				<Text
 					text="CHARACTER CUSTOMIZATION"
@@ -34,7 +34,7 @@ export function CharacterCustomization() {
 				<Image
 					size={UDim2.fromOffset(rem(45), rem(0.25))}
 					position={UDim2.fromOffset(rem(0), rem(10))}
-					image={images.ui.dividergradient}
+					image={images.ui.misc.divider}
 				/>
 
 				<CustomizationButtonRow />
@@ -44,7 +44,7 @@ export function CharacterCustomization() {
 				<Image
 					size={UDim2.fromOffset(rem(45), rem(0.25))}
 					position={new UDim2(0, rem(0), 1, -rem(7.5))}
-					image={images.ui.dividergradient}
+					image={images.ui.misc.divider}
 				/>
 			</Frame>
 		</>
