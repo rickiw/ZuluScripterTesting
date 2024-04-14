@@ -157,8 +157,3 @@ packable = false
 hash = "2e1871aeeacebc75cbb5be93ca6001a8c83526ac7cadb79206e1889cd850e9bb"
 id = 17151021776
 packable = false
-
-[inputs."assets/images/ui/misc/foundationlogo.png"]
-hash = "ed7acfebe6b5a955cbe3c5a9dd8d3c6775844d788c1b754cfbe9e6936561f0a3"
-id = 17153055581
-packable = false

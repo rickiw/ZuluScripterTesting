@@ -1,5 +1,6 @@
 export const images: {
 	readonly ui: {
+    readonly foundationlogo: string;
 		readonly icons: {
 			readonly group: string;
 			readonly groupselected: string;
