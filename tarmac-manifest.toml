@@ -33,6 +33,11 @@ hash = "0b2239ac2042a7d790448624d337fd7ac49a8a9be7a154cf02adf70bff6c8d56"
 id = 17118731201
 packable = false
 
+[inputs."assets/images/ui/glyphs/FPHD.png"]
+hash = "507623bcca6fdfe4c63dc496f805cd4fb8d8cbf43355f57177bc1ffcc991b36e"
+id = 17149132155
+packable = false
+
 [inputs."assets/images/ui/glyphs/LD.png"]
 hash = "291674e6ca4b24ff1f12425c376533d3093893f7f2d8d98d0b4fb849bb70f71d"
 id = 17118731351
@@ -68,6 +73,16 @@ hash = "a7005e07d7828fa5ad95ad5bb56b0b0ea44aa2aab88dd43e777f684743a18f1c"
 id = 17118732015
 packable = false
 
+[inputs."assets/images/ui/icons/attachments.png"]
+hash = "bca64413178fb99a8c14fc1186a3f8bd8a3598896175d9abf7cb7b933a510c61"
+id = 17149398946
+packable = false
+
+[inputs."assets/images/ui/icons/attachmentsselected.png"]
+hash = "555b9e752cce4a25da73127ca0a95547ecc561880552ff3513fd291360299bfa"
+id = 17149398969
+packable = false
+
 [inputs."assets/images/ui/icons/customize.png"]
 hash = "616f95f40c2ba8d09e17de6fb2aa43803bae52323adfd1b82dc0c0e28c6625ed"
 id = 17118732118
@@ -83,14 +98,59 @@ hash = "bb1ba95fe56fb1c94da67697980cd03eda112e55e14ec40237d52e9448bc58c7"
 id = 17118732173
 packable = false
 
+[inputs."assets/images/ui/icons/groupselected.png"]
+hash = "dbbd70bdf403a6e82264b1b6e2a146baa032f445a838cd5257698d66c91143cd"
+id = 17149025918
+packable = false
+
+[inputs."assets/images/ui/icons/handgun.png"]
+hash = "fe8ff14a6e3ad04613e1a72478225e151de42074e9d32ec64f0a9613e365eb4c"
+id = 17149399006
+packable = false
+
+[inputs."assets/images/ui/icons/handgunselected.png"]
+hash = "92fa1b6d998f7c17ed7fb1ef0715c000be597a1d83edf8f7077ae1fce952f0ff"
+id = 17149399065
+packable = false
+
+[inputs."assets/images/ui/icons/knife.png"]
+hash = "3ad2716169c2c91901d031a0e3f0925cd76ab5bc85b4a9cb1217da8083c6aefb"
+id = 17149399123
+packable = false
+
+[inputs."assets/images/ui/icons/knifeselected.png"]
+hash = "52feafb5fdac100ac4dbdadc6eee68945a99ffb5c3a969c2d289bb99245609ba"
+id = 17149399164
+packable = false
+
 [inputs."assets/images/ui/icons/pencil.png"]
 hash = "56167e08324cc0b4564565936cab3577180045dc59cefe95770d76c54a4b3e9e"
 id = 17118732290
 packable = false
 
+[inputs."assets/images/ui/icons/pencilselected.png"]
+hash = "5aea7d78d00a5452bcc6752f6711a4bd2f95920127e1b6b99444550ac68735c1"
+id = 17149026045
+packable = false
+
+[inputs."assets/images/ui/icons/rifleselected.png"]
+hash = "3971ebf2abaf9dc83414284d9260d7a52c4b97f392314302962397f59bca9b68"
+id = 17149399204
+packable = false
+
 [inputs."assets/images/ui/icons/shirt.png"]
 hash = "12d5e69019749e9b5fffbfaf77eeba7fb37a3e6ceea78a1ddf715edeb8ca722c"
 id = 17118732420
+packable = false
+
+[inputs."assets/images/ui/icons/shirtselected.png"]
+hash = "6dc50236c46e174d10278fce6b01a3a117eec1f0483a0abc0a99805273f94537"
+id = 17149026149
+packable = false
+
+[inputs."assets/images/ui/icons/toparrow.png"]
+hash = "0fee4cfc44b6a700e1e8848f738c253f16ab53fb756ece447570ae72ed0c0e85"
+id = 17149166578
 packable = false
 
 [inputs."assets/images/ui/icons/vest.png"]
