@@ -23,7 +23,7 @@ const initialState: TeamState = {
 		FP: {
 			abbreviation: "FP",
 			name: "Foundation Personnel",
-			image: images.ui.glyphs.FPHD,
+			image: images.ui.glyphs.FP,
 			description: "Foundation Personnel are responsible for the day-to-day operations of the facility.",
 			members: [],
 		},

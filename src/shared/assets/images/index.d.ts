@@ -28,7 +28,6 @@ export const images: {
 			readonly "E&T": string;
 			readonly EC: string;
 			readonly FP: string;
-			readonly FPHD: string;
 			readonly LD: string;
 			readonly MAND: string;
 			readonly MD: string;

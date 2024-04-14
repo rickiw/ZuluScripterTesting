@@ -66,36 +66,36 @@ export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowBu
 							position={UDim2.fromScale(0.5, 0.95)}
 							image={images.ui.icons.toparrow}
 						/>
+						<Frame
+							size={new UDim2(1.15, 0, 0, rem(2))}
+							position={UDim2.fromScale(0, 1)}
+							backgroundColor={Color3.fromRGB(61, 65, 42)}
+							backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
+						>
+							<Text
+								size={UDim2.fromScale(0.75, 1)}
+								text={title.split(" ")[0]}
+								textSize={rem(1.15)}
+								textXAlignment="Center"
+								textColor={Color3.fromRGB(106, 109, 81)}
+								font={fonts.inter.bold}
+								textTransparency={selectedPage === page ? 0 : effectTransparency}
+							/>
+							<Text
+								size={UDim2.fromScale(0.25, 1)}
+								position={UDim2.fromScale(0.75, 0)}
+								text={title.split(" ")[1] ?? "N/A"}
+								textXAlignment="Right"
+								textSize={rem(1.15)}
+								textColor={Color3.fromRGB(106, 109, 81)}
+								borderSize={0}
+								zIndex={3}
+								font={fonts.inter.bold}
+								textTransparency={selectedPage === page ? 0 : effectTransparency}
+							/>
+						</Frame>
 					</>
 				)}
-				<Frame
-					size={new UDim2(1.15, 0, 0, rem(2))}
-					position={UDim2.fromScale(0, 1)}
-					backgroundColor={Color3.fromRGB(61, 65, 42)}
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-				>
-					<Text
-						size={UDim2.fromScale(0.75, 1)}
-						text={title.split(" ")[0]}
-						textSize={rem(1.15)}
-						textXAlignment="Center"
-						textColor={Color3.fromRGB(106, 109, 81)}
-						font={fonts.inter.bold}
-						textTransparency={selectedPage === page ? 0 : effectTransparency}
-					/>
-					<Text
-						size={UDim2.fromScale(0.25, 1)}
-						position={UDim2.fromScale(0.75, 0)}
-						text={title.split(" ")[1] ?? "N/A"}
-						textXAlignment="Right"
-						textSize={rem(1.15)}
-						textColor={Color3.fromRGB(106, 109, 81)}
-						borderSize={0}
-						zIndex={3}
-						font={fonts.inter.bold}
-						textTransparency={selectedPage === page ? 0 : effectTransparency}
-					/>
-				</Frame>
 
 				<Image
 					anchorPoint={new Vector2(0.5, 0.5)}
@@ -104,9 +104,9 @@ export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowBu
 					image={
 						!selectedIcon
 							? images.ui.icons[icon]
-							: selectedPage === page
-							? images.ui.icons[selectedIcon]
-							: images.ui.icons[icon]
+							: selectedPage === page || hovered
+								? images.ui.icons[selectedIcon]
+								: images.ui.icons[icon]
 					}
 				/>
 			</Button>

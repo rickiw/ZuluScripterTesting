@@ -4,7 +4,7 @@ import Roact from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { useButtonAnimation } from "client/ui/hooks/use-button-animation";
 import { useButtonState } from "client/ui/hooks/use-button-state";
-import { ButtonSoundVariant, buttonDown, buttonUp } from "shared/assets/sounds";
+import { ButtonSoundVariant, buttonDown, buttonUp } from "shared/utils/sounds";
 import { Frame } from "../frame";
 import { Button } from "./button";
 

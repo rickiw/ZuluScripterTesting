@@ -1,7 +1,7 @@
 import { New } from "@rbxts/fusion";
 import { Debris } from "@rbxts/services";
-import { SoundOptions } from "shared/assets/sounds";
 import { AnimationDict, ManagedSound } from "shared/utils";
+import { SoundOptions } from "shared/utils/sounds";
 import { IModificationSave, WeaponLike } from ".";
 import { FirearmProjectileLike } from "./projectile";
 
