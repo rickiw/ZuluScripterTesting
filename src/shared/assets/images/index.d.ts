@@ -1,6 +1,5 @@
 export const images: {
 	readonly ui: {
-    readonly foundationlogo: string;
 		readonly icons: {
 			readonly group: string;
 			readonly groupselected: string;
@@ -38,6 +37,7 @@ export const images: {
 			readonly SD: string;
 		};
 		readonly misc: {
+			readonly foundationlogo: string;
 			readonly divider: string;
 		};
 	};

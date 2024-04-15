@@ -42,7 +42,7 @@ export function CookingProvider() {
 						imageTransparency={backgroundTransparency}
 						size={UDim2.fromOffset(rem(6), rem(6))}
 						position={UDim2.fromOffset(rem(1), rem(1))}
-						image={images.ui.foundationlogo}
+						image={images.ui.misc.foundationlogo}
 					/>
 					<Text
 						text="CULINARY SYSTEM"
@@ -60,7 +60,7 @@ export function CookingProvider() {
 					<Image
 						size={UDim2.fromOffset(rem(45), rem(0.25))}
 						position={UDim2.fromOffset(rem(0), rem(7.5))}
-						image={images.ui.dividergradient}
+						image={images.ui.misc.divider}
 					/>
 
 					<Text
