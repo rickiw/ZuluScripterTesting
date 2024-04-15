@@ -1,24 +1,44 @@
 export const images: {
 	readonly ui: {
-		readonly group: string;
-		readonly pencil: string;
-		readonly pencil2: string;
-		readonly shirt: string;
-		readonly vest: string;
-		readonly headericon: string;
-		readonly dividergradient: string;
-		readonly downeffect: string;
-		readonly downeffectfull: string;
-		readonly administrativedepartment: string;
-		readonly engineeringservices: string;
-		readonly ethicscommittee: string;
-		readonly foundationlogo: string;
-		readonly foundationpersonnel: string;
-		readonly medicaldepartment: string;
-		readonly mobiletaskforces: string;
-		readonly scientificdepartment: string;
-		readonly securitydepartment: string;
-		readonly logisticsdepartment: string;
-		readonly classd: string;
+    readonly foundationlogo: string;
+		readonly icons: {
+			readonly group: string;
+			readonly groupselected: string;
+			readonly pencil: string;
+			readonly pencilselected: string;
+			readonly shirt: string;
+			readonly shirtselected: string;
+			readonly vest: string;
+			readonly customize: string;
+			readonly down: string;
+			readonly toparrow: string;
+			readonly handgun: string;
+			readonly handgunselected: string;
+			readonly rifle: string;
+			readonly rifleselected: string;
+			readonly knife: string;
+			readonly knifeselected: string;
+			readonly attachments: string;
+			readonly attachmentsselected: string;
+		};
+		readonly glyphs: {
+			readonly AD: string;
+			readonly CD: string;
+			readonly CI: string;
+			readonly DEA: string;
+			readonly "E&T": string;
+			readonly EC: string;
+			readonly FP: string;
+			readonly LD: string;
+			readonly MAND: string;
+			readonly MD: string;
+			readonly MTF: string;
+			readonly O5C: string;
+			readonly SCD: string;
+			readonly SD: string;
+		};
+		readonly misc: {
+			readonly divider: string;
+		};
 	};
 };

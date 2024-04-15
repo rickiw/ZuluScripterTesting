@@ -1,7 +1,7 @@
 import { Controller, OnStart } from "@flamework/core";
 import { Players, StarterGui, TweenService, UserInputService } from "@rbxts/services";
 import { Events } from "client/network";
-import { playSound } from "shared/assets/sounds";
+import { playSound } from "shared/utils/sounds";
 
 function formatSeconds(totalSeconds: number): string {
 	const seconds = totalSeconds % 60;
