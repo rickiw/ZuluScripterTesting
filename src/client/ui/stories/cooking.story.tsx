@@ -13,7 +13,7 @@ const Story: WithControls<typeof controls> = {
 	summary: "Cooking UI",
 	story: (props) => {
 		clientStore.setCookingOpen(props.controls.isOpen);
-		clientStore.setRecipes(["Pizza", "Burger", "Salad", "Pasta", "Soup", "Sandwich", "Taco", "Sushi"]);
+		clientStore.setRecipes(["Pizza", "Burger", "Salad", "Pasta"]);
 		return (
 			<RootProvider>
 				<CookingProvider />

@@ -162,3 +162,8 @@ packable = false
 hash = "ed7acfebe6b5a955cbe3c5a9dd8d3c6775844d788c1b754cfbe9e6936561f0a3"
 id = 17153143297
 packable = false
+
+[inputs."assets/images/ui/misc/vignette.png"]
+hash = "81bdbc8b86fea75db5c77a898552967f1c9dc7f0d99dda31b7e4dc9361f347f2"
+id = 17159843312
+packable = false

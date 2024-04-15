@@ -10,6 +10,7 @@ import { springs } from "shared/constants/springs";
 import { useMotion, useRem } from "../hooks";
 import { Image } from "../library/image";
 import { Text } from "../library/text";
+import { Vignette } from "../library/vignette";
 import { RecipeSelection } from "./recipe-selection";
 
 export function CookingProvider() {
@@ -28,6 +29,7 @@ export function CookingProvider() {
 
 	return (
 		<>
+			<Vignette open={isCooking} />
 			{isCooking && (
 				<Frame
 					anchorPoint={new Vector2(0.5, 0.5)}

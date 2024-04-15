@@ -17,10 +17,11 @@ interface RecipeSelectionProps extends GroupProps {
 interface SelectionTableProps extends FrameProps {
 	items: string[];
 	header: string;
+	ItemComponent: (props: ButtonProps) => Roact.Element;
 	onItemClicked?: (item: string) => void;
 }
 
-const SelectionTableItem = (props: ButtonProps) => {
+const RecipeTableItem = (props: ButtonProps) => {
 	const rem = useRem();
 	const [hover, hoverMotion] = useMotion(0);
 
@@ -60,10 +61,10 @@ const SelectionTableItem = (props: ButtonProps) => {
 	);
 };
 
-const SelectionTable = (props: SelectionTableProps) => {
+const SCPTable = (props: SelectionTableProps) => {
 	const rem = useRem();
 	const backgroundTransparency = useBindingState(props.backgroundTransparency ?? 0);
-	const { items } = props;
+	const { items, ItemComponent } = props;
 	return (
 		<Group
 			size={props.size}
@@ -84,6 +85,8 @@ const SelectionTable = (props: SelectionTableProps) => {
 				size={new UDim2(1, 0, 0, rem(2))}
 				backgroundTransparency={backgroundTransparency}
 				backgroundColor={palette.surface1}
+				borderColor={palette.surface1}
+				borderSize={1}
 			>
 				<Text
 					text={props.header.upper()}
@@ -101,12 +104,10 @@ const SelectionTable = (props: SelectionTableProps) => {
 				/>
 			</Frame>
 			{items.map((item, key) => (
-				<SelectionTableItem
+				<ItemComponent
 					text={item}
 					key={`item${key}`}
-					onClick={() => {
-						props.onItemClicked?.(item);
-					}}
+					onClick={() => props.onItemClicked?.(item)}
 					backgroundTransparency={backgroundTransparency}
 				/>
 			))}
@@ -120,6 +121,9 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 	const [column1, column2] = useMemo(() => {
 		const column1: string[] = [];
 		const column2: string[] = [];
+		if (recipes.size() < 5) {
+			return [recipes, []];
+		}
 		for (let i = 0; i < recipes.size(); i++) {
 			if (i % 2 === 0) {
 				column1.push(recipes[i]);
@@ -155,18 +159,20 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 			/>
 			<Group size={new UDim2(1, 0, 1, -rem(2))}>
 				<uilistlayout FillDirection={Enum.FillDirection.Horizontal} Padding={new UDim(0, rem(4))} />
-				<SelectionTable
+				<SCPTable
 					onItemClicked={(item) => print(`${item} clicked`)}
 					backgroundTransparency={backgroundTransparency}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column1}
+					ItemComponent={RecipeTableItem}
 					header={"Food Options"}
 				/>
-				<SelectionTable
+				<SCPTable
 					backgroundTransparency={backgroundTransparency}
 					onItemClicked={(item) => print(`${item} clicked`)}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column2}
+					ItemComponent={RecipeTableItem}
 					header={"Food Options"}
 				/>
 			</Group>

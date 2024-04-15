@@ -39,6 +39,7 @@ export const images: {
 		readonly misc: {
 			readonly foundationlogo: string;
 			readonly divider: string;
+			readonly vignette: string;
 		};
 	};
 };
