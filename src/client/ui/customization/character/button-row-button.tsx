@@ -82,7 +82,7 @@ export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowBu
 								textTransparency={selectedPage === page ? 0 : effectTransparency}
 							/>
 							<Text
-								size={UDim2.fromScale(0.25, 1)}
+								size={UDim2.fromScale(0.2, 1)}
 								position={UDim2.fromScale(0.75, 0)}
 								text={title.split(" ")[1] ?? "N/A"}
 								textXAlignment="Right"

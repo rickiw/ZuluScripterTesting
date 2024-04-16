@@ -8,6 +8,16 @@ hash = "3f9aa94f20fa20a5262a1e9997c9dab793e31435383dd30af387e0da8157855a"
 id = 17150930719
 packable = false
 
+[inputs."assets/images/ui/glyphs/CDhovered.png"]
+hash = "00101c0dfc7888440a15b2afeeb077e2c26647dbf900bb29a5db1795985f124c"
+id = 17153336526
+packable = false
+
+[inputs."assets/images/ui/glyphs/CDselected.png"]
+hash = "ec52ffb0adc9cd4914e04356ea0c44feb1a0667c98f8c65bf241fe87ce4401c2"
+id = 17153336637
+packable = false
+
 [inputs."assets/images/ui/glyphs/CI.png"]
 hash = "c2dda80029542c63493d4a7e0b5f6d6005383880529a4ecb392927dcfd66204e"
 id = 17150930892
@@ -23,6 +33,16 @@ hash = "9e23ca7c330f48d6431b864caadca875e4646f15ad693ae70a34f70ed57b7259"
 id = 17150931129
 packable = false
 
+[inputs."assets/images/ui/glyphs/E&Thovered.png"]
+hash = "6975bd8d43a485de5df76da5a7e4120917aaf558d88b9c9a72e0e7a1e94b1272"
+id = 17153336754
+packable = false
+
+[inputs."assets/images/ui/glyphs/E&Tselected.png"]
+hash = "c292cc9111d495c8b11148e2919024f9faff6241925bdf95ca5bdb8d475ce2a4"
+id = 17153336850
+packable = false
+
 [inputs."assets/images/ui/glyphs/EC.png"]
 hash = "14e1565689c68160639a037b184953c05a6a7c99e02b02ab18b68530c1c874c8"
 id = 17150931238
@@ -33,9 +53,29 @@ hash = "d7ce3d581651fd88cda9576b8ab7f5356059344edad561fdb1ffdbff8971447c"
 id = 17150931360
 packable = false
 
+[inputs."assets/images/ui/glyphs/FPhovered.png"]
+hash = "214aad4382088dcd82f838d5f61973d83a0ba0e20242705dae232579117986fb"
+id = 17153337034
+packable = false
+
+[inputs."assets/images/ui/glyphs/FPselected.png"]
+hash = "e3985f04f4f58dccd11a91495a75c28e66a5c8e38530cb794bb4b8a7391cb676"
+id = 17153337264
+packable = false
+
 [inputs."assets/images/ui/glyphs/LD.png"]
 hash = "a40277a29660be29078ee112872d9ef7952029569f0c4d3ccddd26d40d31f39b"
 id = 17150931516
+packable = false
+
+[inputs."assets/images/ui/glyphs/LDhovered.png"]
+hash = "4f396ddb47abe6b7bb43193baa06129ac00a8fe04e9b1c9411f3796618c7e2f8"
+id = 17153337483
+packable = false
+
+[inputs."assets/images/ui/glyphs/LDselected.png"]
+hash = "23529bdb64a45764ddcba807ac2de37df5fb3d68f67fee572464334f7c0aba08"
+id = 17153337614
 packable = false
 
 [inputs."assets/images/ui/glyphs/MAND.png"]
@@ -48,6 +88,16 @@ hash = "8ef39ff4e1e00e34173aa50de842ccce22841f209fdb10e15e72909859c06d6c"
 id = 17150931771
 packable = false
 
+[inputs."assets/images/ui/glyphs/MDhovered.png"]
+hash = "450d4716facf46d4c3ad761d798e6666e73b6b66ec11f2cb11a380fc86f28ea2"
+id = 17153337743
+packable = false
+
+[inputs."assets/images/ui/glyphs/MDselected.png"]
+hash = "3f7daa783faae0800525afba192338b53391c59603b13f0ed3207a6d44d474b4"
+id = 17153337843
+packable = false
+
 [inputs."assets/images/ui/glyphs/MTF.png"]
 hash = "988e8e5b9d9fd75a3b4230b5432a122f5cde19d928811968f409321df87f7754"
 id = 17150931902
@@ -58,9 +108,29 @@ hash = "e3f6c110aacb0d3c087a94289a8d4e7a018ed39a633e1384ad741e055445c580"
 id = 17150932092
 packable = false
 
+[inputs."assets/images/ui/glyphs/SCDhovered.png"]
+hash = "8e30933328be19f68608c100c108ccd9dafc2e3b59dba7e3d723377f9144d348"
+id = 17153337924
+packable = false
+
+[inputs."assets/images/ui/glyphs/SCDselected.png"]
+hash = "e65591d5fca05f552ee73c10c1090b97b83d5f35bed6f4495f9f22723285ef1c"
+id = 17153338058
+packable = false
+
 [inputs."assets/images/ui/glyphs/SD.png"]
 hash = "8dddbf745ba0dbe012f7ff2641f56ab0be263da709228bd713abfc977f5eadb2"
 id = 17150932255
+packable = false
+
+[inputs."assets/images/ui/glyphs/SDhovered.png"]
+hash = "d566c53acadf255e91e883c13b640649366a4ea8b152719f4299879e0bfd1f1a"
+id = 17153338192
+packable = false
+
+[inputs."assets/images/ui/glyphs/SDselected.png"]
+hash = "eb24f3726f91f1f6827902df3c6f83bffa2bae84792297347c6c3e500a246db7"
+id = 17153338314
 packable = false
 
 [inputs."assets/images/ui/icons/attachments.png"]
@@ -81,6 +151,16 @@ packable = false
 [inputs."assets/images/ui/icons/down.png"]
 hash = "f0b663106b74d73fc616ea1a268b30a4ddbeba100dd39f40155103795e33bf85"
 id = 17150932825
+packable = false
+
+[inputs."assets/images/ui/icons/downselected.png"]
+hash = "de9564d54e922b0ecbf75946a7b4d6974a2b66378c0466b4ea8a18560c674816"
+id = 17153427979
+packable = false
+
+[inputs."assets/images/ui/icons/downselectedcd.png"]
+hash = "ce84c8c69bd613e711a56afe8f1d89c9a734052a5dc13e18209f6c47216d62f4"
+id = 17153428318
 packable = false
 
 [inputs."assets/images/ui/icons/group.png"]

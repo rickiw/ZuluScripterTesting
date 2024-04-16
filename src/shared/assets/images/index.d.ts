@@ -10,6 +10,8 @@ export const images: {
 			readonly vest: string;
 			readonly customize: string;
 			readonly down: string;
+			readonly downselected: string;
+			readonly downselectedcd: string;
 			readonly toparrow: string;
 			readonly handgun: string;
 			readonly handgunselected: string;
@@ -23,18 +25,32 @@ export const images: {
 		readonly glyphs: {
 			readonly AD: string;
 			readonly CD: string;
+			readonly CDselected: string;
+			readonly CDhovered: string;
 			readonly CI: string;
 			readonly DEA: string;
 			readonly "E&T": string;
+			readonly "E&Tselected": string;
+			readonly "E&Thovered": string;
 			readonly EC: string;
 			readonly FP: string;
+			readonly FPselected: string;
+			readonly FPhovered: string;
 			readonly LD: string;
+			readonly LDselected: string;
+			readonly LDhovered: string;
 			readonly MAND: string;
 			readonly MD: string;
+			readonly MDselected: string;
+			readonly MDhovered: string;
 			readonly MTF: string;
 			readonly O5C: string;
 			readonly SCD: string;
+			readonly SCDselected: string;
+			readonly SCDhovered: string;
 			readonly SD: string;
+			readonly SDselected: string;
+			readonly SDhovered: string;
 		};
 		readonly misc: {
 			readonly foundationlogo: string;
