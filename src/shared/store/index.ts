@@ -1,5 +1,6 @@
 import { CombineStates } from "@rbxts/reflex";
 import { combatSlice } from "./combat";
+import { foodSlice } from "./food";
 import { objectivesSlice } from "./objectives";
 import { teamSlice } from "./teams";
 
@@ -9,4 +10,5 @@ export const slices = {
 	combat: combatSlice,
 	objectives: objectivesSlice,
 	team: teamSlice,
+	food: foodSlice,
 };

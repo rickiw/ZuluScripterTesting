@@ -1,27 +1,19 @@
-import { useBindingState } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useMemo } from "@rbxts/roact";
-import { selectRecipes } from "client/store/cooking";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
+import { selectRecipes } from "shared/store/food";
 import { useMotion, useRem } from "../hooks";
 import { Button, ButtonProps } from "../library/button/button";
-import { Frame, FrameProps } from "../library/frame";
 import { Group, GroupProps } from "../library/group";
+import { SCPTable } from "../library/scp";
 import { Text } from "../library/text";
 
-interface RecipeSelectionProps extends GroupProps {
+interface FoodSelectionProps extends GroupProps {
 	backgroundTransparency?: Roact.Binding<number>;
 }
 
-interface SelectionTableProps extends FrameProps {
-	items: string[];
-	header: string;
-	ItemComponent: (props: ButtonProps) => Roact.Element;
-	onItemClicked?: (item: string) => void;
-}
-
-const RecipeTableItem = (props: ButtonProps) => {
+const FoodTableItem = (props: ButtonProps) => {
 	const rem = useRem();
 	const [hover, hoverMotion] = useMotion(0);
 
@@ -61,61 +53,7 @@ const RecipeTableItem = (props: ButtonProps) => {
 	);
 };
 
-const SCPTable = (props: SelectionTableProps) => {
-	const rem = useRem();
-	const backgroundTransparency = useBindingState(props.backgroundTransparency ?? 0);
-	const { items, ItemComponent } = props;
-	return (
-		<Group
-			size={props.size}
-			position={props.position}
-			anchorPoint={props.anchorPoint}
-			rotation={props.rotation}
-			clipsDescendants={props.clipsDescendants}
-			visible={props.visible}
-			zIndex={props.zIndex}
-			layoutOrder={props.layoutOrder}
-		>
-			<uilistlayout
-				FillDirection={Enum.FillDirection.Vertical}
-				HorizontalAlignment={Enum.HorizontalAlignment.Left}
-				VerticalAlignment={Enum.VerticalAlignment.Top}
-			/>
-			<Frame
-				size={new UDim2(1, 0, 0, rem(2))}
-				backgroundTransparency={backgroundTransparency}
-				backgroundColor={palette.surface1}
-				borderColor={palette.surface1}
-				borderSize={1}
-			>
-				<Text
-					text={props.header.upper()}
-					position={new UDim2(0, rem(0.5), 0, rem(0.25))}
-					size={new UDim2(0, 0, 0, rem(1.5))}
-					textAutoResize="X"
-					textColor={palette.subtext0}
-					textSize={rem(1.5)}
-					textTransparency={backgroundTransparency}
-					backgroundTransparency={1}
-					textWrapped={true}
-					textXAlignment="Left"
-					textYAlignment="Center"
-					font={fonts.inter.bold}
-				/>
-			</Frame>
-			{items.map((item, key) => (
-				<ItemComponent
-					text={item}
-					key={`item${key}`}
-					onClick={() => props.onItemClicked?.(item)}
-					backgroundTransparency={backgroundTransparency}
-				/>
-			))}
-		</Group>
-	);
-};
-
-export const RecipeSelection = ({ size, backgroundTransparency, position }: RecipeSelectionProps) => {
+export const FoodSelection = ({ size, backgroundTransparency, position }: FoodSelectionProps) => {
 	const rem = useRem();
 	const recipes = useSelector(selectRecipes);
 	const [column1, column2] = useMemo(() => {
@@ -146,7 +84,7 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 			<Text
 				text={"SELECT TO COOK"}
 				size={UDim2.fromOffset(rem(30), rem(1.5))}
-				textColor={Color3.fromRGB(255, 255, 255)}
+				textColor={palette.subtext1}
 				textSize={rem(1.5)}
 				textTransparency={
 					backgroundTransparency?.map((transparency) => math.clamp(transparency + 0.25, 0, 1)) ?? 1
@@ -155,7 +93,7 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 				textWrapped={true}
 				textXAlignment="Left"
 				textYAlignment="Center"
-				font={fonts.inter.bold}
+				font={fonts.inter.extra}
 			/>
 			<Group size={new UDim2(1, 0, 1, -rem(2))}>
 				<uilistlayout FillDirection={Enum.FillDirection.Horizontal} Padding={new UDim(0, rem(4))} />
@@ -164,7 +102,7 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 					backgroundTransparency={backgroundTransparency}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column1}
-					ItemComponent={RecipeTableItem}
+					ItemComponent={FoodTableItem}
 					header={"Food Options"}
 				/>
 				<SCPTable
@@ -172,7 +110,7 @@ export const RecipeSelection = ({ size, backgroundTransparency, position }: Reci
 					onItemClicked={(item) => print(`${item} clicked`)}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column2}
-					ItemComponent={RecipeTableItem}
+					ItemComponent={FoodTableItem}
 					header={"Food Options"}
 				/>
 			</Group>
