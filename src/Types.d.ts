@@ -9,8 +9,6 @@ interface Workspace extends Instance {
 	};
 }
 
-type FoodTypes = "Chicken";
-
 type BaseDoor = Model & {
 	Keypads: Model;
 };

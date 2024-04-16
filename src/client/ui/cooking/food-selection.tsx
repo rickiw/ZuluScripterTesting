@@ -1,5 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useMemo } from "@rbxts/roact";
+import { Events } from "client/network";
+import { clientStore } from "client/store";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { selectRecipes } from "shared/store/food";
@@ -98,7 +100,10 @@ export const FoodSelection = ({ size, backgroundTransparency, position }: FoodSe
 			<Group size={new UDim2(1, 0, 1, -rem(2))}>
 				<uilistlayout FillDirection={Enum.FillDirection.Horizontal} Padding={new UDim(0, rem(4))} />
 				<SCPTable
-					onItemClicked={(item) => print(`${item} clicked`)}
+					onItemClicked={(item) => {
+						Events.CookFood.fire(item);
+						clientStore.setCookingOpen(false);
+					}}
 					backgroundTransparency={backgroundTransparency}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column1}
@@ -107,7 +112,10 @@ export const FoodSelection = ({ size, backgroundTransparency, position }: FoodSe
 				/>
 				<SCPTable
 					backgroundTransparency={backgroundTransparency}
-					onItemClicked={(item) => print(`${item} clicked`)}
+					onItemClicked={(item) => {
+						Events.CookFood.fire(item);
+						clientStore.setCookingOpen(false);
+					}}
 					size={UDim2.fromScale(0.5, 1)}
 					items={column2}
 					ItemComponent={FoodTableItem}

@@ -13,6 +13,7 @@ export interface ClientToServerEvents {
 	ReloadFirearm(weapon: Tool): void;
 	EquipFirearm(weapon: Tool): void;
 	UnequipFirearm(weapon: Tool): void;
+	CookFood(food: string): void;
 	Help(): void;
 	UpdateFirearm(weapon: Tool, modifications: IModification[]): void;
 
@@ -26,6 +27,7 @@ export interface ServerToClientEvents {
 	SetProfile(profile: PlayerProfile): void;
 	SetActiveObjective(objective: Objective | undefined): void;
 	ToggleCollision(instance: Instance, toggled: boolean): void;
+	ToggleCookMenu(): void;
 
 	// RoombaTouchpad
 	RoombaActive(chr: BaseCharacter): void;
