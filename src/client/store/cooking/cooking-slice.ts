@@ -10,4 +10,5 @@ const initialState: CookingState = {
 
 export const cookingSlice = createProducer(initialState, {
 	setCookingOpen: (state, isOpen: boolean) => ({ ...state, isOpen }),
+	toggleCookingOpen: (state) => ({ ...state, isOpen: !state.isOpen }),
 });
