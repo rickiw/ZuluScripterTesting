@@ -56,6 +56,7 @@ return {
 			misc = {
 				divider = "rbxassetid://17151021776",
 				foundationlogo = "rbxassetid://17153143297",
+				vignette = "rbxassetid://17159843312",
 			},
 		},
 	},

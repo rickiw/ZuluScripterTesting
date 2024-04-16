@@ -22,20 +22,19 @@ export const accents = {
 } as const;
 
 /**
- * Catppuccin Mocha Neutrals
- * @see https://github.com/catppuccin/catppuccin
+ * These have been replaced with the palette from mockups
  */
 export const neutrals = {
-	text: Color3.fromRGB(205, 214, 244),
-	subtext1: Color3.fromRGB(186, 194, 222),
-	subtext0: Color3.fromRGB(166, 173, 200),
-	overlay2: Color3.fromRGB(147, 153, 178),
-	overlay1: Color3.fromRGB(127, 132, 156),
-	overlay0: Color3.fromRGB(108, 112, 134),
-	surface2: Color3.fromRGB(88, 91, 112),
-	surface1: Color3.fromRGB(69, 71, 90),
-	surface0: Color3.fromRGB(49, 50, 68),
-	base: Color3.fromRGB(30, 30, 46),
+	text: Color3.fromRGB(242, 242, 242),
+	subtext1: Color3.fromRGB(179, 179, 179),
+	subtext0: Color3.fromRGB(75, 80, 83),
+	overlay2: Color3.fromRGB(143, 149, 111),
+	overlay1: Color3.fromRGB(106, 109, 81),
+	overlay0: Color3.fromRGB(39, 43, 29),
+	surface2: Color3.fromRGB(153, 153, 153),
+	surface1: Color3.fromRGB(33, 38, 41),
+	surface0: Color3.fromRGB(25, 29, 32),
+	base: Color3.fromRGB(16, 20, 21),
 	mantle: Color3.fromRGB(24, 24, 37),
 	crust: Color3.fromRGB(17, 17, 27),
 } as const;

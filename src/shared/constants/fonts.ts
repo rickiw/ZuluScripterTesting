@@ -3,6 +3,7 @@ export const fonts = {
 		regular: new Font("rbxassetid://12187365364"),
 		medium: new Font("rbxassetid://12187365364", Enum.FontWeight.Medium),
 		bold: new Font("rbxassetid://12187365364", Enum.FontWeight.Bold),
+		extra: new Font("rbxassetid://12187365364", Enum.FontWeight.Heavy),
 	},
 	ibmPlexSansJP: {
 		regular: new Font("rbxassetid://12187364147"),

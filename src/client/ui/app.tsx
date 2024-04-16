@@ -1,4 +1,5 @@
 import Roact from "@rbxts/roact";
+import { CookingProvider } from "./cooking/cooking-provider";
 import { CustomizationProvider } from "./customization/customization-provider";
 import { AerialProvider } from "./library/aerial/aerial-provider";
 import { ErrorHandler } from "./library/error";
@@ -22,6 +23,7 @@ export function App() {
 			<Layer key="menu-layer">
 				<MenuProvider key="menu-provider" />
 				<CustomizationProvider key="customization-provider" />
+				<CookingProvider key="cooking-provider" />
 			</Layer>
 
 			<Layer key="daily-rewards-layers"></Layer>
