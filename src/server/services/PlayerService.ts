@@ -1,7 +1,6 @@
 import { Modding, OnStart, Service } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
-import { FirearmService } from "./FirearmService";
 
 export interface PlayerRemoving {
 	playerRemoving(player: Player): void;
@@ -20,70 +19,73 @@ export interface CharacterRemoving {
 }
 
 @Service()
-export class PlayerService implements OnStart, PlayerAdded {
-	constructor(private firearmService: FirearmService) {}
+export class PlayerService implements OnStart {
+	private playerAddedListeners = new Set<PlayerAdded>();
+	private characterAddedListeners = new Set<CharacterAdded>();
+	private characterRemovingListeners = new Set<CharacterRemoving>();
+	private playerRemovingListeners = new Set<PlayerRemoving>();
 
-	onStart() {
-		const playerAddedListeners = new Set<PlayerAdded>();
-		const characterAddedListeners = new Set<CharacterAdded>();
-		const characterRemovingListeners = new Set<CharacterRemoving>();
-		Modding.onListenerAdded<PlayerAdded>((object) => playerAddedListeners.add(object));
-		Modding.onListenerRemoved<PlayerAdded>((object) => playerAddedListeners.delete(object));
-		Modding.onListenerAdded<CharacterAdded>((object) => characterAddedListeners.add(object));
-		Modding.onListenerRemoved<CharacterAdded>((object) => characterAddedListeners.delete(object));
-		Modding.onListenerAdded<CharacterRemoving>((object) => characterRemovingListeners.add(object));
-		Modding.onListenerRemoved<CharacterRemoving>((object) => characterRemovingListeners.delete(object));
-		Players.PlayerAdded.Connect((player) => {
-			for (const listener of playerAddedListeners) {
-				task.spawn(() => listener.playerAdded(player));
-				task.spawn(() => {
-					const character = player.Character || player.CharacterAdded.Wait()[0];
-					for (const listener of characterAddedListeners) {
-						task.spawn(() => listener.characterAdded(character as CharacterRigR15));
-					}
-				});
-				task.spawn(() => {
-					player.CharacterRemoving.Connect((character) => {
-						for (const listener of characterRemovingListeners) {
-							listener.characterRemoving(player, character as CharacterRigR15);
-						}
-					});
-				});
-			}
-		});
-		for (const player of Players.GetPlayers()) {
-			for (const listener of playerAddedListeners) {
-				task.spawn(() => listener.playerAdded(player));
-			}
-		}
-
-		const playerRemovingListeners = new Set<PlayerRemoving>();
-		Modding.onListenerAdded<PlayerRemoving>((object) => playerRemovingListeners.add(object));
-		Modding.onListenerRemoved<PlayerRemoving>((object) => playerRemovingListeners.delete(object));
-		Players.PlayerRemoving.Connect((player) => {
-			for (const listener of playerRemovingListeners) {
-				task.spawn(() => listener.playerRemoving(player));
-			}
-		});
-		for (const player of Players.GetPlayers()) {
-			for (const listener of playerRemovingListeners) {
-				task.spawn(() => listener.playerRemoving(player));
-			}
-		}
-	}
-
-	characterAdded(character: BaseCharacter) {
+	characterAdded(character: Model) {
 		character.AddTag("character");
+
+		for (const listener of this.characterAddedListeners) {
+			task.spawn(() => listener.characterAdded(character as CharacterRigR15));
+		}
 	}
 
 	playerAdded(player: Player) {
 		player.AddTag("player");
 
-		if (player.Character) {
-			this.characterAdded(player.Character as BaseCharacter);
+		for (const listener of this.playerAddedListeners) {
+			task.spawn(() => listener.playerAdded(player));
 		}
-		player.CharacterAdded.Connect((character) => {
-			this.characterAdded(character as BaseCharacter);
+
+		const character = player.Character;
+		if (character) {
+			this.characterAdded(character);
+		}
+
+		player.CharacterAdded.Connect((character) => this.characterAdded(character));
+	}
+
+	characterRemoving(player: Player, character: CharacterRigR15) {
+		for (const listener of this.characterRemovingListeners) {
+			task.spawn(() => listener.characterRemoving(player, character));
+		}
+	}
+
+	onStart() {
+		const { playerAddedListeners, characterAddedListeners, playerRemovingListeners, characterRemovingListeners } =
+			this;
+
+		Modding.onListenerAdded<PlayerAdded>((object) => playerAddedListeners.add(object));
+		Modding.onListenerRemoved<PlayerAdded>((object) => playerAddedListeners.delete(object));
+
+		Modding.onListenerAdded<CharacterAdded>((object) => characterAddedListeners.add(object));
+		Modding.onListenerRemoved<CharacterAdded>((object) => characterAddedListeners.delete(object));
+
+		Modding.onListenerAdded<PlayerRemoving>((object) => playerRemovingListeners.add(object));
+		Modding.onListenerRemoved<PlayerRemoving>((object) => playerRemovingListeners.delete(object));
+
+		Modding.onListenerAdded<CharacterRemoving>((object) => this.characterRemovingListeners.add(object));
+		Modding.onListenerRemoved<CharacterRemoving>((object) => characterRemovingListeners.delete(object));
+
+		Players.PlayerAdded.Connect((player) => {
+			this.playerAdded(player);
+			player.CharacterRemoving.Connect((character) => {
+				for (const listener of characterRemovingListeners) {
+					task.spawn(() => listener.characterRemoving(player, character as CharacterRigR15));
+				}
+			});
+		});
+		for (const player of Players.GetPlayers()) {
+			this.playerAdded(player);
+		}
+
+		Players.PlayerRemoving.Connect((player) => {
+			for (const listener of playerRemovingListeners) {
+				task.spawn(() => listener.playerRemoving(player));
+			}
 		});
 	}
 }

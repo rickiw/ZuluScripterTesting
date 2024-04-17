@@ -36,7 +36,9 @@ export class BaseFoodItems<A extends FoodItemAttributes, I extends FoodItemInsta
 			this.enabled = !this.instance.GetAttribute("cooldown") as boolean;
 		});
 		this.instance.Activated.Connect(() => {
-			if (!this.enabled) return;
+			if (!this.enabled) {
+				return;
+			}
 
 			this.instance.GripForward = new Vector3(0.675, -0.675, -0.3);
 			this.instance.GripPos = new Vector3(0.4, -0.59, 1.1);

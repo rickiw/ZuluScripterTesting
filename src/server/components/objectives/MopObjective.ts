@@ -59,7 +59,9 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 
 	startObjective(player: Player): [complete: boolean, exists: boolean, started: boolean] {
 		const [completed, existed, started] = super.startObjective(player);
-		if (completed || existed) return [completed, existed, started];
+		if (completed || existed) {
+			return [completed, existed, started];
+		}
 
 		const maid = new Maid();
 		this.playerMaids.set(player.UserId, maid);
@@ -79,7 +81,9 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 		super.stopObjective(player);
 		removeTool(player, "Broom");
 		const maid = this.playerMaids.get(player.UserId);
-		if (maid) maid.DoCleaning();
+		if (maid) {
+			maid.DoCleaning();
+		}
 		this.playerMaids.delete(player.UserId);
 	}
 
@@ -98,13 +102,17 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 		this.interactComponents.set(puddle.Name, interactComponent);
 
 		interactComponent.activated.Connect((player) => {
-			if (this.isDoingObjective(player)) this.sweepPuddle(player, puddle);
+			if (this.isDoingObjective(player)) {
+				this.sweepPuddle(player, puddle);
+			}
 		});
 
 		task.delay(lifetime, () => {
 			if (puddle !== undefined && puddle.IsDescendantOf(Workspace)) {
 				const beingSwept = puddle.GetAttribute("Sweeping") as boolean;
-				if (beingSwept) return;
+				if (beingSwept) {
+					return;
+				}
 				puddle.Destroy();
 				this.interactComponents.delete(puddle.Name);
 			}
@@ -112,7 +120,9 @@ export class MopObjective<A extends MopObjectiveAttributes, I extends MopObjecti
 	}
 
 	sweepPuddle(player: Player, puddle: typeof this.instance.Assets.Puddle) {
-		if (puddle.GetAttribute("Sweeping") === true) return;
+		if (puddle.GetAttribute("Sweeping") === true) {
+			return;
+		}
 
 		const swept = (this.objectiveService.getCompletion(player, this.objectiveId).swept as number) ?? 0;
 		const character = player.Character as CharacterRigR15;

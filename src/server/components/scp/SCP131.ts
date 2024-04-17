@@ -1,10 +1,9 @@
 import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import Log from "@rbxts/log";
-import { CharacterRigR15 } from "@rbxts/promise-character";
 import SimplePath from "@rbxts/simplepath";
 import { SCPKilled } from "server/services/EnemyService";
-import { CharacterRemoving } from "server/services/PlayerService";
+import { PlayerRemoving } from "server/services/PlayerService";
 import { HealthChange } from "server/services/variants";
 import { BaseSCP, BaseSCPInstance, OnPathfind, PathfindErrorType } from "./BaseSCP";
 
@@ -26,7 +25,7 @@ interface SCPAttributes {
 })
 export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	extends BaseSCP<A, I>
-	implements OnStart, OnTick, OnPathfind, SCPKilled, CharacterRemoving
+	implements OnStart, OnTick, OnPathfind, SCPKilled, PlayerRemoving
 {
 	status: "idle" | "wandering" | "following" = "idle";
 	target?: Player;
@@ -78,7 +77,7 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 		return true;
 	}
 
-	characterRemoving(player: Player, character: CharacterRigR15) {
+	playerRemoving(player: Player) {
 		if (this.target === player) {
 			this.target = undefined;
 			if (this.path.Status === "Active") {
@@ -130,16 +129,22 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	}
 
 	pathfindBlocked() {
-		if (this.attributes.visualize) Log.Warn("SCP131 pathfinding was blocked...");
+		if (this.attributes.visualize) {
+			Log.Warn("SCP131 pathfinding was blocked...");
+		}
 		if (this.status === "wandering") {
 			this.nextWanderPoint = this.getNextWanderPoint();
-			if (this.path.Status === "Active") this.path.Stop();
+			if (this.path.Status === "Active") {
+				this.path.Stop();
+			}
 			this.path.Run(this.nextWanderPoint);
 		}
 	}
 
 	fixPathfindError() {
-		if (this.status !== "wandering") return;
+		if (this.status !== "wandering") {
+			return;
+		}
 		this.nextWanderPoint = this.getNextWanderPoint();
 		this.path.Run(this.nextWanderPoint);
 	}
@@ -153,7 +158,9 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 			case "AgentStuck":
 				break;
 			case "TargetUnreachable":
-				if (this.attributes.visualize) Log.Warn("SCP131 | Target unreachable");
+				if (this.attributes.visualize) {
+					Log.Warn("SCP131 | Target unreachable");
+				}
 				break;
 		}
 	}
@@ -177,7 +184,9 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 		if (this.status === "wandering") {
 			this.status = "idle";
 			task.delay(math.random(1, 3), () => {
-				if (this.status !== "idle") return;
+				if (this.status !== "idle") {
+					return;
+				}
 				this.nextWanderPoint = this.getNextWanderPoint();
 				this.path.Run(this.nextWanderPoint);
 				this.status = "wandering";
@@ -186,7 +195,9 @@ export class SCP131<A extends SCPAttributes, I extends SCPInstance>
 	}
 
 	scpKilled(scp: BaseHumanoidSCP, deathCause: HealthChange) {
-		if (scp !== this.instance) return;
+		if (scp !== this.instance) {
+			return;
+		}
 		this.alive = false;
 		this.instance
 			.GetDescendants()

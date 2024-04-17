@@ -49,12 +49,16 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 		this.presenceComponents.push(presenceComponent);
 		this.maid.GiveTask(
 			presenceComponent.presenceBegin.Connect((player) => {
-				if (this.isDoingObjective(player)) this.areaEnter(player);
+				if (this.isDoingObjective(player)) {
+					this.areaEnter(player);
+				}
 			}),
 		);
 		this.maid.GiveTask(
 			presenceComponent.presenceEnd.Connect((player) => {
-				if (this.isDoingObjective(player)) this.areaExit(player);
+				if (this.isDoingObjective(player)) {
+					this.areaExit(player);
+				}
 			}),
 		);
 	}
@@ -81,7 +85,9 @@ export class GuardObjective<A extends GuardObjectiveAttributes, I extends GuardO
 			const completion = this.objectiveService.getCompletion(player, this.objectiveId);
 			const completed = completion.completed ? (completion.completed as boolean) : false;
 			const timeWatched = completion.timeWatched ? (completion.timeWatched as number) : 0;
-			if (completed && timeWatched >= this.attributes.goal) return;
+			if (completed && timeWatched >= this.attributes.goal) {
+				return;
+			}
 			if (timeWatched >= this.attributes.goal) {
 				this.objectiveService.completeObjective(player, this.objective, {
 					completed: true,

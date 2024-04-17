@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { InteractionProps } from "client/ui/library/interaction/interaction";
+import { InteractionProps } from "client/ui/components/interaction/interaction";
 import { BaseInteraction } from "shared/components/BaseInteraction";
 
 export interface Interaction extends Readonly<InteractionProps> {

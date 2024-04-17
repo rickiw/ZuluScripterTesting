@@ -56,20 +56,26 @@ export class ObjectiveService implements OnStart, PlayerDataLoaded {
 	}
 
 	registerObjective(objective: BaseObjective<ObjectiveAttributes, any>) {
-		if (this.objectiveClasses.has(objective.objectiveId)) return;
+		if (this.objectiveClasses.has(objective.objectiveId)) {
+			return;
+		}
 		this.objectiveClasses.set(objective.objectiveId, objective);
 	}
 
 	onStart() {
 		Functions.BeginObjective.setCallback((player, objective) => {
-			if (this.isDoingObjective(player)) return false;
+			if (this.isDoingObjective(player)) {
+				return false;
+			}
 			const objectiveClass = this.objectiveClasses.get(objective);
 			if (!objectiveClass) {
 				Log.Warn("Objective class {@ObjectiveName} not found", objective);
 				return false;
 			}
 			const [completed, , started] = objectiveClass.startObjective(player);
-			if (!started) return false;
+			if (!started) {
+				return false;
+			}
 
 			if (objectiveClass.isDoingObjective(player) && !completed) {
 				Log.Warn("Objective {@ObjectiveName} is already active", objective);

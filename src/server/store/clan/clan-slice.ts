@@ -16,7 +16,9 @@ export const clanSlice = createProducer(initialState, {
 	}),
 	setClanFunds: (state, clanId: number, amount: number) => {
 		const clan = state.clans.find((clan) => clan.groupId === clanId);
-		if (!clan) return state;
+		if (!clan) {
+			return state;
+		}
 		return {
 			...state,
 			clans: state.clans.map((clan) => {

@@ -20,9 +20,13 @@ export class ClanController extends HandlesMultipleInputs<ClanActions> implement
 
 	onStart() {
 		UserInputService.InputEnded.Connect((input, processed) => {
-			if (processed) return;
+			if (processed) {
+				return;
+			}
 			const action = this.hasInput(input.KeyCode);
-			if (!action) return;
+			if (!action) {
+				return;
+			}
 			switch (action) {
 				case "CreateClan":
 					this.createClan();

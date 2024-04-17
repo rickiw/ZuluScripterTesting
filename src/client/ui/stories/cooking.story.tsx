@@ -3,7 +3,7 @@ import Roact from "@rbxts/roact";
 import { WithControls } from "@rbxts/ui-labs";
 import { clientStore } from "client/store";
 import { RootProvider } from "client/ui/providers/root-provider";
-import { CookingProvider } from "../cooking/cooking-provider";
+import { CookingProvider } from "../providers/cooking-provider";
 
 const controls = {
 	isOpen: true,

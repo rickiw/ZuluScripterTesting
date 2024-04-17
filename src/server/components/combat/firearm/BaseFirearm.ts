@@ -129,14 +129,16 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		return this.instance.Parent?.IsA("Model")
 			? (Players.GetPlayerFromCharacter(this.instance.Parent) as Player & {
 					Character: CharacterRigR15;
-			  })
+				})
 			: (this.instance.FindFirstAncestorOfClass("Player") as Player & {
 					Character: CharacterRigR15;
-			  });
+				});
 	}
 
 	loadAnimations() {
-		if (!this.character) return;
+		if (!this.character) {
+			return;
+		}
 		this.character.WaitForChild("Humanoid");
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
@@ -159,7 +161,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	initBehavior() {
-		if (!this.character) return;
+		if (!this.character) {
+			return;
+		}
 		const params = new RaycastParams();
 		params.FilterDescendantsInstances = [this.character, this.tool];
 		params.FilterType = Enum.RaycastFilterType.Exclude;

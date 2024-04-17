@@ -62,9 +62,13 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 
 	hasCompletedObjective(player: Player, objectiveId: ObjectiveID) {
 		const profile = serverStore.getState(selectPlayerSave(player.UserId));
-		if (!profile) return false;
+		if (!profile) {
+			return false;
+		}
 		const objective = profile.objectiveCompletion.find((objective) => objective.id === objectiveId);
-		if (!objective) return false;
+		if (!objective) {
+			return false;
+		}
 		return (objective.completion.completed as boolean) ?? false;
 	}
 
@@ -78,7 +82,9 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	): [complete: boolean, exists: boolean, started: boolean] {
 		const hasCompleted = this.hasCompletedObjective(player, this.objectiveId);
 		const exists = this.doingObjective.has(player.UserId);
-		if (!hasCompleted && !exists) Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
+		if (!hasCompleted && !exists) {
+			Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
+		}
 		let started = false;
 		if (!overrideIfCompleted) {
 			started = true;
@@ -98,6 +104,8 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 
 	objectiveComplete(player: Player, objective: Objective) {
 		Log.Warn("Objective complete");
-		if (objective.id === this.objectiveId) this.stopObjective(player);
+		if (objective.id === this.objectiveId) {
+			this.stopObjective(player);
+		}
 	}
 }

@@ -22,7 +22,9 @@ export const selectInteractionIndex = (id: string) => {
 export const selectInteractionIdByPrompt = (prompt: ProximityPrompt) => {
 	return createSelector(selectInteractionsVisible, (interactions) => {
 		const interaction = interactions.find((interaction) => interaction.prompt === prompt);
-		if (interaction) return interaction.id;
+		if (interaction) {
+			return interaction.id;
+		}
 		return false;
 	});
 };

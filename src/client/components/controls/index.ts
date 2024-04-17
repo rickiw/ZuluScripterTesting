@@ -37,14 +37,18 @@ export class ControlSet {
 					data.onEnd();
 				}
 
-				if (data.once) data.once(state);
+				if (data.once) {
+					data.once(state);
+				}
 			},
 			data.Mobile,
 			data.priority === undefined ? Enum.ContextActionPriority.Low.Value : data.priority,
 			...data.controls,
 		);
 
-		if (data.Mobile) CAU.SetTitle(data.ID, data.Name);
+		if (data.Mobile) {
+			CAU.SetTitle(data.ID, data.Name);
+		}
 	}
 
 	remove(id: string) {

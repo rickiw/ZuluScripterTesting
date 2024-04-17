@@ -108,12 +108,16 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		if (authorized) {
 			this.sendInteractionMessage(player, "interaction_accepted");
 			this.setReaderColor(Color3.fromRGB(0, 255, 0));
-			if (this.doorSound) this.doorSound.doorAccept();
+			if (this.doorSound) {
+				this.doorSound.doorAccept();
+			}
 			this.interacted.Fire(player);
 		} else {
 			this.sendInteractionMessage(player, "interaction_denied");
 			this.setReaderColor(Color3.fromRGB(255, 0, 0));
-			if (this.doorSound) this.doorSound.doorDeny();
+			if (this.doorSound) {
+				this.doorSound.doorDeny();
+			}
 			Log.Verbose("Player {@Player} was not authenticated for door {@Door}", player.Name, this.instance.Name);
 		}
 		task.delay(0.4, () => {
@@ -206,8 +210,12 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 				if (presenceComponent) {
 					this.maid.GiveTask(
 						presenceComponent.presenceBegin.Connect((player) => {
-							if (this.attributes.open) return;
-							if (this.attributes.moving) return;
+							if (this.attributes.open) {
+								return;
+							}
+							if (this.attributes.moving) {
+								return;
+							}
 							this.onInteract(player);
 						}),
 					);
@@ -218,7 +226,9 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 			if (value !== oldValue) {
 				if (value) {
 					this.stateChanged.Fire(true);
-					if (this.doorSound) this.doorSound.doorOpen();
+					if (this.doorSound) {
+						this.doorSound.doorOpen();
+					}
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.openMotor, this.getSpringSettings());
 						return;
@@ -232,7 +242,9 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 					this.net.ToggleCollision.broadcast(this.instance, true);
 				} else {
 					this.stateChanged.Fire(false);
-					if (this.doorSound) this.doorSound.doorClose();
+					if (this.doorSound) {
+						this.doorSound.doorClose();
+					}
 					if (RunService.IsClient()) {
 						this.baseMotor.spring(this.closeMotor, this.getSpringSettings());
 					} else {
@@ -253,7 +265,9 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 	}
 
 	dutyCycle() {
-		if (this.attributes.locked) return;
+		if (this.attributes.locked) {
+			return;
+		}
 		if (this.attributes.broken) {
 			if (RunService.IsClient()) {
 				this.baseMotor.spring(0.1, springs.wobbly);
@@ -278,7 +292,9 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 			const openTick = tick();
 			while (math.abs(tick() - openTick) <= (this.attributes.autocloseDelay ?? 5)) {
 				task.wait();
-				if (!this.attributes.moving) break;
+				if (!this.attributes.moving) {
+					break;
+				}
 			}
 			this.attributes.open = false;
 		}

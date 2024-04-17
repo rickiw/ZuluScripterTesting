@@ -82,7 +82,9 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	}
 
 	enableCd() {
-		if (this.getCd()) return;
+		if (this.getCd()) {
+			return;
+		}
 		// delay disableCd, so that it toggles back to false after COOLDOWN_TIME
 		task.spawn(() => {
 			let Left = ROOMBA_COOLDOWN;
@@ -101,8 +103,12 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	onStart() {
 		super.onStart();
 		this.instance.Activated.Connect(() => {
-			if (this.getCd()) return;
-			if (!this.roombaCharacter) return this.spawnRoomba();
+			if (this.getCd()) {
+				return;
+			}
+			if (!this.roombaCharacter) {
+				return this.spawnRoomba();
+			}
 
 			if (!this.roombaActive && this.roombaCharacter) {
 				this.roombaActive = true;
@@ -143,7 +149,9 @@ export class RoombaTouchpad extends BaseTouchpad<TouchpadAttributes, TouchpadIns
 	}
 
 	spawnRoomba() {
-		if (this.roombaCharacter !== undefined || !this.wielder || !this.wielder.Character || this.getCd()) return;
+		if (this.roombaCharacter !== undefined || !this.wielder || !this.wielder.Character || this.getCd()) {
+			return;
+		}
 		const RoombaClone = ReplicatedStorage.FindFirstChild("Assets")
 			?.FindFirstChild("Roomba")
 			?.Clone() as RoombaCharacter;

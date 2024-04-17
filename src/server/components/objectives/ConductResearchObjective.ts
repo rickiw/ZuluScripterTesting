@@ -53,13 +53,17 @@ export class ConductResearch<A extends ConductResearchAttributes, I extends Cond
 		this.interactComponents.push(deskInteractComponent);
 		this.maid.GiveTask(
 			deskInteractComponent.activated.Connect((player) => {
-				if (this.isDoingObjective(player)) this.deskInteract(player);
+				if (this.isDoingObjective(player)) {
+					this.deskInteract(player);
+				}
 			}),
 		);
 	}
 
 	deskInteract(player: Player) {
-		if (this.researching.has(player)) return;
+		if (this.researching.has(player)) {
+			return;
+		}
 		this.researching.add(player);
 		const character = player.Character as CharacterRigR15;
 		const walkSpeed = character.Humanoid.WalkSpeed;

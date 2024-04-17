@@ -52,13 +52,17 @@ export class WiringObjective<A extends WiringObjectiveAttributes, I extends Wiri
 		this.interactComponents.push(wiringInteractComponent);
 		this.maid.GiveTask(
 			wiringInteractComponent.activated.Connect((player) => {
-				if (this.isDoingObjective(player)) this.fixWiring(player);
+				if (this.isDoingObjective(player)) {
+					this.fixWiring(player);
+				}
 			}),
 		);
 	}
 
 	fixWiring(player: Player) {
-		if (this.fixing.has(player)) return;
+		if (this.fixing.has(player)) {
+			return;
+		}
 		this.fixing.add(player);
 		const character = player.Character as CharacterRigR15;
 		const walkSpeed = character.Humanoid.WalkSpeed;

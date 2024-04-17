@@ -32,7 +32,9 @@ export class FirearmMagazine implements IFirearmMagazine {
 	}
 
 	take() {
-		if (this.isEmpty()) return;
+		if (this.isEmpty()) {
+			return;
+		}
 		this.holding--;
 		this.onChanged.Fire();
 	}

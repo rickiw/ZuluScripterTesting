@@ -69,19 +69,25 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 		this.interactComponents.push(desk1InteractComponent, desk2InteractComponent);
 		this.maid.GiveTask(
 			desk1InteractComponent.activated.Connect((player) => {
-				if (this.isDoingObjective(player)) this.desk1Interact(player);
+				if (this.isDoingObjective(player)) {
+					this.desk1Interact(player);
+				}
 			}),
 		);
 		this.maid.GiveTask(
 			desk2InteractComponent.activated.Connect((player) => {
-				if (this.isDoingObjective(player)) this.desk2Interact(player);
+				if (this.isDoingObjective(player)) {
+					this.desk2Interact(player);
+				}
 			}),
 		);
 	}
 
 	desk1Interact(player: Player) {
 		const alreadyHolding = this.holdingPaperwork.has(player);
-		if (alreadyHolding) return;
+		if (alreadyHolding) {
+			return;
+		}
 
 		const profile = serverStore.getState(selectPlayerSave(player.UserId));
 		if (!profile) {
@@ -90,7 +96,9 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 		}
 
 		const objectiveCompletion = profile.objectiveCompletion.find((objective) => this.objectiveId === objective.id);
-		if (objectiveCompletion && objectiveCompletion.completion.completed) return;
+		if (objectiveCompletion && objectiveCompletion.completion.completed) {
+			return;
+		}
 
 		this.holdingPaperwork.add(player);
 		giveTool(player, this.instance.Paperwork);
@@ -98,10 +106,14 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 
 	desk2Interact(player: Player) {
 		const holdingPaperwork = this.holdingPaperwork.has(player);
-		if (!holdingPaperwork) return;
+		if (!holdingPaperwork) {
+			return;
+		}
 
 		const completed = this.hasCompletedObjective(player, this.objectiveId);
-		if (completed) return;
+		if (completed) {
+			return;
+		}
 
 		removeTool(player, "Paperwork");
 

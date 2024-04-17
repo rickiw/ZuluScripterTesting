@@ -15,7 +15,9 @@ export class ObjectiveController implements OnStart {
 				| undefined;
 			assert(objective, `objective ${objectiveName} not found`);
 			objective.Beacon.Transparency = toggled ? 0.5 : 1;
-			if (!toggled) clientStore.stopActiveObjective();
+			if (!toggled) {
+				clientStore.stopActiveObjective();
+			}
 		});
 
 		Events.SetActiveObjective.connect((objective) => {

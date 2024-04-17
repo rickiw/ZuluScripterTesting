@@ -56,9 +56,9 @@ export class BaseTouchpad<A extends TouchpadAttributes, I extends TouchpadInstan
 		return this.instance.Parent?.IsA("Model")
 			? (Players.GetPlayerFromCharacter(this.instance.Parent) as Player & {
 					Character: CharacterRigR15;
-			  })
+				})
 			: (this.instance.FindFirstAncestorOfClass("Player") as Player & {
 					Character: CharacterRigR15;
-			  });
+				});
 	}
 }

@@ -11,7 +11,9 @@ export function damp(rate: number, delta: number) {
 }
 
 export const toScientific = (number: number): string => {
-	if (number === 0) return "0";
+	if (number === 0) {
+		return "0";
+	}
 	const coefficient = tostring(number / math.pow(10, math.floor(math.log10(math.abs(number)))));
 	const exponent = tostring(math.floor(math.log10(math.abs(number))));
 	return coefficient.sub(0, 4) + " * 10^" + exponent;

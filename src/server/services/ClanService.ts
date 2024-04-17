@@ -63,12 +63,20 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 
 	depositClanFunds(player: Player, amount: number): ClanDepositStatus {
 		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
-		if (!playerProfile) return "Error";
+		if (!playerProfile) {
+			return "Error";
+		}
 		const clanGroupId = playerProfile.clan;
-		if (!clanGroupId) return "NotInClan";
+		if (!clanGroupId) {
+			return "NotInClan";
+		}
 		const clan = serverStore.getState(selectClan(clanGroupId));
-		if (!clan) return "Error";
-		if (playerProfile.credits < amount) return "InsufficientBalance";
+		if (!clan) {
+			return "Error";
+		}
+		if (playerProfile.credits < amount) {
+			return "InsufficientBalance";
+		}
 		const newFunds = clan.bank + amount;
 		const newClan: Clan = {
 			...clan,
@@ -92,15 +100,27 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 
 	withdrawClanFunds(player: Player, amount: number): ClanWithdrawStatus {
 		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
-		if (!playerProfile) return "Error";
+		if (!playerProfile) {
+			return "Error";
+		}
 		const clanGroupId = playerProfile.clan;
-		if (!clanGroupId) return "NotInClan";
+		if (!clanGroupId) {
+			return "NotInClan";
+		}
 		const clan = serverStore.getState(selectClan(clanGroupId));
-		if (!clan) return "Error";
+		if (!clan) {
+			return "Error";
+		}
 		const groupInfo = GroupService.GetGroupsAsync(player.UserId).find((group) => group.Id === clanGroupId);
-		if (!groupInfo) return "Error";
-		if (groupInfo.Rank < clan.minimumWithdrawalRank) return "NotAllowed";
-		if (clan.bank < amount) return "InsufficientBalance";
+		if (!groupInfo) {
+			return "Error";
+		}
+		if (groupInfo.Rank < clan.minimumWithdrawalRank) {
+			return "NotAllowed";
+		}
+		if (clan.bank < amount) {
+			return "InsufficientBalance";
+		}
 		const newFunds = clan.bank - amount;
 		const newClan: Clan = {
 			...clan,
@@ -124,8 +144,12 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 
 	createClan(owner: Player, groupId: GroupID): ClanCreationStatus {
 		const playerProfile = serverStore.getState(selectPlayerSave(owner.UserId));
-		if (!playerProfile) return "Error";
-		if (playerProfile.clan && playerProfile.clan !== 0) return "AlreadyInClan";
+		if (!playerProfile) {
+			return "Error";
+		}
+		if (playerProfile.clan && playerProfile.clan !== 0) {
+			return "AlreadyInClan";
+		}
 		const groupInfo = GroupService.GetGroupInfoAsync(groupId);
 		if (groupInfo.Owner.Id !== owner.UserId) {
 			return "NotAllowed";
@@ -204,12 +228,20 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 
 	joinClan(player: Player, clanId: GroupID): ClanJoinStatus {
 		const clan = serverStore.getState(selectClan(clanId));
-		if (!clan) return "Error";
+		if (!clan) {
+			return "Error";
+		}
 		const isPlayerInClanGroup = GroupService.GetGroupsAsync(player.UserId).some((group) => group.Id === clanId);
-		if (!isPlayerInClanGroup) return "NotInGroup";
+		if (!isPlayerInClanGroup) {
+			return "NotInGroup";
+		}
 		const playerProfile = serverStore.getState(selectPlayerSave(player.UserId));
-		if (!playerProfile) return "Error";
-		if (playerProfile.clan && playerProfile.clan !== 0) return "AlreadyInClan";
+		if (!playerProfile) {
+			return "Error";
+		}
+		if (playerProfile.clan && playerProfile.clan !== 0) {
+			return "AlreadyInClan";
+		}
 		this.addPlayerToClan(player, clanId);
 		serverStore.updatePlayerSave(player.UserId, {
 			clan: clanId,
@@ -218,7 +250,9 @@ export class ClanService implements OnStart, PlayerDataLoaded {
 	}
 
 	playerDataLoaded(player: Player, data: PlayerProfile) {
-		if (!data.clan) return;
+		if (!data.clan) {
+			return;
+		}
 		const clan = serverStore.getState(selectClan(data.clan));
 		if (!clan) {
 			Log.Warn(

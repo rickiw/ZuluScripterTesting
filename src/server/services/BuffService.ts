@@ -42,7 +42,9 @@ export class BuffService implements OnStart, PlayerDataLoaded {
 			const cooldown = food.GetAttribute("cooldown") as boolean;
 			const cooldownTime = food.GetAttribute("cooldownTime") as number;
 
-			if (cooldown) return false;
+			if (cooldown) {
+				return false;
+			}
 			if (recoveryType === "health") {
 				const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 				character.Humanoid.Health = math.min(

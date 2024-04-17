@@ -25,7 +25,9 @@ export class SimulationController implements On1SecondInterval {
 	on1SecondInterval() {
 		const newNodesInSimulation: Octree.Node<SimNodeInfo>[] = [];
 		for (const node of this.simulationTree.GetNearest(this.camera.CFrame.Position, this.simulationDistance, 50)) {
-			if (!node || !node.Object || !node.Object.callback) continue;
+			if (!node || !node.Object || !node.Object.callback) {
+				continue;
+			}
 			if (!this.simulationNodes.includes(node)) {
 				this.simulationNodes.push(node);
 				node.Object.callback(true);

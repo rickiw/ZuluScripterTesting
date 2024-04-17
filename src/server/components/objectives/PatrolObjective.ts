@@ -35,7 +35,9 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 
 	startObjective(player: Player): [complete: boolean, exists: boolean, started: boolean] {
 		const [completed, existed, started] = super.startObjective(player);
-		if (completed || existed) return [completed, existed, started];
+		if (completed || existed) {
+			return [completed, existed, started];
+		}
 
 		const maid = new Maid();
 		this.playerMaids.set(player.UserId, maid);
@@ -62,7 +64,9 @@ export class PatrolObjective<A extends PatrolObjectiveAttributes, I extends Patr
 				) {
 					if (steps + 1 >= this.attributes.requiredSteps) {
 						const completed = this.hasCompletedObjective(player, this.objectiveId);
-						if (completed) return;
+						if (completed) {
+							return;
+						}
 
 						this.objectiveService.completeObjective(player, this.objective, {
 							completed: true,

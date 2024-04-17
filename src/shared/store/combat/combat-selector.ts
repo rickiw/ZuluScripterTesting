@@ -16,7 +16,8 @@ export const selectMagHolding =
 			!state.combat[userId] ||
 			!state.combat[userId]?.weapon ||
 			(state.combat[userId]?.weapon as FirearmState).magazine === undefined
-		)
+		) {
 			return undefined;
+		}
 		return (state.combat[userId]?.weapon as FirearmState).magazine.holding;
 	};

@@ -106,7 +106,9 @@ export class DataService implements OnStart, PlayerAdded, PlayerRemoving {
 		Log.Verbose("{@Player} is leaving, closing out profile.", player.Name);
 
 		const profile = this.profileStorage.get(player.UserId);
-		if (!profile) return;
+		if (!profile) {
+			return;
+		}
 
 		this.profileStorage.delete(player.UserId);
 

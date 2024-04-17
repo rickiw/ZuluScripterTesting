@@ -23,7 +23,9 @@ export function weightedRandomIndex<T extends object>(array: Array<{ weight: num
 	}
 	const random = math.random(1, totalWeight);
 	const utilityType = weights.get(random);
-	if (!utilityType) throw `Utility type not found for random number ${random}`;
+	if (!utilityType) {
+		throw `Utility type not found for random number ${random}`;
+	}
 
 	return utilityType;
 }

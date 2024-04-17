@@ -27,7 +27,9 @@ export class SingleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 
 	onDoorInteract(player: Player) {
 		if (!this.open) {
-			if (!player.Character || !player.Character.PrimaryPart) return;
+			if (!player.Character || !player.Character.PrimaryPart) {
+				return;
+			}
 			const posA = this.instance.Center.Position;
 			const posB = player.Character.PrimaryPart.Position;
 			const diffVector = posB.sub(posA);

@@ -32,7 +32,9 @@ export class IDService implements CharacterAdded, PlayerRemoving, SCPAdded, SCPR
 	scpAdded(scp: BaseSCPInstance) {
 		const id = this.getNewID();
 		scp.SetAttribute("entityId", id);
-		if (!scp.FindFirstChildWhichIsA("Humanoid")) return;
+		if (!scp.FindFirstChildWhichIsA("Humanoid")) {
+			return;
+		}
 		const model = scp as BaseHumanoidSCP;
 		this.idMap.set(id, { player: false, model });
 	}

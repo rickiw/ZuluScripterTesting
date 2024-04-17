@@ -64,8 +64,12 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 		);
 
 		for (const tool of food) {
-			if (!tool.IsA("Tool")) continue;
-			if (!this.availableRecipes.includes(tool.Name)) continue;
+			if (!tool.IsA("Tool")) {
+				continue;
+			}
+			if (!this.availableRecipes.includes(tool.Name)) {
+				continue;
+			}
 			this.foodTools[tool.Name] = tool as ToolWithHandle;
 		}
 
@@ -76,13 +80,17 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 
 	cookInteract(player: Player) {
 		const distance = player.Character?.PrimaryPart?.Position.sub(this.instance.Oven.Stove.Position).Magnitude;
-		if (distance && distance > 10) return;
+		if (distance && distance > 10) {
+			return;
+		}
 		Events.ToggleCookMenu(player);
 	}
 
 	cookFood(player: Player, food: string) {
 		const distance = player.Character?.PrimaryPart?.Position.sub(this.instance.Oven.Stove.Position).Magnitude;
-		if (distance && distance > 10) return;
+		if (distance && distance > 10) {
+			return;
+		}
 		if (!this.foodTools[food]) {
 			Log.Warn("Player tried to cook food that doesn't exist", player.Name, food);
 			return;

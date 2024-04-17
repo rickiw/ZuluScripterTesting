@@ -14,7 +14,9 @@ export namespace AnimationUtil {
 	};
 
 	export const makeAnimationTrack = (animatorOrHumanoid: Animator | Humanoid, anim: Animation): AnimationTrack => {
-		if (animatorOrHumanoid.IsA("Animator")) return animatorOrHumanoid.LoadAnimation(anim);
+		if (animatorOrHumanoid.IsA("Animator")) {
+			return animatorOrHumanoid.LoadAnimation(anim);
+		}
 		return animatorOrHumanoid.LoadAnimation(anim);
 	};
 
@@ -53,8 +55,9 @@ export namespace AnimationUtil {
 		const animDictionary: AnimationDict<Animation> = convertDictionaryToAnimation(dict);
 		const trackDictionary: AnimationDict<AnimationTrack> = {};
 
-		for (const key of ObjectUtils.keys(animDictionary))
+		for (const key of ObjectUtils.keys(animDictionary)) {
 			trackDictionary[key] = makeAnimationTrack(animatorOrHumanoid, animDictionary[key]);
+		}
 
 		return trackDictionary;
 	};

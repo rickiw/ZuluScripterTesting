@@ -52,7 +52,9 @@ function gaussianElimination(input: number[][]) {
 function buildMatrixFromFactors(factors: number[][]) {
 	return factors.map((f) => {
 		const row = [];
-		for (let i = factors.size() - 1; i >= 0; i--) row.push(math.pow(f[0], i));
+		for (let i = factors.size() - 1; i >= 0; i--) {
+			row.push(math.pow(f[0], i));
+		}
 		row.push(f[1]);
 		return row;
 	});
@@ -79,10 +81,12 @@ export const getCaliberData = (caliberDescriptor: string) => {
 	// the "x" in the descriptor splits the diameter and the length
 	const diameterAndLength = First.split("x");
 
-	if (!tonumber(diameterAndLength[0]))
+	if (!tonumber(diameterAndLength[0])) {
 		error(debug.traceback("Invalid projectile configuration: the diameter of the bullet is not a number"));
-	if (!tonumber(diameterAndLength[1]))
+	}
+	if (!tonumber(diameterAndLength[1])) {
 		error(debug.traceback("Invalid projectile configuration: the length of the bullet is not a number"));
+	}
 
 	return {
 		diameter: tonumber(diameterAndLength[0]) as number,

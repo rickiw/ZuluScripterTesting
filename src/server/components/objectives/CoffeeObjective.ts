@@ -78,7 +78,9 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 
 	vendingInteract(player: Player) {
 		const alreadyHolding = this.holdingCoffee.has(player.UserId);
-		if (alreadyHolding) return;
+		if (alreadyHolding) {
+			return;
+		}
 
 		const profile = serverStore.getState(selectPlayerSave(player.UserId));
 		if (!profile) {
@@ -87,7 +89,9 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 		}
 
 		const objectiveCompletion = profile.objectiveCompletion.find((objective) => this.objectiveId === objective.id);
-		if (objectiveCompletion && objectiveCompletion.completion.completed) return;
+		if (objectiveCompletion && objectiveCompletion.completion.completed) {
+			return;
+		}
 
 		this.holdingCoffee.add(player.UserId);
 		giveTool(player, this.instance.VendingMachine.Coffee);
@@ -95,10 +99,14 @@ export class CoffeeObjective<A extends CoffeeObjectiveAttributes, I extends Coff
 
 	workerInteract(player: Player) {
 		const holdingCoffee = this.holdingCoffee.has(player.UserId);
-		if (!holdingCoffee) return;
+		if (!holdingCoffee) {
+			return;
+		}
 
 		const completed = this.hasCompletedObjective(player, this.objectiveId);
-		if (completed) return;
+		if (completed) {
+			return;
+		}
 
 		removeTool(player, "Coffee");
 		this.holdingCoffee.delete(player.UserId);
