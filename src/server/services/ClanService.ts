@@ -7,7 +7,6 @@ import { serverStore } from "server/store";
 import { selectClan, selectClans } from "server/store/clan";
 import { selectPlayerSave } from "server/store/saves";
 import { Clan, ClanRank, GroupID } from "shared/constants/clans";
-import { ClanCreationStatus, ClanDepositStatus, ClanJoinStatus, ClanWithdrawStatus } from "shared/network";
 import { PlayerProfile } from "shared/utils";
 import { PlayerDataLoaded } from "./DataService";
 

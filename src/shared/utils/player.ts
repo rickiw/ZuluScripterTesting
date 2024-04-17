@@ -1,5 +1,6 @@
 import Log from "@rbxts/log";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Players } from "@rbxts/services";
 import { GroupID } from "shared/constants/clans";
 import { FirearmDataSave } from "shared/constants/weapons";
 import { ObjectiveSave } from "shared/store/objectives";
@@ -39,4 +40,28 @@ export function giveTool(player: Player, tool: ToolWithHandle, equip: boolean = 
 		const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 		character.Humanoid.EquipTool(toolClone);
 	}
+}
+
+export function onPlayerAdded(callback: (player: Player) => void): () => void {
+	const connection = Players.PlayerAdded.Connect(callback);
+
+	for (const player of Players.GetPlayers()) {
+		callback(player);
+	}
+
+	return () => {
+		connection.Disconnect();
+	};
+}
+
+export function onCharacterAdded(player: Player, callback: (rig: Model) => void): () => void {
+	if (player.Character) {
+		callback(player.Character);
+	}
+
+	const connection = player.CharacterAdded.Connect(callback);
+
+	return () => {
+		connection.Disconnect();
+	};
 }

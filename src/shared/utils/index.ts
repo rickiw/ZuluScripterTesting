@@ -2,6 +2,7 @@ export * from "./animation";
 export * from "./array";
 export * from "./cframe";
 export * from "./character";
+export * from "./flamework";
 export * from "./instance";
 export * from "./math";
 export * from "./misc";

@@ -43,12 +43,6 @@ export interface ServerToClientEvents {
 	AreaEntered(title: string, description: string): void;
 }
 
-export type BaseResponseStatus = "Success" | "Error";
-export type ClanJoinStatus = BaseResponseStatus | "AlreadyInClan" | "NotInGroup";
-export type ClanCreationStatus = BaseResponseStatus | "AlreadyExists" | "AlreadyInClan" | "NotAllowed";
-export type ClanDepositStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance";
-export type ClanWithdrawStatus = BaseResponseStatus | "NotInClan" | "InsufficientBalance" | "NotAllowed";
-
 interface ClientToServerFunctions {
 	CreateClan(groupId: GroupID): ClanCreationStatus;
 	JoinClan(groupId: GroupID): ClanJoinStatus;
