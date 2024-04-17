@@ -3,6 +3,7 @@ import Roact from "@rbxts/roact";
 import { RunService } from "@rbxts/services";
 import { selectCustomizationIsOpen, selectIsCustomizingWeapon } from "client/store/customization";
 import { CharacterCustomization } from "../components/customization/character/character-customization";
+import { CustomizationActionButton } from "../components/customization/customization-action-button";
 import { WeaponCustomization } from "../components/customization/weapon/weapon-customization";
 
 const DEBUG = !RunService.IsRunning();
@@ -18,8 +19,9 @@ export function CustomizationProvider() {
 					{isCustomizingWeapon ? (
 						<WeaponCustomization key={"weapon-customization-layer"} />
 					) : (
-						<CharacterCustomization key={"customization-layer"} />
+						<CharacterCustomization key={"character-customization-layer"} />
 					)}
+					<CustomizationActionButton />
 				</>
 			)}
 		</>

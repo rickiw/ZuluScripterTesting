@@ -205,12 +205,14 @@ export class CustomizationController implements OnStart, OnRender {
 			camera.CFrame = this.openedCFrame!;
 			clientStore.setCameraLock(false);
 			this.character.Humanoid.WalkSpeed = 1;
+			this.maid.DoCleaning();
 			Workspace.CustomizationBox.Weapons.ClearAllChildren();
 		} else {
 			this.character.Humanoid.UnequipTools();
 			this.character.Humanoid.WalkSpeed = 0;
 			clientStore.setCameraLock(true);
 			this.setCameraPosition();
+
 			this.maid.GiveTask(
 				clientStore.subscribe(selectSelectedWeapon, (newWeapon) => {
 					clientStore.resetPreview();

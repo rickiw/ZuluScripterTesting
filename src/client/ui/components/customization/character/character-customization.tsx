@@ -5,8 +5,8 @@ import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
-import { CustomizationPageProvider } from "../../../providers/customization-page-provider";
-import { CustomizationButtonRow } from "../customization-button-row";
+import { CharacterCustomizationPageProvider } from "../../../providers/character-customization-page-provider.tsx";
+import { CharacterCustomizationRow } from "./character-customization-row";
 
 export function CharacterCustomization() {
 	const rem = useRem();
@@ -37,9 +37,9 @@ export function CharacterCustomization() {
 					image={images.ui.misc.divider}
 				/>
 
-				<CustomizationButtonRow />
+				<CharacterCustomizationRow />
 
-				<CustomizationPageProvider />
+				<CharacterCustomizationPageProvider />
 
 				<Image
 					size={UDim2.fromOffset(rem(45), rem(0.25))}

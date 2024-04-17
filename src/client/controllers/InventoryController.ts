@@ -37,7 +37,7 @@ export class InventoryController extends HandlesInput implements OnStart {
 			.GetChildren()
 			.filter((item) => item.IsA("Tool"))
 			.forEach((item) => {
-				clientStore.addInventoryItem(item as Tool);
+				clientStore.addInventoryItem({ tool: item as Tool, meta: {} });
 				const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
 				if (baseFirearmComponent) {
 					// clientStore.addInventoryItem(baseFirearmComponent);
@@ -46,25 +46,31 @@ export class InventoryController extends HandlesInput implements OnStart {
 				}
 			});
 
-		backpack.ChildAdded.Connect((item) => {
-			if (!item.IsA("Tool")) {
-				return;
-			}
-			const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
-			clientStore.addInventoryItem(item);
-			if (baseFirearmComponent) {
-				// clientStore.addInventoryItem(baseFirearmComponent);
-			}
-		});
-		backpack.ChildRemoved.Connect((item) => {
-			if (!item.IsA("Tool")) {
-				return;
-			}
-			const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
-			clientStore.removeInventoryItem(item);
-			if (baseFirearmComponent) {
-				// clientStore.removeInventoryItem(baseFirearmComponent);
-			}
-		});
+		// backpack.ChildAdded.Connect((item) => {
+		// 	if (!item.IsA("Tool")) {
+		// 		return;
+		// 	}
+		// 	const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
+		// 	if (!baseFirearmComponent) {
+		// 		clientStore.addInventoryItem({ tool: item, meta: {} });
+		// 		// clientStore.addInventoryItem(baseFirearmComponent);
+		// 	}
+		// });
+		// backpack.ChildRemoved.Connect((item) => {
+		// 	if (!item.IsA("Tool")) {
+		// 		return;
+		// 	}
+		// 	const baseFirearmComponent = components.getComponent<BaseFirearm<any, any>>(item);
+		// 	const inventoryItems = clientStore.getState(selectInventoryItems);
+		// 	const inventoryItem = inventoryItems.find((inventoryItem) => inventoryItem.tool === item);
+		// 	if (!inventoryItem) {
+		// 		Log.Warn("No inventory item found for tool, cannot automatically remove");
+		// 		return;
+		// 	}
+		// 	clientStore.removeInventoryItem(inventoryItem);
+		// 	if (baseFirearmComponent) {
+		// 		// clientStore.removeInventoryItem(baseFirearmComponent);
+		// 	}
+		// });
 	}
 }

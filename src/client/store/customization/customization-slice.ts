@@ -5,41 +5,40 @@ export interface CustomizationState {
 	isOpen: boolean;
 	isCustomizingWeapon: boolean;
 	selectedWeapon: WeaponBase | undefined;
-	selectedModification: BasePart | undefined;
+	selectedModificationMount: BasePart | undefined;
 	modificationPreviews: IModification[];
-	unsavedModifications: IModification[];
-	selectedPage: "character" | "teams" | "uniform" | "other";
+	characterSelectedPage: "character" | "teams" | "uniform" | "other";
+	weaponSelectedPage: "primary" | "secondary" | "melee" | "attachments";
 }
 
 const initialState: CustomizationState = {
 	isOpen: false,
-	isCustomizingWeapon: false,
+	isCustomizingWeapon: true,
 	selectedWeapon: undefined,
-	selectedModification: undefined,
+	selectedModificationMount: undefined,
 	modificationPreviews: [],
-	unsavedModifications: [],
-	selectedPage: "teams",
+	characterSelectedPage: "teams",
+	weaponSelectedPage: "primary",
 };
 
 export const customizationSlice = createProducer(initialState, {
 	setCustomizationOpen: (state, isOpen: boolean) => ({ ...state, isOpen }),
 	setCustomizingWeapon: (state, isCustomizingWeapon: boolean) => ({ ...state, isCustomizingWeapon }),
-	setSelectedWeapon: (state, selectedWeapon: WeaponBase | undefined) => ({ ...state, selectedWeapon }),
-	setCustomizationSelectedPage: (state, selectedPage: "character" | "teams" | "uniform" | "other") => ({
+	setSelectedWeapon: (state, selectedWeapon: WeaponBase | undefined) => ({
 		...state,
-		selectedPage,
+		selectedWeapon,
 	}),
-	addUnsavedModification: (state, modification: IModification) => ({
+	setCharacterCustomizationPage: (state, characterSelectedPage: CustomizationState["characterSelectedPage"]) => ({
 		...state,
-		unsavedModifications: [...state.unsavedModifications, modification],
+		characterSelectedPage,
 	}),
-	removeUnsavedModification: (state, modification: IModification) => ({
+	setWeaponCustomizationPage: (state, weaponSelectedPage: CustomizationState["weaponSelectedPage"]) => ({
 		...state,
-		unsavedModifications: state.unsavedModifications.filter((unsaved) => unsaved.name !== modification.name),
+		weaponSelectedPage,
 	}),
-	setSelectedModification: (state, selectedModification: BasePart | undefined) => ({
+	setSelectedModificationMount: (state, selectedModificationMount: BasePart | undefined) => ({
 		...state,
-		selectedModification,
+		selectedModificationMount,
 	}),
 	addModificationPreview: (state, modification: IModification) => ({
 		...state,
@@ -58,19 +57,9 @@ export const customizationSlice = createProducer(initialState, {
 				: [...state.modificationPreviews, modification],
 		};
 	},
-	clearUnsavedModifications: (state) => ({
-		...state,
-		unsavedModifications: [],
-	}),
-	clearModificationPreviews: (state) => ({
-		...state,
-		modificationPreviews: [],
-	}),
-
 	resetPreview: (state) => ({
 		...state,
-		selectedModification: undefined,
+		selectedModificationMount: undefined,
 		modificationPreviews: [],
-		unsavedModifications: [],
 	}),
 });

@@ -4,7 +4,7 @@ import Roact from "@rbxts/roact";
 import { useRem } from "client/ui/hooks";
 import { ScrollingFrame } from "client/ui/library/frame";
 import { selectTeams } from "shared/store/teams";
-import { TeamSelector } from "../../team-selector";
+import { TeamSelector } from "../team-selector";
 
 export function CustomizeTeamsPage() {
 	const rem = useRem();

@@ -11,7 +11,7 @@ export interface ClientToServerEvents {
 
 	// BaseFirearm
 	ReloadFirearm(weapon: Tool): void;
-	EquipFirearm(weapon: Tool): void;
+
 	UnequipFirearm(weapon: Tool): void;
 	CookFood(food: string): void;
 	Help(): void;
@@ -28,6 +28,7 @@ export interface ServerToClientEvents {
 	SetActiveObjective(objective: Objective | undefined): void;
 	ToggleCollision(instance: Instance, toggled: boolean): void;
 	ToggleCookMenu(): void;
+	SetWeaponInfo(weaponName: string, ammo: number, reserve: number, override?: boolean): void;
 
 	// RoombaTouchpad
 	RoombaActive(chr: BaseCharacter): void;
@@ -57,6 +58,7 @@ interface ClientToServerFunctions {
 	IngestFood(food: Tool): boolean;
 	FireFirearm(weapon: Tool, mousePosition: Vector3): boolean;
 	BeginObjective(objectiveId: ObjectiveID): false | Objective;
+	EquipFirearm(weapon: Tool): Tool | undefined;
 	JoinTeam(team: TeamAbbreviation): boolean;
 }
 

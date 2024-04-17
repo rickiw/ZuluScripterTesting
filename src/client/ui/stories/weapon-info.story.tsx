@@ -3,13 +3,14 @@ import Roact from "@rbxts/roact";
 import { ObjectStory } from "@rbxts/ui-labs";
 import { Crosshair } from "client/ui/components/weapon/crosshair";
 import { RootProvider } from "client/ui/providers/root-provider";
+import { WeaponInfo } from "../components/weapon/weapon-info";
 
 const Story: ObjectStory = {
-	summary: "Weapon HUD",
+	summary: "Weapon Info HUD",
 	story: (props) => {
 		return (
 			<RootProvider>
-				{/* <WeaponProvider /> */}
+				<WeaponInfo />
 				<Crosshair />
 			</RootProvider>
 		);

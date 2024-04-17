@@ -1,7 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect, useState } from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { selectSelectedCustomizationPage } from "client/store/customization";
+import { CustomizationState, selectCharacterCustomizationPage } from "client/store/customization";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
@@ -13,19 +13,19 @@ import { springs } from "shared/constants/springs";
 
 interface ButtonRowButtonProps {
 	title: string;
-	page: "character" | "teams" | "uniform" | "other";
+	page: CustomizationState["characterSelectedPage"];
 	icon: keyof typeof images.ui.icons;
 	selectedIcon?: keyof typeof images.ui.icons;
 }
 
-export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowButtonProps) {
+export function CharacterButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowButtonProps) {
 	const rem = useRem();
 
 	const [hovered, setHovered] = useState(false);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
 
-	const selectedPage = useSelector(selectSelectedCustomizationPage);
+	const selectedPage = useSelector(selectCharacterCustomizationPage);
 
 	useEffect(() => {
 		backgroundTransparencyMotion.spring(hovered ? 0.75 : 1, springs.gentle);
@@ -41,7 +41,7 @@ export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowBu
 					MouseEnter: () => setHovered(true),
 					MouseLeave: () => setHovered(false),
 					MouseButton1Click: () => {
-						clientStore.setCustomizationSelectedPage(page);
+						clientStore.setCharacterCustomizationPage(page);
 					},
 				}}
 			>
@@ -101,6 +101,7 @@ export function ButtonRowButton({ title, page, icon, selectedIcon }: ButtonRowBu
 					anchorPoint={new Vector2(0.5, 0.5)}
 					size={UDim2.fromOffset(rem(2.5), rem(2.5))}
 					position={UDim2.fromScale(0.5, 0.5)}
+					scaleType="Fit"
 					image={
 						!selectedIcon
 							? images.ui.icons[icon]

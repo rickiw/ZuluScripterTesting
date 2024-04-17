@@ -21,6 +21,7 @@ export const images: {
 			readonly knifeselected: string;
 			readonly attachments: string;
 			readonly attachmentsselected: string;
+			readonly arrowright: string;
 		};
 		readonly glyphs: {
 			readonly AD: string;

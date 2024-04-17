@@ -133,14 +133,19 @@ hash = "eb24f3726f91f1f6827902df3c6f83bffa2bae84792297347c6c3e500a246db7"
 id = 17153338314
 packable = false
 
+[inputs."assets/images/ui/icons/arrowright.png"]
+hash = "dfdc6e8dcc7a9f876891e04dcdf84777ecb6f8da6cc6eb0a5e8f2c00eb9a414e"
+id = 17175586944
+packable = false
+
 [inputs."assets/images/ui/icons/attachments.png"]
 hash = "9bb352d3fbb9086c1d2e5353965d88eb6baccb28f3bf87ec1c7d651ccee24ebf"
 id = 17151019782
 packable = false
 
-[inputs."assets/images/ui/icons/attachmentselected.png"]
+[inputs."assets/images/ui/icons/attachmentsselected.png"]
 hash = "10d145f91bc158bbb251828c6c66b064418c280516be6f7140611b28bdd6692e"
-id = 17151019981
+id = 17175669380
 packable = false
 
 [inputs."assets/images/ui/icons/customize.png"]

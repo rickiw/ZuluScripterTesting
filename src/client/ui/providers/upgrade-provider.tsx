@@ -1,26 +1,27 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { selectModifications } from "client/store/interaction";
+import { selectModificationMounts } from "client/store/interaction";
 import { UpgradeIndicator } from "../components/menu/upgrade-indicator";
 
 export function UpgradeProvider() {
-	const modifications = useSelector(selectModifications);
+	const modificationMounts = useSelector(selectModificationMounts);
 
 	return (
 		<>
-			{modifications.map((modification) => (
+			{modificationMounts.map((modificationMount) => (
 				<billboardgui
-					key={modification.Name}
-					Adornee={modification.Attachment}
+					key={modificationMount.Name}
+					Adornee={modificationMount.Attachment}
 					Size={UDim2.fromScale(0.4, 0.4)}
 					AlwaysOnTop
 					Active
 				>
 					<UpgradeIndicator
-						modification={modification}
+						modification={modificationMount}
 						clicked={() => {
-							clientStore.setSelectedModification(modification);
+							clientStore.setSelectedModificationMount(modificationMount);
+							clientStore.setWeaponCustomizationPage("attachments");
 						}}
 					/>
 				</billboardgui>

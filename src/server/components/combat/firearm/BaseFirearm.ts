@@ -13,6 +13,7 @@ import { FirearmService } from "server/services/FirearmService";
 import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
+import { selectPlayerSave } from "server/store/saves";
 import { BULLET_PROVIDER } from "shared/constants/firearm";
 import {
 	FirearmAnimations,
@@ -89,6 +90,29 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		Events.UnequipFirearm.connect((player, weapon) => {
 			if (weapon === this.tool) {
+				const state = serverStore.getState();
+				const data = selectPlayerSave(player.UserId)(state);
+				if (!data) {
+					Log.Warn(
+						"Player {@Player} doesn't have save data | FirearmService->PlayerDataRemoving",
+						player.Name,
+					);
+					return;
+				}
+				const weaponData = data.weaponData;
+
+				for (const key of Object.keys(weaponData)) {
+					if (key === this.tool.Name) {
+						const newWeaponData = this.firearmService.getUpdatedWeaponData(weaponData, key, {
+							ammo: this.state.reserve,
+							magazine: this.state.magazine.holding,
+							equipped: true,
+						});
+
+						serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
+					}
+				}
+
 				this.instance.Destroy();
 			}
 		});
@@ -227,6 +251,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	equip() {
 		serverStore.setWeapon(this.wielder.UserId, this.state);
 		this.equipped = true;
+		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve, true);
 	}
 
 	unequip() {
@@ -244,6 +269,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	updateState(update: Partial<FirearmState>) {
 		this.state = { ...this.state, ...update };
 		serverStore.setWeapon(this.wielder.UserId, this.state);
+		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
 	}
 
 	updateMagazineHolding(holding: number) {
@@ -333,6 +359,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.soundManager.play("Fire", { volume: 0.6 });
 		this.loadedAnimations.Fire.Play();
 		this.state.magazine.take();
+		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
 	}
 
 	reload() {
@@ -359,6 +386,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.updateState({ reserve: this.state.reserve - bulletsToFill, reloading: false });
 		this.updateMagazineHolding(this.state.magazine.holding + bulletsToFill);
+		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
 	}
 
 	cycleFireModes() {

@@ -32,8 +32,9 @@ return {
 				SDselected = "rbxassetid://17153338314",
 			},
 			icons = {
+				arrowright = "rbxassetid://17175586944",
 				attachments = "rbxassetid://17151019782",
-				attachmentselected = "rbxassetid://17151019981",
+				attachmentsselected = "rbxassetid://17175669380",
 				customize = "rbxassetid://17151101784",
 				down = "rbxassetid://17150932825",
 				downselected = "rbxassetid://17153427979",

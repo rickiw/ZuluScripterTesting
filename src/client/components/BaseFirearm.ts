@@ -6,6 +6,7 @@ import { Players, RunService, UserInputService, Workspace } from "@rbxts/service
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
 import { selectCameraBias, selectCameraOffset } from "client/store/camera";
+import { selectEquippedWeaponInfo } from "client/store/inventory";
 import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
@@ -43,7 +44,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	loaded = false;
 	equipped = false;
-	connections: Indexable<"activated" | "equipped" | "unequipped" | "loop", RBXScriptConnection> = {} as any;
+	connections: Indexable<"activated" | "updateInfo" | "equipped" | "unequipped" | "loop", RBXScriptConnection> =
+		{} as any;
 
 	recoil = new CameraShaker(Enum.RenderPriority.Camera.Value, (shakeCFrame) => clientStore.setRecoil(shakeCFrame));
 
@@ -64,6 +66,20 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				return;
 			}
 			this.fire();
+		});
+
+		this.connections.updateInfo = Events.SetWeaponInfo.connect((weaponName, ammo, reserve, override) => {
+			if (
+				this.instance.Name !== weaponName ||
+				(!override && clientStore.getState(selectEquippedWeaponInfo) === undefined)
+			) {
+				return;
+			}
+			clientStore.setEquippedWeaponInfo({
+				weaponName,
+				ammo,
+				reserve,
+			});
 		});
 
 		this.connections.equipped = this.instance.Equipped.Connect(() => {
@@ -260,6 +276,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setExtraCameraOffset(Vector3.zero);
 		clientStore.setFovOffset(0);
 		clientStore.setWalkspeedMultiplier(1);
+		clientStore.setEquippedWeaponInfo(undefined);
 		this.recoil.Stop();
 
 		this.equipped = false;

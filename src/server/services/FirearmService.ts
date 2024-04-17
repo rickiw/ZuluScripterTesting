@@ -6,7 +6,7 @@ import { CharacterRigR15 } from "@rbxts/promise-character";
 import { CollectionService, ReplicatedStorage } from "@rbxts/services";
 import { BaseFirearm } from "server/components/combat/firearm/BaseFirearm";
 import { defaultWeaponData } from "server/data";
-import { Events } from "server/network";
+import { Events, Functions } from "server/network";
 import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
 import { PlayerID } from "shared/constants/clans";
@@ -30,8 +30,8 @@ export class FirearmService implements OnStart, CharacterRemoving {
 			this.updateAttachments(player, weapon, modifications);
 		});
 
-		Events.EquipFirearm.connect((player, weapon) => {
-			this.equipFirearm(player, weapon);
+		Functions.EquipFirearm.setCallback((player, weapon) => {
+			return this.equipFirearm(player, weapon);
 		});
 	}
 
@@ -63,6 +63,7 @@ export class FirearmService implements OnStart, CharacterRemoving {
 		});
 		firearmClass.updateMagazineHolding(weaponData[weapon.Name as WEAPON].magazine);
 		firearmClass.updateToolAttachmentsByName(weaponClone, modifications);
+		return weaponClone;
 	}
 
 	serializeModifications(modifications: IModification[]) {

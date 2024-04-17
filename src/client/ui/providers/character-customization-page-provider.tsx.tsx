@@ -1,16 +1,16 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
-import { selectSelectedCustomizationPage } from "client/store/customization";
+import { selectCharacterCustomizationPage } from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { CustomizeCharacterPage } from "../components/customization/character/pages/character";
 import { CustomizeTeamsPage } from "../components/customization/character/pages/teams";
 import { CustomizeUniformPage } from "../components/customization/character/pages/uniform";
 
-export function CustomizationPageProvider() {
+export function CharacterCustomizationPageProvider() {
 	const rem = useRem();
 
-	const selectedPage = useSelector(selectSelectedCustomizationPage);
+	const selectedPage = useSelector(selectCharacterCustomizationPage);
 
 	return (
 		<>

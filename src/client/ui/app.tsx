@@ -2,6 +2,7 @@ import Roact from "@rbxts/roact";
 import { Stamina } from "./components/vitals/stamina";
 import { Vitals } from "./components/vitals/vitals";
 import { Crosshair } from "./components/weapon/crosshair";
+import { WeaponInfo } from "./components/weapon/weapon-info";
 import { Layer } from "./library/layer";
 import { AerialProvider } from "./providers/aerial-provider";
 import { CookingProvider } from "./providers/cooking-provider";
@@ -31,6 +32,7 @@ export function App() {
 				<Vitals key="vitals" />
 				<Stamina key="stamina" />
 				<Crosshair key="crosshair" />
+				<WeaponInfo />
 				<KillEffectProvider />
 			</Layer>
 
