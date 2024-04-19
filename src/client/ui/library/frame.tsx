@@ -19,6 +19,8 @@ export interface FrameProps<T extends Instance = Frame | ViewportFrame | Scrolli
 	zIndex?: number | Roact.Binding<number>;
 	layoutOrder?: number | Roact.Binding<number>;
 	cornerRadius?: UDim | Roact.Binding<UDim>;
+	automaticSize?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
+	borderMode?: "Outline" | "Middle" | "Inset" | Roact.Binding<Enum.BorderMode>;
 }
 
 export interface ViewportFrameProps<T extends Instance = ViewportFrame> extends FrameProps<T> {
@@ -29,7 +31,7 @@ export interface ScrollingFrameProps<T extends Instance = ScrollingFrame> extend
 	canvasSize?: UDim2 | Roact.Binding<UDim2>;
 	automaticSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	scrollBarImageTransparency?: number | Roact.Binding<number>;
-
+	borderMode?: "Outline" | "Middle" | "Inset" | Roact.Binding<Enum.BorderMode>;
 	scrollBarTop?: string | Roact.Binding<string>;
 	scrollBarMid?: string | Roact.Binding<string>;
 	scrollBarBottom?: string | Roact.Binding<string>;
@@ -42,6 +44,7 @@ export const Frame = forwardRef((props: FrameProps, ref: Ref<Frame>) => {
 			Size={props.size}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}
+			AutomaticSize={props.automaticSize}
 			Rotation={props.rotation}
 			BackgroundColor3={props.backgroundColor}
 			BackgroundTransparency={props.backgroundTransparency}
@@ -53,6 +56,7 @@ export const Frame = forwardRef((props: FrameProps, ref: Ref<Frame>) => {
 			BorderSizePixel={props.borderSize || 0}
 			Event={props.event || {}}
 			Change={props.change || {}}
+			BorderMode={props.borderMode}
 		>
 			{props.cornerRadius && <uicorner key="corner" CornerRadius={props.cornerRadius} />}
 			{props.children}
@@ -109,6 +113,7 @@ export const ScrollingFrame = forwardRef((props: ScrollingFrameProps, ref: Ref<S
 			AutomaticCanvasSize={props.automaticSizing}
 			Event={props.event || {}}
 			Change={props.change || {}}
+			BorderMode={props.borderMode}
 		>
 			{props.cornerRadius && <uicorner key="corner" CornerRadius={props.cornerRadius} />}
 			{props.children}
