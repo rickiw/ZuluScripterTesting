@@ -14,7 +14,7 @@ interface CookAndServeObjectiveAttributes extends ObjectiveAttributes {}
 interface CookAndServeObjectiveInstance extends ObjectiveInstance {
 	Food: Folder;
 	Oven: Model & {
-		Stove: Part & {
+		Stove: MeshPart & {
 			ProximityAttachment: Attachment;
 			ProximityPrompt: ProximityPrompt;
 		};
@@ -32,6 +32,7 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 	availableRecipes: string[] = [];
 	foodTools: Record<string, ToolWithHandle> = {};
 	maid = new Maid();
+	maxDistance = 20;
 
 	constructor(
 		protected objectiveService: ObjectiveService,
@@ -80,7 +81,7 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 
 	cookInteract(player: Player) {
 		const distance = player.Character?.PrimaryPart?.Position.sub(this.instance.Oven.Stove.Position).Magnitude;
-		if (distance && distance > 10) {
+		if (distance && distance > this.maxDistance) {
 			return;
 		}
 		Events.ToggleCookMenu(player);
@@ -88,7 +89,7 @@ export class CookAndServeObjective<A extends CookAndServeObjectiveAttributes, I 
 
 	cookFood(player: Player, food: string) {
 		const distance = player.Character?.PrimaryPart?.Position.sub(this.instance.Oven.Stove.Position).Magnitude;
-		if (distance && distance > 10) {
+		if (distance && distance > this.maxDistance) {
 			return;
 		}
 		if (!this.foodTools[food]) {
