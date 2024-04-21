@@ -23,7 +23,7 @@ const initialState: CameraState = {
 	shiftLocked: false,
 	zoomDistance: 8,
 	lockedCenter: false,
-	bias: { left: true, right: false },
+	bias: { left: false, right: true },
 	flags: {},
 	dontUpdate: false,
 };

@@ -160,8 +160,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	loadAnimations() {
-		if (!this.character) {
-			return;
+		while (!this.character || !this.character.IsDescendantOf(Workspace)) {
+			wait();
 		}
 		this.character.WaitForChild("Humanoid");
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(

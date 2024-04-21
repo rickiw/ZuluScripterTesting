@@ -252,7 +252,7 @@ export class CameraController implements OnStart, OnRender {
 		this.matchCharacterCamera(recoil, finalCameraTarget);
 		this.matchCharacterRotation();
 
-		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, 0, math.rad(160));
+		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, math.rad(40), math.rad(160));
 		this.theta += this.gamepadState.X * SENSITIVITY() * math.pi;
 	}
 

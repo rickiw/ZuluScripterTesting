@@ -1,8 +1,7 @@
 import { Modding, OnStart, Service } from "@flamework/core";
-import Log from "@rbxts/log";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
-import { ListenerData, onPlayerAdded, setupLifecycle } from "shared/utils";
+import { ListenerData } from "shared/utils";
 
 export interface PlayerRemoving {
 	playerRemoving(player: Player): void;
@@ -63,13 +62,13 @@ export class PlayerService implements OnStart {
 	}
 
 	onStart() {
-		setupLifecycle<PlayerAdded>(this.playerAddedEvents);
+		// setupLifecycle<PlayerAdded>(this.playerAddedEvents);
 
-		onPlayerAdded((player) => {
-			this.onPlayerJoin(player).catch((err) => {
-				Log.Error("Failed to load player {@Player}: {@Error}", player.Name, err);
-			});
-		});
+		// onPlayerAdded((player) => {
+		// 	this.onPlayerJoin(player).catch((err) => {
+		// 		Log.Error("Failed to load player {@Player}: {@Error}", player.Name, err);
+		// 	});
+		// });
 
 		const { playerAddedListeners, characterAddedListeners, playerRemovingListeners, characterRemovingListeners } =
 			this;
