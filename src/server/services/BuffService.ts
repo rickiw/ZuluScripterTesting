@@ -58,6 +58,7 @@ export class BuffService implements OnStart, PlayerDataLoaded {
 				return true;
 			}
 
+			Events.StaminaBoostChanged.fire([player], 1.05);
 			food.SetAttribute("durability", durability - 1);
 			food.SetAttribute("cooldown", true);
 			task.delay(cooldownTime, () => {

@@ -39,12 +39,6 @@ export class BaseFoodItems<A extends FoodItemAttributes, I extends FoodItemInsta
 			if (!this.enabled) {
 				return;
 			}
-
-			this.instance.GripForward = new Vector3(0.675, -0.675, -0.3);
-			this.instance.GripPos = new Vector3(0.4, -0.59, 1.1);
-			this.instance.GripRight = new Vector3(0.212, -0.212, 0.954);
-			this.instance.GripUp = new Vector3(0.707, 0.707, 0);
-
 			if (this.attributes.activateSound) {
 				this.instance.ActivateSound!.Play();
 			}
@@ -64,11 +58,6 @@ export class BaseFoodItems<A extends FoodItemAttributes, I extends FoodItemInsta
 				case "health":
 					break;
 			}
-
-			this.instance.GripForward = new Vector3(0.976, 0, -0.217);
-			this.instance.GripPos = new Vector3(0, -0.4, 0);
-			this.instance.GripRight = new Vector3(0.217, 0, -0.976);
-			this.instance.GripUp = new Vector3(0, 1, 0);
 		});
 	}
 }
