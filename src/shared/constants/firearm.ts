@@ -3,7 +3,7 @@ import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { LimbType } from "shared/utils";
 
 export const BULLET_TEMPLATE = ReplicatedStorage.Assets.Bullet;
-export const BULLET_PROVIDER = new PartCacheModule(BULLET_TEMPLATE, 1);
+export const BULLET_PROVIDER = new PartCacheModule(BULLET_TEMPLATE, 4);
 BULLET_PROVIDER.SetCacheParent(Workspace.Bullets);
 
 export const DAMAGE_BALANCE_FACTORS = [

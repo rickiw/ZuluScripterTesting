@@ -257,6 +257,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setShiftLocked(false);
 		clientStore.setFovOffset(0);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
+		clientStore.setWeaponEquipped(true);
 		this.recoil.Start();
 
 		this.equipped = true;
@@ -277,6 +278,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setFovOffset(0);
 		clientStore.setWalkspeedMultiplier(1);
 		clientStore.setEquippedWeaponInfo(undefined);
+		clientStore.setWeaponEquipped(false);
 		this.recoil.Stop();
 
 		this.equipped = false;

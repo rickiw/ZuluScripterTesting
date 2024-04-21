@@ -28,7 +28,13 @@ import {
 import { FirearmState } from "shared/constants/weapons/state";
 import { AnimationUtil, Indexable, getCharacterFromHit, getLimbProjectileDamage, isLimb } from "shared/utils";
 
-export interface FirearmInstance extends Tool {}
+export interface FirearmInstance extends Tool {
+	Muzzle: BasePart & {
+		MuzzleFlash: ParticleEmitter;
+		MuzzleLight: PointLight;
+		Smoke: ParticleEmitter;
+	};
+}
 
 export interface FirearmAttributes {}
 
@@ -349,6 +355,14 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.getVelocity(),
 			this.behavior,
 		);
+
+		task.spawn(() => {
+			this.instance.Muzzle.MuzzleFlash.Emit(10);
+			this.instance.Muzzle.Smoke.Emit(1);
+			this.instance.Muzzle.MuzzleLight.Enabled = true;
+			wait();
+			this.instance.Muzzle.MuzzleLight.Enabled = false;
+		});
 
 		this.state.cooldown = true;
 		serverStore.setWeapon(this.wielder.UserId, this.state);
