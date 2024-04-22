@@ -22,6 +22,7 @@ export const images: {
 			readonly attachments: string;
 			readonly attachmentsselected: string;
 			readonly arrowright: string;
+			readonly os_icons: string;
 		};
 		readonly glyphs: {
 			readonly AD: string;

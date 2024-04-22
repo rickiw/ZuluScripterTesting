@@ -2,23 +2,32 @@ import Roact, { useEffect, useState } from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame, FrameProps } from "client/ui/library/frame";
+import { Group } from "client/ui/library/group";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
+import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 
 interface SCPTabProps {
-	title: string;
 	page: string;
-	icon: keyof typeof images.ui.icons;
-	selectedIcon?: keyof typeof images.ui.icons;
+	index: number;
+	icon: string;
+	rectOffset?: Vector2;
+	rectSize?: Vector2;
+	onClick?: () => void;
 	selectedPage?: string;
 }
 
-export const SCPTab = ({ title, page, icon, selectedIcon, selectedPage }: SCPTabProps) => {
-	const rem = useRem();
+interface SCPTabsProps extends FrameProps {
+	selectedPage?: string;
+	selectedIndex?: number;
+}
 
+export const SCPTab = ({ page, onClick, rectOffset, rectSize, icon, selectedPage }: SCPTabProps) => {
+	const rem = useRem();
+	const active = selectedPage === page;
 	const [hovered, setHovered] = useState(false);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
@@ -29,110 +38,111 @@ export const SCPTab = ({ title, page, icon, selectedIcon, selectedPage }: SCPTab
 	}, [hovered]);
 
 	return (
-		<>
-			<Button
-				backgroundColor={Color3.fromRGB(143, 149, 111)}
-				backgroundTransparency={selectedPage === page ? 0.75 : backgroundTransparency}
-				event={{
-					MouseEnter: () => setHovered(true),
-					MouseLeave: () => setHovered(false),
-					MouseButton1Click: () => {
-						// add on click
-					},
-				}}
+		<Button
+			backgroundColor={Color3.fromRGB(143, 149, 111)}
+			backgroundTransparency={active ? 0.75 : backgroundTransparency}
+			event={{
+				MouseEnter: () => setHovered(true),
+				MouseLeave: () => setHovered(false),
+				MouseButton1Click: () => {
+					onClick?.();
+				},
+			}}
+		>
+			<Frame
+				backgroundTransparency={active ? 0 : effectTransparency}
+				backgroundColor={palette.overlay2}
+				size={UDim2.fromScale(1, 1)}
+				position={UDim2.fromScale(0, 0)}
+			/>
+			<Frame
+				backgroundTransparency={active ? 0 : effectTransparency}
+				anchorPoint={new Vector2(0.5, 0.5)}
+				position={UDim2.fromScale(0.5, 0.5)}
+				backgroundColor={palette.overlay0}
+				size={UDim2.fromScale(1, 1)}
 			>
-				<Frame
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 1)}
-					position={UDim2.fromScale(0, 0)}
-				/>
-				<Frame
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-					backgroundColor={Color3.fromRGB(143, 149, 111)}
-					size={UDim2.fromScale(0.1, 1)}
-					position={UDim2.fromScale(0.9, 0)}
-				/>
-				{selectedPage === page && (
-					<>
-						<Image
-							anchorPoint={new Vector2(0.5, 0.5)}
-							size={UDim2.fromOffset(rem(1.5), rem(1.5))}
-							scaleType="Fit"
-							position={UDim2.fromScale(0.5, 0.95)}
-							image={images.ui.icons.toparrow}
-						/>
-						<Frame
-							size={new UDim2(1.15, 0, 0, rem(2))}
-							position={UDim2.fromScale(0, 1)}
-							backgroundColor={Color3.fromRGB(61, 65, 42)}
-							backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-						>
-							<Text
-								size={UDim2.fromScale(0.75, 1)}
-								text={title.split(" ")[0]}
-								textSize={rem(1.15)}
-								textXAlignment="Center"
-								textColor={Color3.fromRGB(106, 109, 81)}
-								font={fonts.inter.bold}
-								textTransparency={selectedPage === page ? 0 : effectTransparency}
-							/>
-							<Text
-								size={UDim2.fromScale(0.2, 1)}
-								position={UDim2.fromScale(0.75, 0)}
-								text={title.split(" ")[1] ?? "N/A"}
-								textXAlignment="Right"
-								textSize={rem(1.15)}
-								textColor={Color3.fromRGB(106, 109, 81)}
-								borderSize={0}
-								zIndex={3}
-								font={fonts.inter.bold}
-								textTransparency={selectedPage === page ? 0 : effectTransparency}
-							/>
-						</Frame>
-					</>
-				)}
-
-				<Image
-					anchorPoint={new Vector2(0.5, 0.5)}
-					size={UDim2.fromOffset(rem(2.5), rem(2.5))}
-					position={UDim2.fromScale(0.5, 0.5)}
-					scaleType="Fit"
-					image={
-						!selectedIcon
-							? images.ui.icons[icon]
-							: selectedPage === page || hovered
-								? images.ui.icons[selectedIcon]
-								: images.ui.icons[icon]
-					}
-				/>
-			</Button>
-		</>
+				<uiaspectratioconstraint AspectRatio={1.2} />
+			</Frame>
+			<Image
+				anchorPoint={new Vector2(0.5, 0.5)}
+				size={UDim2.fromOffset(rem(2.5), rem(2.5))}
+				position={UDim2.fromScale(0.5, 0.5)}
+				backgroundTransparency={1}
+				imageRectOffset={rectOffset}
+				imageRectSize={rectSize}
+				imageColor={active ? palette.overlay2 : palette.subtext0}
+				scaleType="Fit"
+				image={icon}
+			/>
+		</Button>
 	);
 };
 
-export const SCPTabs = (props: FrameProps) => {
+export const SCPTabs = (props: SCPTabsProps) => {
 	const rem = useRem();
+	const tabSize = UDim2.fromOffset(rem(6), rem(4));
 	return (
-		<>
-			<Frame
-				position={UDim2.fromOffset(rem(0), rem(10.25))}
-				size={UDim2.fromOffset(rem(45), rem(4.75))}
-				backgroundTransparency={1}
-				zIndex={2}
-			>
-				<uigridlayout
-					CellPadding={UDim2.fromOffset(rem(1), rem(1))}
-					CellSize={UDim2.fromOffset(rem(6), rem(5))}
-				/>
+		<Group size={UDim2.fromOffset(rem(45), rem(7))} position={props.position}>
+			<Frame size={UDim2.fromOffset(rem(45), rem(4.5))} backgroundTransparency={1} zIndex={2}>
+				<uigridlayout CellPadding={UDim2.fromOffset(0, rem(0))} CellSize={tabSize} />
 				{props.children}
 			</Frame>
-			<Frame
-				zIndex={1}
-				backgroundColor={Color3.fromRGB(33, 38, 41)}
-				size={UDim2.fromOffset(rem(45), rem(2))}
-				position={UDim2.fromOffset(rem(0), rem(15.25))}
+			<Image
+				size={new UDim2(1, 0, 0, rem(0.2))}
+				position={UDim2.fromOffset(rem(0), rem(4.25))}
+				anchorPoint={new Vector2(0, 0.5)}
+				imageTransparency={props.backgroundTransparency ?? 0}
+				image={images.ui.misc.divider}
 			/>
-		</>
+			{props.selectedIndex !== undefined ? (
+				<Image
+					anchorPoint={new Vector2(0.5, 1)}
+					size={UDim2.fromOffset(rem(1), rem(1))}
+					scaleType="Fit"
+					zIndex={3}
+					position={UDim2.fromOffset(
+						tabSize.Width.Offset * props.selectedIndex - tabSize.Width.Offset / 2,
+						rem(4.25),
+					)}
+					image={images.ui.icons.toparrow}
+				/>
+			) : (
+				<></>
+			)}
+
+			{props.selectedPage ? (
+				<Frame
+					size={new UDim2(0, rem(10), 0, rem(1.5))}
+					position={UDim2.fromOffset(0, rem(4.4))}
+					backgroundColor={Color3.fromRGB(61, 65, 42)}
+					backgroundTransparency={props.backgroundTransparency}
+				>
+					<Text
+						size={UDim2.fromScale(0.75, 1)}
+						text={props.selectedPage.upper()}
+						textSize={rem(1.25)}
+						textXAlignment="Center"
+						textColor={palette.overlay1}
+						font={fonts.robotoMono.regular}
+						textTransparency={props.backgroundTransparency}
+					/>
+					<Text
+						size={UDim2.fromScale(0.2, 1)}
+						position={UDim2.fromScale(0.75, 0)}
+						text={string.format("%02d", props.selectedIndex ?? 0)}
+						textXAlignment="Right"
+						textSize={rem(1.25)}
+						textColor={palette.overlay1}
+						borderSize={0}
+						zIndex={3}
+						font={fonts.robotoMono.regular}
+						textTransparency={props.backgroundTransparency}
+					/>
+				</Frame>
+			) : (
+				<></>
+			)}
+		</Group>
 	);
 };

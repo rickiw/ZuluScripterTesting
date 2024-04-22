@@ -17,6 +17,7 @@ export const SCPTable = (props: SelectionTableProps) => {
 	return (
 		<Group
 			size={props.size}
+			autoSize={Enum.AutomaticSize.Y}
 			position={props.position}
 			anchorPoint={props.anchorPoint}
 			rotation={props.rotation}

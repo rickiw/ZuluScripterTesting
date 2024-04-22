@@ -148,6 +148,11 @@ hash = "10d145f91bc158bbb251828c6c66b064418c280516be6f7140611b28bdd6692e"
 id = 17175669380
 packable = false
 
+[inputs."assets/images/ui/icons/audio.png"]
+hash = "a44bfafff67207fff1bd6618fb695eb4014c488b8740d549e7af6af8244772f0"
+id = 17254582936
+packable = false
+
 [inputs."assets/images/ui/icons/customize.png"]
 hash = "d032a7f0f571db8236ba2f7d55d7e3fc170d94cb70ab8c7f189ceb26dec03ece"
 id = 17151101784
@@ -188,6 +193,11 @@ hash = "a4a3a672e3f1680f37308451d99bf7b66c258a9c8c61d8b325db40ff07fcf526"
 id = 17151020582
 packable = false
 
+[inputs."assets/images/ui/icons/home.png"]
+hash = "2908199de4458099532ec089e621cf943a38f7c7316fc358a15ee2415c6be9a2"
+id = 17254583151
+packable = false
+
 [inputs."assets/images/ui/icons/knife.png"]
 hash = "bb430374b6a4955306fc156c82b6a9a792f6abc2ba0de1a66fb56ea07d11610f"
 id = 17151020744
@@ -198,6 +208,11 @@ hash = "df3ce5936d506afbc581c88c17c46e32fb35f126f174a1262d805a50977075ea"
 id = 17151020876
 packable = false
 
+[inputs."assets/images/ui/icons/os_icons.png"]
+hash = "58381dfd2100d9af9363e1726979dab9857a838f0cd4c36b2585e5043b1550b3"
+id = 17254583284
+packable = false
+
 [inputs."assets/images/ui/icons/pencil.png"]
 hash = "a5f89d79f93bbff4e5b93dee7f3cead4366c8aa34e518975ef6357a4dfd8f0b3"
 id = 17151058577
@@ -206,6 +221,16 @@ packable = false
 [inputs."assets/images/ui/icons/pencilselected.png"]
 hash = "ac1c79699aca245daab72c38ecebb432eeb9d45b9b2f09ae811cf5f957902b4f"
 id = 17151058737
+packable = false
+
+[inputs."assets/images/ui/icons/power.png"]
+hash = "aa081104a20a2be3c60fdbdf662cf154569e03b1ad669f76586641bc3c1e0600"
+id = 17254583437
+packable = false
+
+[inputs."assets/images/ui/icons/research.png"]
+hash = "d5881fdaf2e37efb1aef0b3c83c9dd1bc3a5391acd1c77637d61dd025b7462f6"
+id = 17254583568
 packable = false
 
 [inputs."assets/images/ui/icons/rifle.png"]

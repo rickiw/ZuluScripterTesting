@@ -1,24 +1,24 @@
 import * as ReactRoblox from "@rbxts/react-roblox";
 import Roact from "@rbxts/roact";
 import { WithControls } from "@rbxts/ui-labs";
-import { SCPTab, SCPTabs } from "./scp-tabs";
+import { RootProvider } from "client/ui/providers/root-provider";
+import { SCPToggle } from "./scp-toggle";
 
 const controls = {
-	isOpen: true,
+	toggled: true,
 };
 
 const Story: WithControls<typeof controls> = {
 	summary: "SCP Table UI",
 	story: (props) => {
 		return (
-			<>
-				<SCPTabs>
-					<SCPTab page="PRIMARY" index={1} icon="rifle" />
-					<SCPTab page="SECONDARY" index={2} icon="handgun" />
-					<SCPTab page="MELEE" index={3} icon="knife" />
-					<SCPTab page="MODS" index={4} icon="attachments" />
-				</SCPTabs>
-			</>
+			<RootProvider>
+				<SCPToggle
+					active={props.controls.toggled}
+					size={new UDim2(0, 40, 0, 40)}
+					position={new UDim2(0, 0, 0, 0)}
+				/>
+			</RootProvider>
 		);
 	},
 	react: Roact,

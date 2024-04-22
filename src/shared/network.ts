@@ -1,5 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { Clan, GroupID } from "./constants/clans";
+import { FacilityAlarmCode, FacilityAnnouncement } from "./constants/os";
 import { IModification } from "./constants/weapons";
 import { Objective, ObjectiveID } from "./store/objectives";
 import { TeamAbbreviation } from "./store/teams";
@@ -53,6 +54,26 @@ interface ClientToServerFunctions {
 	BeginObjective(objectiveId: ObjectiveID): false | Objective;
 	EquipFirearm(weapon: Tool): Tool | undefined;
 	JoinTeam(team: TeamAbbreviation): boolean;
+
+	// OS
+	// FILE SYSTEM
+	CreateDocument(filename: string): boolean;
+	DeleteDocument(filename: string): boolean;
+	EditDocument(filename: string, contents: string): boolean;
+	// FACILITY
+	TogglePower(): boolean;
+	ToggleHume(): boolean;
+	ToggleSeismic(): boolean;
+	// AUDIO
+	SetAlarm(alarm: FacilityAlarmCode): boolean;
+	ClearAlarm(): boolean;
+	SetAnnouncement(announcement: FacilityAnnouncement): boolean;
+	ClearAnnouncement(): boolean;
+	// SECTOR
+	SetSectorStatus(sector: string, status: string): boolean;
+	// POWER
+	SetTeslaGateStatus(gate: string, active: boolean): boolean;
+	SetDoorStatus(door: string, active: boolean): boolean;
 }
 
 interface ServerToClientFunctions {}

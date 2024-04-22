@@ -11,6 +11,7 @@ import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
 import { perkSlice } from "./perks";
 import { shopSlice } from "./shop";
+import { terminalSlice } from "./terminal";
 import { vitalsSlice } from "./vitals";
 
 type Store = typeof clientStore;
@@ -33,6 +34,7 @@ function createStore() {
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
 		cooking: cookingSlice,
+		terminal: terminalSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

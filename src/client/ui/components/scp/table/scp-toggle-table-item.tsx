@@ -1,17 +1,23 @@
-import Roact from "@rbxts/roact";
+import Roact, { useEffect, useState } from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button, ButtonProps } from "client/ui/library/button/button";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
+import { SCPToggle } from "../toggle";
 
-interface SCPTextTableItemProps extends ButtonProps {
-	subText?: string;
+interface SCPToggleTableItemProps extends ButtonProps {
+	active: boolean;
 }
 
-export const SCPTextTableItem = (props: SCPTextTableItemProps) => {
+export const SCPToggleTableItem = (props: SCPToggleTableItemProps) => {
 	const rem = useRem();
+	const [hovered, setHovered] = useState(false);
 	const [hover, hoverMotion] = useMotion(0);
+
+	useEffect(() => {
+		hoverMotion.spring(hovered ? 1 : 0);
+	}, [hovered]);
 
 	return (
 		<Button
@@ -25,8 +31,8 @@ export const SCPTextTableItem = (props: SCPTextTableItemProps) => {
 				return palette.surface1.Lerp(palette.surface2, value);
 			})}
 			onClick={props.onClick}
-			onMouseEnter={() => hoverMotion.spring(1)}
-			onMouseLeave={() => hoverMotion.spring(0)}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
 			borderSize={1}
 		>
 			<Text
@@ -42,24 +48,13 @@ export const SCPTextTableItem = (props: SCPTextTableItemProps) => {
 				textXAlignment="Left"
 				textYAlignment="Center"
 			/>
-			{props.subText ? (
-				<Text
-					zIndex={2}
-					size={new UDim2(0, rem(8), 0, rem(1.5))}
-					position={new UDim2(1, -rem(0.5), 0, rem(0.25))}
-					textColor={props.textColor ?? palette.subtext0}
-					textAutoResize="X"
-					backgroundTransparency={1}
-					anchorPoint={new Vector2(1, 0)}
-					textSize={rem(1.5)}
-					font={fonts.inter.bold}
-					text={props.subText}
-					textXAlignment="Right"
-					textYAlignment="Center"
-				/>
-			) : (
-				<></>
-			)}
+			<SCPToggle
+				active={props.active}
+				hovered={hovered}
+				size={new UDim2(0, rem(1.25), 0, rem(1.25))}
+				anchorPoint={new Vector2(1, 0.5)}
+				position={new UDim2(1, -rem(1), 0.5, 0)}
+			/>
 		</Button>
 	);
 };
