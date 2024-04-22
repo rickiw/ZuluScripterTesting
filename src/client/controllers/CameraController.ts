@@ -16,6 +16,7 @@ import {
 	selectCameraZoomDistance,
 } from "client/store/camera";
 import { selectWeaponEquipped } from "client/store/character";
+import { selectMenuOpen } from "client/store/menu";
 import { springs } from "shared/constants/springs";
 
 const SENSITIVITY = () => UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
@@ -217,6 +218,7 @@ export class CameraController implements OnStart, OnRender {
 	updateCamera() {
 		const state = clientStore.getState();
 		const weaponEquipped = clientStore.getState(selectWeaponEquipped);
+		const inMenu = clientStore.getState(selectMenuOpen);
 
 		const rootPart = character.HumanoidRootPart;
 		if (selectCameraLock(state)) {

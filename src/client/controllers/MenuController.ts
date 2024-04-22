@@ -125,6 +125,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			Character.Humanoid.UnequipTools();
 			this.openedCFrame = camera.CFrame;
 			clientStore.setCameraLock(true);
+			camera.CameraType = Enum.CameraType.Scriptable;
 			Character.Humanoid.WalkSpeed = 0;
 			this.setCamera();
 			this.setMenuPanel();
@@ -136,6 +137,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 			this.currentTween.Play();
 			this.setCharacterVisible(true);
 			this.currentTween.Completed.Connect(() => {
+				camera.CameraType = Enum.CameraType.Custom;
 				clientStore.setCameraLock(false);
 				Character.Humanoid.WalkSpeed = 1;
 			});

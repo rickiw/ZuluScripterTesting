@@ -57,6 +57,7 @@ return {
 			misc = {
 				divider = "rbxassetid://17151021776",
 				foundationlogo = "rbxassetid://17153143297",
+				objectivemarker = "rbxassetid://17249239160",
 				vignette = "rbxassetid://17159843312",
 			},
 		},

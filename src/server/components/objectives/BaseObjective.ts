@@ -82,9 +82,6 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	): [complete: boolean, exists: boolean, started: boolean] {
 		const hasCompleted = this.hasCompletedObjective(player, this.objectiveId);
 		const exists = this.doingObjective.has(player.UserId);
-		if (!hasCompleted && !exists) {
-			Events.ToggleBeacon.fire(player, this.objective.objectiveClass, true);
-		}
 		let started = false;
 		if (!overrideIfCompleted) {
 			started = true;
@@ -94,7 +91,7 @@ export class BaseObjective<A extends ObjectiveAttributes, I extends ObjectiveIns
 	}
 
 	stopObjective(player: Player) {
-		Events.ToggleBeacon.fire(player, this.objective.objectiveClass, false);
+		Events.SetActiveObjective.fire(player, undefined);
 		this.doingObjective.delete(player.UserId);
 	}
 

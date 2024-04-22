@@ -14,7 +14,6 @@ import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
-import { BULLET_PROVIDER } from "shared/constants/firearm";
 import {
 	FirearmAnimations,
 	FirearmLike,
@@ -200,7 +199,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.behavior = FastCast.newBehavior();
 		this.behavior.RaycastParams = params;
-		this.behavior.CosmeticBulletProvider = BULLET_PROVIDER;
 		this.behavior.Acceleration = new Vector3(0, -Workspace.Gravity, 0);
 
 		this.connections.lConn = this.caster.LengthChanged.Connect(
@@ -214,10 +212,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.connections.rayHit = this.caster.RayHit.Connect((caster, result, segmentVelocity) => {
 			Log.Verbose("Hit something");
 			this.onHit(result, segmentVelocity);
-		});
-
-		this.connections.castTerminate = this.caster.CastTerminating.Connect((cast) => {
-			BULLET_PROVIDER.ReturnPart(cast.RayInfo.CosmeticBulletObject as BasePart);
 		});
 	}
 

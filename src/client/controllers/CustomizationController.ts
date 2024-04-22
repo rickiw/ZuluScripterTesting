@@ -203,8 +203,8 @@ export class CustomizationController implements OnStart, OnRender {
 
 		if (open) {
 			camera.CFrame = this.openedCFrame!;
-			clientStore.setCameraLock(false);
 			camera.CameraType = Enum.CameraType.Custom;
+			clientStore.setCameraLock(false);
 			this.character.Humanoid.WalkSpeed = 1;
 			this.maid.DoCleaning();
 			Workspace.CustomizationBox.Weapons.ClearAllChildren();

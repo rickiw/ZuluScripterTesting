@@ -57,6 +57,7 @@ export const images: {
 			readonly foundationlogo: string;
 			readonly divider: string;
 			readonly vignette: string;
+			readonly objectivemarker: string;
 		};
 	};
 };
