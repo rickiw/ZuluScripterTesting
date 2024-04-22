@@ -203,6 +203,7 @@ export class CustomizationController implements OnStart, OnRender {
 
 		if (open) {
 			camera.CFrame = this.openedCFrame!;
+			camera.CameraType = Enum.CameraType.Custom;
 			clientStore.setCameraLock(false);
 			this.character.Humanoid.WalkSpeed = 1;
 			this.maid.DoCleaning();
@@ -211,6 +212,7 @@ export class CustomizationController implements OnStart, OnRender {
 			this.character.Humanoid.UnequipTools();
 			this.character.Humanoid.WalkSpeed = 0;
 			clientStore.setCameraLock(true);
+			camera.CameraType = Enum.CameraType.Scriptable;
 			this.setCameraPosition();
 
 			this.maid.GiveTask(

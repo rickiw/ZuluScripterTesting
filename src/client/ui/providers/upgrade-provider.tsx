@@ -9,23 +9,25 @@ export function UpgradeProvider() {
 
 	return (
 		<>
-			{modificationMounts.map((modificationMount) => (
-				<billboardgui
-					key={modificationMount.Name}
-					Adornee={modificationMount.Attachment}
-					Size={UDim2.fromScale(0.4, 0.4)}
-					AlwaysOnTop
-					Active
-				>
-					<UpgradeIndicator
-						modification={modificationMount}
-						clicked={() => {
-							clientStore.setSelectedModificationMount(modificationMount);
-							clientStore.setWeaponCustomizationPage("attachments");
-						}}
-					/>
-				</billboardgui>
-			))}
+			{modificationMounts
+				.filter((mount) => mount.FindFirstChild("Attachment") !== undefined)
+				.map((modificationMount) => (
+					<billboardgui
+						key={modificationMount.Name}
+						Adornee={modificationMount.Attachment}
+						Size={UDim2.fromScale(0.4, 0.4)}
+						AlwaysOnTop
+						Active
+					>
+						<UpgradeIndicator
+							modification={modificationMount}
+							clicked={() => {
+								clientStore.setSelectedModificationMount(modificationMount);
+								clientStore.setWeaponCustomizationPage("attachments");
+							}}
+						/>
+					</billboardgui>
+				))}
 		</>
 	);
 }

@@ -14,7 +14,6 @@ import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
-import { BULLET_PROVIDER } from "shared/constants/firearm";
 import {
 	FirearmAnimations,
 	FirearmLike,
@@ -28,7 +27,13 @@ import {
 import { FirearmState } from "shared/constants/weapons/state";
 import { AnimationUtil, Indexable, getCharacterFromHit, getLimbProjectileDamage, isLimb } from "shared/utils";
 
-export interface FirearmInstance extends Tool {}
+export interface FirearmInstance extends Tool {
+	Muzzle: BasePart & {
+		MuzzleFlash: ParticleEmitter;
+		MuzzleLight: PointLight;
+		Smoke: ParticleEmitter;
+	};
+}
 
 export interface FirearmAttributes {}
 
@@ -160,8 +165,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	loadAnimations() {
-		if (!this.character) {
-			return;
+		while (!this.character || !this.character.IsDescendantOf(Workspace)) {
+			wait();
 		}
 		this.character.WaitForChild("Humanoid");
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
@@ -194,7 +199,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.behavior = FastCast.newBehavior();
 		this.behavior.RaycastParams = params;
-		this.behavior.CosmeticBulletProvider = BULLET_PROVIDER;
 		this.behavior.Acceleration = new Vector3(0, -Workspace.Gravity, 0);
 
 		this.connections.lConn = this.caster.LengthChanged.Connect(
@@ -208,10 +212,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.connections.rayHit = this.caster.RayHit.Connect((caster, result, segmentVelocity) => {
 			Log.Verbose("Hit something");
 			this.onHit(result, segmentVelocity);
-		});
-
-		this.connections.castTerminate = this.caster.CastTerminating.Connect((cast) => {
-			BULLET_PROVIDER.ReturnPart(cast.RayInfo.CosmeticBulletObject as BasePart);
 		});
 	}
 
@@ -349,6 +349,14 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.getVelocity(),
 			this.behavior,
 		);
+
+		task.spawn(() => {
+			this.instance.Muzzle.MuzzleFlash.Emit(10);
+			this.instance.Muzzle.Smoke.Emit(1);
+			this.instance.Muzzle.MuzzleLight.Enabled = true;
+			wait();
+			this.instance.Muzzle.MuzzleLight.Enabled = false;
+		});
 
 		this.state.cooldown = true;
 		serverStore.setWeapon(this.wielder.UserId, this.state);

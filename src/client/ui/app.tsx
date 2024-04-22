@@ -10,6 +10,7 @@ import { CustomizationProvider } from "./providers/customization-provider";
 import { InteractionProvider } from "./providers/interaction-provider";
 import { KillEffectProvider } from "./providers/kill-effect-provider";
 import { MenuProvider } from "./providers/menu-provider";
+import { ObjectiveProvider } from "./providers/objective-provider";
 import { UpgradeProvider } from "./providers/upgrade-provider";
 
 export function App() {
@@ -18,6 +19,7 @@ export function App() {
 			<Layer key="interaction-layer">
 				<InteractionProvider key="interaction-provider" />
 				<UpgradeProvider key="upgrade-provider" />
+				<ObjectiveProvider key="objective-provider" />
 			</Layer>
 
 			<Layer key="menu-layer">
