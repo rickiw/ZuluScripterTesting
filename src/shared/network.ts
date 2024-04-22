@@ -19,6 +19,8 @@ export interface ClientToServerEvents {
 
 	// Objectives
 	StopObjective(objectiveId: ObjectiveID): void;
+
+	ItemAction(opts: { name: string; target?: Player; [key: string]: unknown }): void;
 }
 
 export interface ServerToClientEvents {
