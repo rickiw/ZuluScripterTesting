@@ -1,24 +1,19 @@
 import { useBindingState } from "@rbxts/pretty-react-hooks";
 import Roact from "@rbxts/roact";
 import { useRem } from "client/ui/hooks";
+import { Frame, FrameProps } from "client/ui/library/frame";
+import { Group } from "client/ui/library/group";
+import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
-import { ButtonProps } from "../../../library/button/button";
-import { Frame, FrameProps } from "../../../library/frame";
-import { Group } from "../../../library/group";
-import { Text } from "../../../library/text";
 
 interface SelectionTableProps extends FrameProps {
-	items: string[];
 	header: string;
-	ItemComponent: (props: ButtonProps) => Roact.Element;
-	onItemClicked?: (item: string) => void;
 }
 
 export const SCPTable = (props: SelectionTableProps) => {
 	const rem = useRem();
 	const backgroundTransparency = useBindingState(props.backgroundTransparency ?? 0);
-	const { items, ItemComponent } = props;
 	return (
 		<Group
 			size={props.size}
@@ -57,14 +52,7 @@ export const SCPTable = (props: SelectionTableProps) => {
 					font={fonts.inter.extra}
 				/>
 			</Frame>
-			{items.map((item, key) => (
-				<ItemComponent
-					text={item}
-					key={`item${key}`}
-					onClick={() => props.onItemClicked?.(item)}
-					backgroundTransparency={backgroundTransparency}
-				/>
-			))}
+			{props.children}
 		</Group>
 	);
 };

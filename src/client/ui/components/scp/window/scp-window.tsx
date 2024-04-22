@@ -3,11 +3,13 @@ import { useRem } from "client/ui/hooks";
 import { palette } from "shared/constants/palette";
 import { Frame } from "../../../library/frame";
 import { Vignette } from "../../vignette";
+import { SCPCloseButton } from "../closeButton";
 
 interface SCPWindowProps extends Roact.PropsWithChildren {
 	isOpen: boolean;
 	backgroundTransparency?: Roact.Binding<number> | number;
 	size: Roact.Binding<UDim2> | UDim2;
+	onClose?: () => void;
 }
 
 export const SCPWindow = (props: SCPWindowProps) => {
@@ -28,6 +30,7 @@ export const SCPWindow = (props: SCPWindowProps) => {
 					borderSize={1}
 				>
 					{props.children}
+					<SCPCloseButton onClick={() => props.onClose?.()} backgroundTransparency={backgroundTransparency} />
 				</Frame>
 			)}
 		</>

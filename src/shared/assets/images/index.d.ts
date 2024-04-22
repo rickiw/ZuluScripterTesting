@@ -58,6 +58,7 @@ export const images: {
 			readonly divider: string;
 			readonly vignette: string;
 			readonly objectivemarker: string;
+			readonly close: string;
 		};
 	};
 };
