@@ -1,3 +1,3 @@
-export * from "./scpClock";
-export * from "./scpTable";
-export * from "./scpWindow";
+export * from "./clock";
+export * from "./table";
+export * from "./window";

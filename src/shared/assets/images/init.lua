@@ -55,6 +55,7 @@ return {
 				vest = "rbxassetid://17151059143",
 			},
 			misc = {
+				close = "rbxassetid://17251632751",
 				divider = "rbxassetid://17151021776",
 				foundationlogo = "rbxassetid://17153143297",
 				objectivemarker = "rbxassetid://17249239160",
