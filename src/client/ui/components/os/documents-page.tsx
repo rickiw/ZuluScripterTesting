@@ -9,7 +9,7 @@ import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { selectDocument, selectDocuments, selectGuidelines, selectIsAuthor } from "shared/store/os";
-import { SCPTable, SCPTextTableItem } from "../scp";
+import { SCPCommandScreen, SCPScrollingFrame, SCPTable, SCPTextTableItem } from "../scp";
 
 const ActiveDocument = () => {
 	const rem = useRem();
@@ -18,11 +18,15 @@ const ActiveDocument = () => {
 	const activeDocument = useSelector(selectDocument(currentDocument));
 	const isAuthor = useSelector(selectIsAuthor(currentDocument, playerName));
 	if (activeDocument === undefined) {
-		return <></>;
+		return <SCPCommandScreen text={"ACCESS FILE SYSTEM"} />;
 	}
 	return (
 		<>
-			<Group size={new UDim2(1, 0, 1, -rem(2))}>
+			<Group
+				size={new UDim2(1, -rem(2), 1, -rem(2))}
+				anchorPoint={new Vector2(0.5, 0.5)}
+				position={new UDim2(0.5, 0, 0.5, 0)}
+			>
 				<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(1))} />
 				<Text
 					layoutOrder={1}
@@ -36,14 +40,21 @@ const ActiveDocument = () => {
 					textYAlignment="Center"
 					font={fonts.inter.extra}
 				/>
-				<Text
-					textAutoResize="Y"
-					layoutOrder={2}
-					textWrapped={true}
-					text={activeDocument.contents}
-					size={new UDim2(1, 0, 1, rem(10))}
-					textColor={palette.white}
-				/>
+				<SCPScrollingFrame size={new UDim2(1, 0, 1, -rem(4))} backgroundTransparency={1}>
+					<Text
+						textAutoResize="Y"
+						textXAlignment="Left"
+						textYAlignment="Top"
+						layoutOrder={2}
+						textSize={rem(1.5)}
+						textWrapped={true}
+						richText={true}
+						text={activeDocument.contents}
+						font={fonts.robotoMono.regular}
+						size={new UDim2(1, 0, 0, rem(10))}
+						textColor={palette.white}
+					/>
+				</SCPScrollingFrame>
 			</Group>
 			<Frame
 				size={new UDim2(1, 0, 0, rem(2))}
@@ -63,7 +74,7 @@ const Guidelines = () => {
 	const rem = useRem();
 	const guidelines = useSelector(selectGuidelines);
 	return (
-		<SCPTable layoutOrder={2} size={new UDim2(1, 0, 0, rem(10))} header="SECTOR STATUS">
+		<SCPTable layoutOrder={2} size={new UDim2(1, 0, 0, rem(2))} header="TESTING GUIDELINES">
 			{guidelines.map(({ filename, author }) => (
 				<SCPTextTableItem
 					text={filename.upper()}
@@ -81,7 +92,7 @@ const Documents = () => {
 	const rem = useRem();
 	const documents = useSelector(selectDocuments);
 	return (
-		<SCPTable layoutOrder={2} size={new UDim2(1, 0, 0, rem(10))} header="SECTOR STATUS">
+		<SCPTable layoutOrder={2} size={new UDim2(1, 0, 0, rem(2))} header="TESTING DOCUMENTS">
 			{documents.map(({ filename, author }) => (
 				<SCPTextTableItem
 					text={filename.upper()}
@@ -110,11 +121,11 @@ export const DocumentsPage = ({
 	return (
 		<>
 			<Group size={UDim2.fromOffset(rem(36), rem(30))} position={UDim2.fromOffset(rem(1), rem(11))}>
-				<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(1))} />
 				<Text
 					layoutOrder={1}
 					text={"LOGGED DOCUMENTS"}
 					size={UDim2.fromOffset(rem(30), rem(1.5))}
+					position={UDim2.fromOffset(rem(2), rem(2))}
 					textColor={palette.subtext1}
 					textSize={rem(1.5)}
 					textTransparency={backgroundTransparency}
@@ -124,8 +135,15 @@ export const DocumentsPage = ({
 					textYAlignment="Center"
 					font={fonts.inter.extra}
 				/>
-				<Guidelines />
-				<Documents />
+				<SCPScrollingFrame
+					size={new UDim2(1, -rem(2), 1, -rem(5))}
+					position={new UDim2(0, rem(2), 0, rem(5))}
+					backgroundTransparency={1}
+				>
+					<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(2))} />
+					<Guidelines />
+					<Documents />
+				</SCPScrollingFrame>
 			</Group>
 			<Group
 				size={UDim2.fromOffset(rem(34), rem(36))}

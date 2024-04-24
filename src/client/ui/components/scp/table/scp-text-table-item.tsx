@@ -46,7 +46,7 @@ export const SCPTextTableItem = (props: SCPTextTableItemProps) => {
 				<Text
 					zIndex={2}
 					size={new UDim2(0, rem(8), 0, rem(1.5))}
-					position={new UDim2(1, -rem(0.5), 0, rem(0.25))}
+					position={new UDim2(1, -rem(1), 0, rem(0.25))}
 					textColor={props.textColor ?? palette.subtext0}
 					textAutoResize="X"
 					backgroundTransparency={1}

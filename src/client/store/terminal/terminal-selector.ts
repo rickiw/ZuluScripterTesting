@@ -9,3 +9,4 @@ export const selectActiveSectionIndex = (state: RootState) =>
 export const selectCurrentUser = (state: RootState) => state.terminal.currentUser;
 export const selectAccessLevel = (state: RootState) => state.terminal.accessLevel;
 export const selectCurrentDocument = (state: RootState) => state.terminal.currentDocument;
+export const selectPlayerList = (state: RootState) => state.terminal.playerList;

@@ -1,5 +1,6 @@
 import { useSelector } from "@rbxts/react-reflex";
-import Roact from "@rbxts/roact";
+import Roact, { useState } from "@rbxts/roact";
+import { RunService } from "@rbxts/services";
 import { Functions } from "client/network";
 import { selectActiveSection } from "client/store/terminal";
 import { useRem } from "client/ui/hooks";
@@ -8,10 +9,10 @@ import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { selectBlastDoorStatuses, selectTeslaGateStatuses } from "shared/store/os";
-import { SCPTable } from "../scp";
+import { SCPCommandScreen, SCPScrollingFrame, SCPTable } from "../scp";
 import { SCPToggleTableItem } from "../scp/table/scp-toggle-table-item";
 
-const TeslaGates = () => {
+const TeslaGates = ({ setLastCommand }: { setLastCommand: (str: string) => void }) => {
 	const rem = useRem();
 	const teslaStatuses = useSelector(selectTeslaGateStatuses);
 
@@ -22,7 +23,10 @@ const TeslaGates = () => {
 					text={`TESLA ${gate}`.upper()}
 					active={status}
 					onClick={() => {
-						Functions.SetTeslaGateStatus(gate, !status);
+						setLastCommand(`TESLA_GATE %${gate}% ${!status ? "ACTIVE" : "INACTIVE"}`);
+						if (RunService.IsRunning()) {
+							Functions.SetTeslaGateStatus(gate, !status);
+						}
 					}}
 				/>
 			))}
@@ -30,7 +34,7 @@ const TeslaGates = () => {
 	);
 };
 
-const DoorControls = () => {
+const DoorControls = ({ setLastCommand }: { setLastCommand: (str: string) => void }) => {
 	const rem = useRem();
 	const blastDoorStatuses = useSelector(selectBlastDoorStatuses);
 
@@ -41,7 +45,10 @@ const DoorControls = () => {
 					text={`${gate} BLAST DOORS`.upper()}
 					active={status}
 					onClick={() => {
-						Functions.SetDoorStatus(gate, !status);
+						setLastCommand(`EXEC SET %${gate}% ${!status ? "OPEN" : "CLOSED"}`);
+						if (RunService.IsRunning()) {
+							Functions.SetDoorStatus(gate, !status);
+						}
 					}}
 				/>
 			))}
@@ -51,6 +58,7 @@ const DoorControls = () => {
 
 export const PowerPage = ({ backgroundTransparency }: { backgroundTransparency?: Roact.Binding<number> | number }) => {
 	const rem = useRem();
+	const [lastCommand, setLastCommand] = useState("ACCESS SUBSYSTEM POWER");
 	const activeSection = useSelector(selectActiveSection);
 
 	if (activeSection !== "power") {
@@ -60,11 +68,11 @@ export const PowerPage = ({ backgroundTransparency }: { backgroundTransparency?:
 	return (
 		<>
 			<Group size={UDim2.fromOffset(rem(36), rem(30))} position={UDim2.fromOffset(rem(1), rem(11))}>
-				<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(1))} />
 				<Text
 					layoutOrder={1}
 					text={"ELECTRIC SYSTEMS"}
 					size={UDim2.fromOffset(rem(30), rem(1.5))}
+					position={UDim2.fromOffset(rem(2), rem(2))}
 					textColor={palette.subtext1}
 					textSize={rem(1.5)}
 					textTransparency={backgroundTransparency}
@@ -74,8 +82,15 @@ export const PowerPage = ({ backgroundTransparency }: { backgroundTransparency?:
 					textYAlignment="Center"
 					font={fonts.inter.extra}
 				/>
-				<TeslaGates />
-				<DoorControls />
+				<SCPScrollingFrame
+					size={new UDim2(1, -rem(2), 1, -rem(5))}
+					position={new UDim2(0, rem(2), 0, rem(5))}
+					backgroundTransparency={1}
+				>
+					<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(2))} />
+					<TeslaGates setLastCommand={setLastCommand} />
+					<DoorControls setLastCommand={setLastCommand} />
+				</SCPScrollingFrame>
 			</Group>
 			<Group
 				size={UDim2.fromOffset(rem(34), rem(36))}
@@ -83,6 +98,7 @@ export const PowerPage = ({ backgroundTransparency }: { backgroundTransparency?:
 				anchorPoint={new Vector2(1, 0)}
 			>
 				<uistroke Color={palette.white} Transparency={backgroundTransparency} />
+				<SCPCommandScreen text={lastCommand} />
 			</Group>
 		</>
 	);

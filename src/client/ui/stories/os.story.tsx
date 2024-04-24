@@ -7,13 +7,15 @@ import { OSProvider } from "../providers/os-provider";
 
 const controls = {
 	isOpen: true,
+	accessLevel: 4,
 };
 
 const Story: WithControls<typeof controls> = {
 	summary: "OS UI",
 	story: (props) => {
-		clientStore.setupTeslaGates(["Gate A", "Gate B", "Gate C"]);
-		clientStore.setupBlastDoors(["Door A", "Door B", "Door C"]);
+		clientStore.setAccessLevel(props.controls.accessLevel);
+		clientStore.setupTeslaGates(["Gate A", "Gate B", "Gate C", "Gate D", "Gate E"]);
+		clientStore.setupBlastDoors(["Door A", "Door B", "Door C", "Door D", "Door E"]);
 		clientStore.setDocuments([
 			{
 				filename: "SCP-001",
@@ -30,6 +32,12 @@ const Story: WithControls<typeof controls> = {
 				contents: "SCP-003 is a sentient entity that is capable of manipulating reality.",
 				author: "root",
 			},
+		]);
+		clientStore.setPlayerList([
+			{ team: "MTF", members: ["Player1", "Player2", "Player3"], teamColor: new Color3(0, 0, 1) },
+			{ team: "CI", members: ["Player4", "Player5", "Player6"], teamColor: new Color3(1, 0, 0) },
+			{ team: "SCP", members: ["Player7", "Player8", "Player9"], teamColor: new Color3(1, 1, 1) },
+			{ team: "SCD", members: ["Player10", "Player11", "Player12"], teamColor: new Color3(0, 1, 0) },
 		]);
 		clientStore.setTerminalOpen(props.controls.isOpen);
 		return (

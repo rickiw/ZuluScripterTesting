@@ -7,6 +7,7 @@ export interface TerminalState {
 	currentUser: string;
 	sections: string[];
 	activeSection: string;
+	playerList: { team: string; members: string[]; teamColor: Color3 }[];
 }
 
 const initialState: TerminalState = {
@@ -16,6 +17,7 @@ const initialState: TerminalState = {
 	currentUser: "root",
 	activeSection: "home",
 	sections: ["home", "document", "audio", "power"],
+	playerList: [],
 };
 
 export const terminalSlice = createProducer(initialState, {
@@ -24,5 +26,9 @@ export const terminalSlice = createProducer(initialState, {
 	setAccessLevel: (state, accessLevel: number) => ({ ...state, accessLevel }),
 	toggleTerminalOpen: (state) => ({ ...state, isOpen: !state.isOpen }),
 	setCurrentDocument: (state, currentDocument: string) => ({ ...state, currentDocument }),
+	setPlayerList: (state, playerList: { team: string; members: string[]; teamColor: Color3 }[]) => ({
+		...state,
+		playerList,
+	}),
 	setActiveSection: (state, activeSection: string) => ({ ...state, activeSection }),
 });

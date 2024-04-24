@@ -1,5 +1,6 @@
 import { useSelector } from "@rbxts/react-reflex";
-import Roact from "@rbxts/roact";
+import Roact, { useState } from "@rbxts/roact";
+import { RunService } from "@rbxts/services";
 import { Functions } from "client/network";
 import { selectActiveSection } from "client/store/terminal";
 import { useRem } from "client/ui/hooks";
@@ -13,10 +14,10 @@ import {
 	selectAlarmCodes,
 	selectAnnouncements,
 } from "shared/store/os";
-import { SCPTable } from "../scp";
+import { SCPCommandScreen, SCPScrollingFrame, SCPTable } from "../scp";
 import { SCPToggleTableItem } from "../scp/table/scp-toggle-table-item";
 
-const AlarmCodes = () => {
+const AlarmCodes = ({ setLastCommand }: { setLastCommand: (str: string) => void }) => {
 	const rem = useRem();
 	const activeAlarm = useSelector(selectActiveAlarmCode);
 	const alarmCodes = useSelector(selectAlarmCodes);
@@ -27,7 +28,10 @@ const AlarmCodes = () => {
 					text={`CODE ${alarmCode}`.upper()}
 					active={alarmCode === activeAlarm}
 					onClick={() => {
-						Functions.SetAlarm(alarmCode);
+						setLastCommand(`SUDO SET ALARMCODE %${alarmCode}%`);
+						if (RunService.IsRunning()) {
+							Functions.SetAlarm(alarmCode);
+						}
 					}}
 				/>
 			))}
@@ -35,7 +39,7 @@ const AlarmCodes = () => {
 	);
 };
 
-const Announcements = () => {
+const Announcements = ({ setLastCommand }: { setLastCommand: (str: string) => void }) => {
 	const rem = useRem();
 	const activeAnnouncement = useSelector(selectActiveAnnouncement);
 	const announcements = useSelector(selectAnnouncements);
@@ -46,7 +50,10 @@ const Announcements = () => {
 					text={`${announcement} ANNOUNCEMENT`.upper()}
 					active={announcement === activeAnnouncement}
 					onClick={() => {
-						Functions.SetAnnouncement(announcement);
+						setLastCommand(`EXEC ANNOUNCEMENT %${announcement}%`);
+						if (RunService.IsRunning()) {
+							Functions.SetAnnouncement(announcement);
+						}
 					}}
 				/>
 			))}
@@ -56,6 +63,7 @@ const Announcements = () => {
 
 export const AudioPage = ({ backgroundTransparency }: { backgroundTransparency?: Roact.Binding<number> | number }) => {
 	const rem = useRem();
+	const [lastCommand, setLastCommand] = useState("ACCESS SUBSYSTEM AUDIO");
 	const activeSection = useSelector(selectActiveSection);
 
 	if (activeSection !== "audio") {
@@ -65,11 +73,11 @@ export const AudioPage = ({ backgroundTransparency }: { backgroundTransparency?:
 	return (
 		<>
 			<Group size={UDim2.fromOffset(rem(36), rem(30))} position={UDim2.fromOffset(rem(1), rem(11))}>
-				<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(1))} />
 				<Text
 					layoutOrder={1}
 					text={"AUDIO SYSTEMS"}
 					size={UDim2.fromOffset(rem(30), rem(1.5))}
+					position={UDim2.fromOffset(rem(2), rem(2))}
 					textColor={palette.subtext1}
 					textSize={rem(1.5)}
 					textTransparency={backgroundTransparency}
@@ -79,8 +87,15 @@ export const AudioPage = ({ backgroundTransparency }: { backgroundTransparency?:
 					textYAlignment="Center"
 					font={fonts.inter.extra}
 				/>
-				<AlarmCodes />
-				<Announcements />
+				<SCPScrollingFrame
+					size={new UDim2(1, -rem(2), 1, -rem(5))}
+					position={new UDim2(0, rem(2), 0, rem(5))}
+					backgroundTransparency={1}
+				>
+					<uilistlayout FillDirection={Enum.FillDirection.Vertical} Padding={new UDim(0, rem(2))} />
+					<AlarmCodes setLastCommand={setLastCommand} />
+					<Announcements setLastCommand={setLastCommand} />
+				</SCPScrollingFrame>
 			</Group>
 			<Group
 				size={UDim2.fromOffset(rem(34), rem(36))}
@@ -88,6 +103,7 @@ export const AudioPage = ({ backgroundTransparency }: { backgroundTransparency?:
 				anchorPoint={new Vector2(1, 0)}
 			>
 				<uistroke Color={palette.white} Transparency={backgroundTransparency} />
+				<SCPCommandScreen text={lastCommand} />
 			</Group>
 		</>
 	);
