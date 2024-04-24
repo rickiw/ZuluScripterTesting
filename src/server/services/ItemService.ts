@@ -1,8 +1,3 @@
-/**
- * @author </Nexus_Prime>
- * @description In case needed help to understand, go to https://nexusprime.vercel.app
- */
-
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart, Service } from "@flamework/core";
 import Maid from "@rbxts/maid";

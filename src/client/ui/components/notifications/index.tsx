@@ -1,69 +1,32 @@
-/**
- * @author </Nexus_Prime>
- * @description In case needed help to understand, go to https://nexusprime.vercel.app
- */
-
-import { lerpBinding } from "@rbxts/pretty-react-hooks";
+import { useMountEffect } from "@rbxts/pretty-react-hooks";
 import Roact from "@rbxts/roact";
-import { useMotion } from "client/ui/hooks";
-import { Notification, useNotification } from "client/ui/hooks/use-notification";
-import { fonts } from "shared/constants/fonts";
-import { springs } from "shared/constants/springs";
+import { Notification } from "client/store/notifications";
+import { useMotion, useRem } from "client/ui/hooks";
+import { Frame } from "client/ui/library/frame";
 
-export function Notification({ title, content }: Notification) {
-	const [opacity, opacityMotion] = useMotion(1);
-	// not workin :(
-	const [leftTransition, leftTransitionMotion] = useMotion(0);
-
-	Roact.useEffect(() => {
-		opacityMotion.spring(0, springs.gentle);
-		leftTransitionMotion.spring(1, springs.world);
-	}, []);
-
-	return (
-		<frame
-			Position={lerpBinding(leftTransition, UDim2.fromScale(5, 0), UDim2.fromScale(0, 0))}
-			Size={new UDim2(0, 150, 0, 50)}
-			BackgroundColor3={Color3.fromHex("#141414")}
-			BorderSizePixel={6}
-			BorderColor3={Color3.fromHex("#3a4a5e")}
-			BackgroundTransparency={opacity}
-		>
-			<textlabel
-				Text={title}
-				TextSize={20}
-				Position={UDim2.fromScale(0.5, 0.2)}
-				TextColor={BrickColor.White()}
-				FontFace={fonts.gothic.regular}
-			/>
-			<textlabel
-				Text={content}
-				TextSize={15}
-				Position={UDim2.fromScale(0.5, 0.6)}
-				TextColor={BrickColor.White()}
-				FontFace={fonts.gothic.regular}
-			/>
-		</frame>
-	);
+export interface NotificationProps {
+	notification: Notification;
 }
 
-/**
- * If you aren't using Roact component, use "NotificationsHandler" in client/uiComponents instead "useNotification"
- */
-export function Notifications() {
-	const { notifications } = useNotification();
+export function Notification({ notification }: NotificationProps) {
+	const rem = useRem();
 
-	const mappedNotifications = notifications.map((n) => <Notification {...n} />);
+	const [opacity, opacityMotion] = useMotion(0);
+	const [position, positionMotion] = useMotion(new UDim2(1, rem(5), 1, -rem(10)));
+
+	useMountEffect(() => {
+		positionMotion.tween(new UDim2(1, rem(-15), 1, -rem(10)), {
+			time: 0.5,
+		});
+	});
 
 	return (
-		<frame Position={UDim2.fromScale(0.88, 0.97)}>
-			<uilistlayout
-				FillDirection={Enum.FillDirection.Vertical}
-				HorizontalAlignment={Enum.HorizontalAlignment.Center}
-				VerticalAlignment={Enum.VerticalAlignment.Bottom}
-				Padding={new UDim(0, 20)}
-			/>
-			{mappedNotifications}
-		</frame>
+		<>
+			<Frame
+				backgroundTransparency={opacity}
+				position={position}
+				size={UDim2.fromOffset(rem(10), rem(3.5))}
+			></Frame>
+		</>
 	);
 }

@@ -10,6 +10,7 @@ import { CustomizationProvider } from "./providers/customization-provider";
 import { InteractionProvider } from "./providers/interaction-provider";
 import { KillEffectProvider } from "./providers/kill-effect-provider";
 import { MenuProvider } from "./providers/menu-provider";
+import { NotificationProvider } from "./providers/notification-provider";
 import { ObjectiveProvider } from "./providers/objective-provider";
 import { UpgradeProvider } from "./providers/upgrade-provider";
 
@@ -26,6 +27,7 @@ export function App() {
 				<MenuProvider key="menu-provider" />
 				<CustomizationProvider key="customization-provider" />
 				<CookingProvider key="cooking-provider" />
+				<NotificationProvider key="notification-provider" />
 			</Layer>
 
 			<Layer key="daily-rewards-layers"></Layer>
@@ -34,8 +36,8 @@ export function App() {
 				<Vitals key="vitals" />
 				<Stamina key="stamina" />
 				<Crosshair key="crosshair" />
-				<WeaponInfo />
-				<KillEffectProvider />
+				<WeaponInfo key="weapon-info" />
+				<KillEffectProvider key="kill-effect-provider" />
 			</Layer>
 
 			<Layer key="aerial-layer">

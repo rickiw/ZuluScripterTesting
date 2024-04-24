@@ -1,15 +1,46 @@
-/**
- * @author </Nexus_Prime>
- * @description In case needed help to understand, go to https://nexusprime.vercel.app
- */
-
 import { createProducer } from "@rbxts/reflex";
-import { Notification } from "client/ui/hooks/use-notification";
+import { notificationMiddleware } from "../middleware/notification";
 
-/**
- * Use notification-util.ts methods
- */
-export const notificationSlice = createProducer(new Array<Notification>(), {
-	setNotifications: (state, arg: Notification[] | ((state: Notification[]) => Notification[])) =>
-		typeIs(arg, "function") ? arg(state) : arg,
+export interface Notification {
+	id: number;
+	title: string;
+	content: string;
+	timer: number;
+	ran?: boolean;
+}
+
+export interface NotificationState {
+	notifications: Notification[];
+}
+
+const initialState: NotificationState = {
+	notifications: [],
+};
+
+export const notificationSlice = createProducer(initialState, {
+	pushNotification: (state, notification: Notification) => ({
+		...state,
+		notifications: [...state.notifications, notification],
+	}),
+	runNotification: (state, id: number) => ({
+		...state,
+		notifications: state.notifications.map((n) => {
+			if (n.id === id) {
+				n.ran = true;
+			}
+			return n;
+		}),
+	}),
+	clearNotification: (state, id: number) => ({
+		...state,
+		notifications: state.notifications.filter((n) => n.id !== id),
+	}),
+	clearAllNotifications: (state) => ({
+		...state,
+		notifications: [],
+	}),
 });
+
+notificationSlice.applyMiddleware(notificationMiddleware);
+
+export type NotificationActions = typeof notificationSlice.getActions;

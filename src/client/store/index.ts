@@ -34,7 +34,7 @@ function createStore() {
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
 		cooking: cookingSlice,
-		notification: notificationSlice,
+		notifications: notificationSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

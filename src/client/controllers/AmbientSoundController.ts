@@ -1,9 +1,5 @@
-/**
- * @author </Nexus_Prime>
- * @description In case needed help to understand, go to https://nexusprime.vercel.app
- */
-
 import { Controller, OnStart } from "@flamework/core";
+import { New } from "@rbxts/fusion";
 import { setTimeout } from "@rbxts/set-timeout";
 import { Players } from "services";
 import { sounds } from "shared/utils/sounds";
@@ -22,9 +18,10 @@ export class SoundController implements OnStart {
 	ambientSounds = (() => {
 		const result: Sound[] = [];
 		for (const [_, value] of pairs(sounds.ambient)) {
-			const sound = new Instance("Sound");
-			sound.SoundId = value;
-			sound.Parent = player;
+			const sound = New("Sound")({
+				Parent: player,
+				SoundId: value,
+			});
 			result.push(sound);
 		}
 

@@ -1,8 +1,3 @@
-/**
- * @author </Nexus_Prime>
- * @description In case needed help to understand, go to https://nexusprime.vercel.app
- */
-
 import { OnStart, Service } from "@flamework/core";
 import { Events } from "server/network";
 import { ReplicatedStorage, Teams, TweenService as Tween } from "services";
