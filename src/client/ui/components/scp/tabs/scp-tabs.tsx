@@ -120,9 +120,10 @@ export const SCPTabs = (props: SCPTabsProps) => {
 				>
 					<Text
 						size={UDim2.fromScale(0.75, 1)}
+						position={UDim2.fromScale(0.15, 0)}
 						text={props.selectedPage.upper()}
 						textSize={rem(1.25)}
-						textXAlignment="Center"
+						textXAlignment="Left"
 						textColor={palette.overlay1}
 						font={fonts.robotoMono.regular}
 						textTransparency={props.backgroundTransparency}

@@ -24,7 +24,7 @@ export const Notification = (props: NotificationProps) => {
 	useEffect(() => {
 		const offset = open ? 0.9 : 1;
 		backgroundTransparencyMotion.spring(open ? 0 : 1, springs.gentle);
-		positionMotion.spring(new UDim2(1, rem(1), offset, 0), springs.molasses);
+		positionMotion.spring(new UDim2(1, rem(1), offset, 0), springs.stiff);
 	}, [open]);
 
 	return (
