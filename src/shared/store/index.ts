@@ -2,6 +2,7 @@ import { CombineStates } from "@rbxts/reflex";
 import { combatSlice } from "./combat";
 import { foodSlice } from "./food";
 import { objectivesSlice } from "./objectives";
+import { osSlice } from "./os";
 import { teamSlice } from "./teams";
 
 export type SharedState = CombineStates<typeof slices>;
@@ -11,4 +12,5 @@ export const slices = {
 	objectives: objectivesSlice,
 	team: teamSlice,
 	food: foodSlice,
+	os: osSlice,
 };

@@ -23,7 +23,7 @@ export const SCPWindow = (props: SCPWindowProps) => {
 				<Frame
 					anchorPoint={new Vector2(0.5, 0.5)}
 					position={new UDim2(0.5, 0, 0.5, 0)}
-					size={new UDim2(0, rem(80), 0, rem(36))}
+					size={props.size}
 					backgroundColor={palette.base}
 					backgroundTransparency={backgroundTransparency}
 					borderColor={Color3.fromRGB(255, 255, 255)}
