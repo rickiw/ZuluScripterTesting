@@ -29,6 +29,7 @@ export const images: {
 			readonly edit: string;
 			readonly trash: string;
 			readonly notification: string;
+			readonly scp_badge: string;
 		};
 		readonly glyphs: {
 			readonly AD: string;

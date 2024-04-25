@@ -8,6 +8,7 @@ import AutomaticSize = Enum.AutomaticSize;
 
 export interface SCPScrollingFrameProps<T extends Instance = ScrollingFrame> extends FrameProps<T> {
 	canvasSize?: UDim2 | Roact.Binding<UDim2>;
+	canvasPos?: Vector2 | Roact.Binding<Vector2>;
 	automaticCanvasSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	automaticSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	scrollBarImageTransparency?: number | Roact.Binding<number>;
@@ -26,6 +27,7 @@ export const SCPScrollingFrame = forwardRef((props: SCPScrollingFrameProps, ref:
 			ScrollBarThickness={rem(1)}
 			AutomaticSize={props.automaticSizing}
 			CanvasSize={props.canvasSize}
+			CanvasPosition={props.canvasPos}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}
 			Rotation={props.rotation}

@@ -7,6 +7,7 @@ import { SCPCloseButton } from "../closeButton";
 
 interface SCPWindowProps extends Roact.PropsWithChildren {
 	isOpen: boolean;
+	noBorder?: boolean;
 	backgroundTransparency?: Roact.Binding<number> | number;
 	size: Roact.Binding<UDim2> | UDim2;
 	onClose?: () => void;
@@ -27,7 +28,7 @@ export const SCPWindow = (props: SCPWindowProps) => {
 					backgroundColor={palette.base}
 					backgroundTransparency={backgroundTransparency}
 					borderColor={Color3.fromRGB(255, 255, 255)}
-					borderSize={1}
+					borderSize={props.noBorder ? 0 : 1}
 				>
 					{props.children}
 					<SCPCloseButton onClick={() => props.onClose?.()} backgroundTransparency={backgroundTransparency} />

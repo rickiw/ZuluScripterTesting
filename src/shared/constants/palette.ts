@@ -35,6 +35,8 @@ export const neutrals = {
 	surface1: Color3.fromRGB(33, 38, 41),
 	surface0: Color3.fromRGB(25, 29, 32),
 	active1: Color3.fromRGB(61, 65, 42),
+	active2: Color3.fromRGB(235, 209, 105),
+	accent_blue: Color3.fromRGB(64, 96, 158),
 	base: Color3.fromRGB(16, 20, 21),
 	mantle: Color3.fromRGB(24, 24, 37),
 	crust: Color3.fromRGB(17, 17, 27),

@@ -7,6 +7,7 @@ import { FrameProps } from "./frame";
 export interface TextProps<T extends Instance = TextLabel> extends FrameProps<T> {
 	font?: Font;
 	text?: string | Roact.Binding<string>;
+	autoLocalize?: boolean;
 	textColor?: Color3 | Roact.Binding<Color3>;
 	textSize?: number | Roact.Binding<number>;
 	textTransparency?: number | Roact.Binding<number>;
@@ -43,6 +44,7 @@ export function Text(props: TextProps) {
 			RichText={props.richText}
 			MaxVisibleGraphemes={props.maxVisibleGraphemes}
 			Size={props.size}
+			AutoLocalize={props.autoLocalize ?? false}
 			AutomaticSize={props.textAutoResize}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}

@@ -1,8 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
-import Roact, { useMemo } from "@rbxts/roact";
+import Roact from "@rbxts/roact";
 import { selectActiveSection, selectPlayerList } from "client/store/terminal";
 import { useRem } from "client/ui/hooks";
-import { Frame } from "client/ui/library/frame";
 import { Group } from "client/ui/library/group";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
@@ -15,73 +14,12 @@ import {
 	selectSeismicStatus,
 	selectTeslaGateStatuses,
 } from "shared/store/os";
+import { PlayerList } from "../playerList";
 import { SCPScrollingFrame, SCPTable, SCPTextTableItem } from "../scp";
-
-const TeamList = ({ team, members, teamColor }: { team: string; members: string[]; teamColor: Color3 }) => {
-	const rem = useRem();
-	return (
-		<Group size={new UDim2(1, 0, 0, rem(2))} autoSize={Enum.AutomaticSize.Y}>
-			<uilistlayout FillDirection={Enum.FillDirection.Vertical} />
-			<Group size={new UDim2(1, 0, 0, rem(2))}>
-				<Frame
-					backgroundColor={teamColor}
-					anchorPoint={new Vector2(0.5, 0.5)}
-					position={UDim2.fromOffset(rem(0.5), rem(1))}
-					size={UDim2.fromOffset(rem(0.5), rem(0.5))}
-				/>
-				<Text
-					position={UDim2.fromOffset(rem(1.5), rem(1))}
-					text={team}
-					anchorPoint={new Vector2(0, 0.5)}
-					size={new UDim2(0.9, 0, 0, rem(1.5))}
-					textSize={rem(2)}
-					textTransparency={0}
-					textColor={palette.subtext1}
-					backgroundTransparency={1}
-					textXAlignment="Left"
-					textYAlignment="Center"
-					font={fonts.arimo.bold}
-				/>
-			</Group>
-			{members.map((member, index) => (
-				<Text
-					text={member}
-					key={"member" + index}
-					size={new UDim2(1, 0, 0, rem(1.5))}
-					textSize={rem(1.5)}
-					textTransparency={0}
-					textColor={palette.subtext1}
-					backgroundTransparency={1}
-					textXAlignment="Left"
-					textYAlignment="Center"
-					font={fonts.arimo.regular}
-				/>
-			))}
-		</Group>
-	);
-};
 
 const ActivePersonnel = ({ backgroundTransparency }: { backgroundTransparency?: Roact.Binding<number> | number }) => {
 	const rem = useRem();
 	const playerList = useSelector(selectPlayerList);
-	const playerColumn1 = useMemo(() => {
-		const arr = [];
-		for (let i = 0; i < playerList.size(); i++) {
-			if (i % 2 === 0) {
-				arr.push(playerList[i]);
-			}
-		}
-		return arr;
-	}, [playerList]);
-	const playerColumn2 = useMemo(() => {
-		const arr = [];
-		for (let i = 0; i < playerList.size(); i++) {
-			if (i % 2 === 1) {
-				arr.push(playerList[i]);
-			}
-		}
-		return arr;
-	}, [playerList]);
 	return (
 		<Group
 			size={new UDim2(1, -rem(1), 1, -rem(1))}
@@ -103,33 +41,7 @@ const ActivePersonnel = ({ backgroundTransparency }: { backgroundTransparency?: 
 				textYAlignment="Center"
 				font={fonts.inter.extra}
 			/>
-			<Group size={new UDim2(1, 0, 0, rem(6))} autoSize={Enum.AutomaticSize.Y}>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Horizontal}
-					HorizontalAlignment={Enum.HorizontalAlignment.Center}
-					Padding={new UDim(0, rem(1))}
-				/>
-				<Group size={new UDim2(0.5, -rem(1), 0, 0)} layoutOrder={1} autoSize={Enum.AutomaticSize.Y}>
-					<uilistlayout
-						FillDirection={Enum.FillDirection.Vertical}
-						HorizontalAlignment={Enum.HorizontalAlignment.Left}
-						Padding={new UDim(0, rem(1))}
-					/>
-					{playerColumn1.map((team, index) => (
-						<TeamList {...team} key={index} />
-					))}
-				</Group>
-				<Group size={new UDim2(0.5, -rem(1), 0, 0)} layoutOrder={2} autoSize={Enum.AutomaticSize.Y}>
-					<uilistlayout
-						FillDirection={Enum.FillDirection.Vertical}
-						HorizontalAlignment={Enum.HorizontalAlignment.Left}
-						Padding={new UDim(0, rem(1))}
-					/>
-					{playerColumn2.map((team, index) => (
-						<TeamList {...team} key={index} />
-					))}
-				</Group>
-			</Group>
+			<PlayerList backgroundTransparency={backgroundTransparency} playerList={playerList} />
 		</Group>
 	);
 };
