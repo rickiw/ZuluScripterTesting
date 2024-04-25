@@ -1,27 +1,30 @@
 import * as ReactRoblox from "@rbxts/react-roblox";
 import Roact from "@rbxts/roact";
 import { WithControls } from "@rbxts/ui-labs";
-import { Notification } from "../components/notification";
-import { RootProvider } from "../providers/root-provider";
+import { clientStore } from "client/store";
+import { RootProvider } from "client/ui/providers/root-provider";
+import { NotificationProvider } from "../providers/notification-provider";
 
 const controls = {
-	open: true,
-	title: "Notification",
-	subtitle: "Subtitle",
-	content: "Content...",
+	isOpen: true,
 };
 
-const MenuStory: WithControls<typeof controls> = {
-	summary: "This is a test story with <b>Rich text</b>",
+const Story: WithControls<typeof controls> = {
+	summary: "Notifications UI",
 	story: (props) => {
+		const runTestNotification = () => {
+			clientStore.pushNotification({
+				id: math.random(1, 9999),
+				title: "Test Notification",
+				content: "This is a test notification",
+				timer: 5,
+			});
+		};
+
+		runTestNotification();
 		return (
 			<RootProvider>
-				<Notification
-					open={props.controls.open}
-					title={props.controls.title}
-					subtitle={props.controls.subtitle}
-					content={props.controls.content}
-				/>
+				<NotificationProvider />
 			</RootProvider>
 		);
 	},
@@ -29,5 +32,4 @@ const MenuStory: WithControls<typeof controls> = {
 	reactRoblox: ReactRoblox,
 	controls,
 };
-
-export = MenuStory;
+export = Story;

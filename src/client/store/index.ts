@@ -9,6 +9,7 @@ import { interactionSlice } from "./interaction/interaction-slice";
 import { inventorySlice } from "./inventory";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
+import { notificationSlice } from "./notifications/notification-slice";
 import { perkSlice } from "./perks";
 import { shopSlice } from "./shop";
 import { terminalSlice } from "./terminal";
@@ -34,6 +35,7 @@ function createStore() {
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
 		cooking: cookingSlice,
+		notifications: notificationSlice,
 		terminal: terminalSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
