@@ -22,6 +22,8 @@ const Story: WithControls<typeof controls> = {
 		};
 
 		runTestNotification();
+		runTestNotification();
+		runTestNotification();
 		return (
 			<RootProvider>
 				<NotificationProvider />

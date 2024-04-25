@@ -9,15 +9,15 @@ import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 
 interface NotificationProps {
-	title: string;
-	subtitle: string;
-	content: string;
+	title?: string;
+	subtitle?: string;
+	content?: string;
 	open: boolean;
 }
 
 export const Notification = (props: NotificationProps) => {
 	const rem = useRem();
-	const { open, title, subtitle, content } = props;
+	const { open, title = "", subtitle = "", content = "" } = props;
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [position, positionMotion] = useMotion(new UDim2(1, rem(1), 0.9, 0));
 
@@ -66,7 +66,7 @@ export const Notification = (props: NotificationProps) => {
 					size={new UDim2(0, rem(17), 0, rem(1.25))}
 					textSize={rem(1.25)}
 					textTruncate="AtEnd"
-					text={subtitle?.upper() ?? ""}
+					text={subtitle.upper()}
 					textColor={palette.subtext0}
 					textTransparency={backgroundTransparency}
 					textXAlignment="Left"

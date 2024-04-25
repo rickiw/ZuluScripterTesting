@@ -4,16 +4,20 @@ import { notificationMiddleware } from "../middleware/notification";
 export interface Notification {
 	id: number;
 	title: string;
+	subtitle?: string;
 	content: string;
 	timer: number;
+	startTime?: number;
 	ran?: boolean;
 }
 
 export interface NotificationState {
 	notifications: Notification[];
+	activeNotification?: Notification;
 }
 
 const initialState: NotificationState = {
+	activeNotification: undefined,
 	notifications: [],
 };
 
@@ -22,22 +26,26 @@ export const notificationSlice = createProducer(initialState, {
 		...state,
 		notifications: [...state.notifications, notification],
 	}),
-	runNotification: (state, id: number) => ({
+	popNotification: (state) => {
+		const notifications = [...state.notifications];
+		const nextNotification = notifications.shift();
+		if (nextNotification) {
+			nextNotification.startTime = tick();
+		}
+		return {
+			...state,
+			notifications,
+			activeNotification: nextNotification,
+		};
+	},
+	clearActiveNotification: (state) => ({
 		...state,
-		notifications: state.notifications.map((n) => {
-			if (n.id === id) {
-				n.ran = true;
-			}
-			return n;
-		}),
-	}),
-	clearNotification: (state, id: number) => ({
-		...state,
-		notifications: state.notifications.filter((n) => n.id !== id),
+		activeNotification: undefined,
 	}),
 	clearAllNotifications: (state) => ({
 		...state,
 		notifications: [],
+		activeNotification: undefined,
 	}),
 });
 
