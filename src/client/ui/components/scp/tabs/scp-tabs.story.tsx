@@ -13,10 +13,10 @@ const Story: WithControls<typeof controls> = {
 		return (
 			<>
 				<SCPTabs>
-					<SCPTab title="PRIMARY 01" page="primary" icon="rifle" selectedIcon="rifleselected" />
-					<SCPTab title="SECONDARY 02" page="secondary" icon="handgun" selectedIcon="handgunselected" />
-					<SCPTab title="MELEE 03" page="melee" icon="knife" selectedIcon="knifeselected" />
-					<SCPTab title="MODS 04" page="attachments" icon="attachments" selectedIcon="attachmentsselected" />
+					<SCPTab page="PRIMARY" index={1} icon="rifle" />
+					<SCPTab page="SECONDARY" index={2} icon="handgun" />
+					<SCPTab page="MELEE" index={3} icon="knife" />
+					<SCPTab page="MODS" index={4} icon="attachments" />
 				</SCPTabs>
 			</>
 		);

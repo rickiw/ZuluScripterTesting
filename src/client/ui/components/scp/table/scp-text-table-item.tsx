@@ -5,7 +5,11 @@ import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 
-export const SCPTextTableItem = (props: ButtonProps) => {
+interface SCPTextTableItemProps extends ButtonProps {
+	subText?: string;
+}
+
+export const SCPTextTableItem = (props: SCPTextTableItemProps) => {
 	const rem = useRem();
 	const [hover, hoverMotion] = useMotion(0);
 
@@ -38,6 +42,24 @@ export const SCPTextTableItem = (props: ButtonProps) => {
 				textXAlignment="Left"
 				textYAlignment="Center"
 			/>
+			{props.subText ? (
+				<Text
+					zIndex={2}
+					size={new UDim2(0, rem(8), 0, rem(1.5))}
+					position={new UDim2(1, -rem(1), 0, rem(0.25))}
+					textColor={props.textColor ?? palette.subtext0}
+					textAutoResize="X"
+					backgroundTransparency={1}
+					anchorPoint={new Vector2(1, 0)}
+					textSize={rem(1.5)}
+					font={fonts.inter.bold}
+					text={props.subText}
+					textXAlignment="Right"
+					textYAlignment="Center"
+				/>
+			) : (
+				<></>
+			)}
 		</Button>
 	);
 };

@@ -5,6 +5,7 @@ export interface GroupProps extends Roact.PropsWithChildren {
 	event?: Roact.JsxInstanceEvents<Frame>;
 	change?: Roact.JsxInstanceChangeEvents<Frame>;
 	size?: UDim2 | Roact.Binding<UDim2>;
+	autoSize?: Enum.AutomaticSize | Roact.Binding<Enum.AutomaticSize>;
 	position?: UDim2 | Roact.Binding<UDim2>;
 	anchorPoint?: Vector2 | Roact.Binding<Vector2>;
 	rotation?: number | Roact.Binding<number>;
@@ -19,6 +20,7 @@ export const Group = forwardRef((props: GroupProps, ref: Roact.Ref<Frame>) => {
 		<frame
 			ref={ref}
 			Size={props.size || UDim2.fromScale(1, 1)}
+			AutomaticSize={props.autoSize || Enum.AutomaticSize.None}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}
 			Rotation={props.rotation}
