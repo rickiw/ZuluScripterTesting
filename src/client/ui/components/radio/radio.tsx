@@ -1,6 +1,4 @@
-import { useEventListener } from "@rbxts/pretty-react-hooks";
 import Roact, { useEffect, useMemo, useRef, useState } from "@rbxts/roact";
-import { RunService } from "@rbxts/services";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
@@ -73,12 +71,12 @@ const ChannelSelection = (props: {
 
 export const RadioBox = (props: RadioBoxProps) => {
 	const rem = useRem();
+	const textboxRef = useRef<TextBox>();
 	const ref = useRef<TextLabel>();
 	const scrollFrameRef = useRef<ScrollingFrame>();
 	const { channels, currentChannel, onChannelSelect, onTextSubmit, messages, isOpen } = props;
+	const [height, setHeight] = useState(0);
 	const [stickToBottom, setStickToBottom] = useState(true);
-	const [hasFocus, setHasFocus] = useState(false);
-	const [canvasSize, setCanvasSize] = useState(0);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [canvasPos, setCanvasPos] = useState(new Vector2(0, 0));
 	const currentMessages = useMemo(() => {
@@ -92,29 +90,6 @@ export const RadioBox = (props: RadioBoxProps) => {
 	useEffect(() => {
 		backgroundTransparencyMotion.spring(isOpen ? 0.25 : 1, springs.gentle);
 	}, [isOpen]);
-
-	useEffect(() => {
-		if (scrollFrameRef.current !== undefined) {
-			setStickToBottom(true);
-			const currentCanvasSize = scrollFrameRef.current.CanvasSize.Y.Offset;
-			setCanvasSize(currentCanvasSize);
-		}
-	}, [messages, scrollFrameRef.current]);
-
-	useEventListener(RunService.Heartbeat, () => {
-		if (scrollFrameRef.current === undefined || ref.current === undefined) {
-			return;
-		}
-		const currentCanvasSize = scrollFrameRef.current.CanvasSize.Y.Offset;
-		const currentCanvasPosition = scrollFrameRef.current.CanvasPosition.Y;
-		const currentCanvasAbsoluteSize = scrollFrameRef.current.AbsoluteSize.Y;
-		if (currentCanvasSize !== canvasSize) {
-			scrollFrameRef.current.CanvasPosition = new Vector2(0, currentCanvasSize - currentCanvasAbsoluteSize);
-			setCanvasSize(currentCanvasSize);
-			print("Setting scroll");
-		}
-		const scrollBarOnBottom = currentCanvasSize >= currentCanvasSize - scrollFrameRef.current.AbsoluteSize.Y;
-	});
 
 	return (
 		<Frame
@@ -191,8 +166,14 @@ export const RadioBox = (props: RadioBoxProps) => {
 				ScrollBarImageColor3={palette.white}
 				Position={UDim2.fromOffset(rem(0.5), rem(4.2))}
 				Size={new UDim2(0, rem(39.5), 0, rem(13))}
-				CanvasSize={new UDim2(0, rem(39.5), 0, rem(14.5))}
+				CanvasSize={new UDim2(0, rem(39.5), 0, rem(13))}
 				CanvasPosition={canvasPos}
+				Change={{
+					CanvasPosition: (frame: ScrollingFrame) => {
+						const scrollPos = frame.CanvasSize.Y.Offset + frame.CanvasPosition.Y;
+						setStickToBottom(scrollPos > height - 10);
+					},
+				}}
 			>
 				<textlabel
 					BackgroundTransparency={1}
@@ -208,6 +189,18 @@ export const RadioBox = (props: RadioBoxProps) => {
 					TextColor3={palette.white}
 					Size={new UDim2(0, rem(38), 0, 0)}
 					ref={ref}
+					Change={{
+						TextBounds: (label: TextLabel) => {
+							setHeight(label.AbsoluteSize.Y);
+							if (stickToBottom && scrollFrameRef.current !== undefined) {
+								const scrollPos = math.max(
+									0,
+									label.AbsoluteSize.Y - scrollFrameRef.current.CanvasSize.Y.Offset,
+								);
+								scrollFrameRef.current.CanvasPosition = new Vector2(0, scrollPos);
+							}
+						},
+					}}
 				/>
 			</scrollingframe>
 			<Frame
@@ -217,7 +210,16 @@ export const RadioBox = (props: RadioBoxProps) => {
 				backgroundTransparency={0}
 				backgroundColor={palette.surface1}
 			>
+				<Text
+					size={UDim2.fromOffset(rem(2), rem(2.5))}
+					text="//"
+					textXAlignment="Left"
+					textColor={palette.white}
+					textSize={rem(1.5)}
+					backgroundTransparency={1}
+				/>
 				<textbox
+					ref={textboxRef}
 					PlaceholderText={"Type a message..."}
 					PlaceholderColor3={palette.subtext1}
 					TextColor3={palette.white}
@@ -227,28 +229,25 @@ export const RadioBox = (props: RadioBoxProps) => {
 					TextYAlignment={"Center"}
 					TextWrapped={false}
 					TextScaled={false}
-					Position={UDim2.fromOffset(rem(0.5), 0)}
-					Size={new UDim2(1, -rem(6), 1, 0)}
+					Position={UDim2.fromOffset(rem(1), 0)}
+					Size={new UDim2(1, -rem(1.5), 1, 0)}
 					Text={""}
 					BackgroundTransparency={1}
 					Event={{
 						FocusLost: (input, enterPressed) => {
-							setHasFocus(false);
 							if (enterPressed) {
+								setStickToBottom(true);
 								onTextSubmit(input.Text);
 								input.Text = "";
 							}
 						},
-						Focused: (focus) => {
-							setHasFocus(true);
-						},
 						ReturnPressedFromOnScreenKeyboard: (input) => {
+							setStickToBottom(true);
 							onTextSubmit(input.Text);
 							input.Text = "";
 						},
 					}}
 				/>
-				<Button size={new UDim2(0, rem(6), 1, 0)} position={new UDim2(1, -rem(6), 0, 0)} text="SEND" />
 			</Frame>
 			<ChannelSelection
 				channels={channels}
