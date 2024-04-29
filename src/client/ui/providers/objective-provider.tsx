@@ -9,7 +9,5 @@ export function ObjectiveProvider() {
 
 	const activeObjective = useSelector(selectActiveObjective);
 
-	return (
-		<>{activeObjective && activeObjective.location !== false && <ObjectiveMarker objective={activeObjective} />}</>
-	);
+	return <>{activeObjective && <ObjectiveMarker objective={activeObjective} />}</>;
 }

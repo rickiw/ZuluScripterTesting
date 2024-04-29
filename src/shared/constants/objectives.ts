@@ -18,7 +18,7 @@ export const FPObjectives: SpecifiedObjective<"FP">[] = [
 		category: "FP",
 		name: "Deliver paperwork",
 		description: "Bring a stack of papers from one desk to another",
-		location: new Vector3(-66.797, 5, 94.031),
+		location: new Vector3(-47.578, 6.869, -100.774),
 		reward: [100, "credits"],
 		objectiveClass: "PaperworkObjective",
 	},

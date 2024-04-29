@@ -1,12 +1,16 @@
 import { Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
+import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
+import { Workspace } from "@rbxts/services";
+import { Events } from "server/network";
 import { ObjectiveService } from "server/services/ObjectiveService";
 import { PlayerRemoving } from "server/services/PlayerService";
 import { serverStore } from "server/store";
 import { selectPlayerSave } from "server/store/saves";
 import { BaseInteraction } from "shared/components/BaseInteraction";
+import { Objective } from "shared/store/objectives";
 import { giveTool, removeTool } from "shared/utils";
 import { BaseObjective, ObjectiveAttributes, ObjectiveInstance } from "./BaseObjective";
 
@@ -102,6 +106,20 @@ export class PaperworkObjective<A extends PaperworkObjectiveAttributes, I extend
 
 		this.holdingPaperwork.add(player);
 		giveTool(player, this.instance.Paperwork);
+
+		const newObjective: Objective = {
+			...this.objective,
+			location: this.instance.Desk2.Position,
+		};
+
+		New("Part")({
+			Parent: Workspace,
+			Size: new Vector3(1, 1, 1),
+			Anchored: true,
+			Position: newObjective.location,
+		});
+
+		Events.SetActiveObjective(player, newObjective);
 	}
 
 	desk2Interact(player: Player) {
