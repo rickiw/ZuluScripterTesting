@@ -1,5 +1,6 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect } from "@rbxts/roact";
+import { clientStore } from "client/store";
 import { selectCookingIsOpen } from "client/store/cooking";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
@@ -22,21 +23,24 @@ export function CookingProvider() {
 	return (
 		<SCPWindow
 			backgroundTransparency={backgroundTransparency}
-			size={new UDim2(0, rem(80), 0, rem(36))}
+			size={new UDim2(0, rem(78), 0, rem(28))}
 			isOpen={isCooking}
+			onClose={() => {
+				clientStore.setCookingOpen(false);
+			}}
 		>
 			<Image
 				imageTransparency={backgroundTransparency}
-				size={UDim2.fromOffset(rem(6), rem(6))}
-				position={UDim2.fromOffset(rem(1), rem(1))}
+				size={UDim2.fromOffset(rem(5), rem(5))}
+				position={UDim2.fromOffset(rem(1), rem(0.5))}
 				image={images.ui.misc.foundationlogo}
 			/>
 			<Text
 				text="CULINARY SYSTEM"
-				position={UDim2.fromOffset(rem(8), rem(2.75))}
-				size={UDim2.fromOffset(rem(30), rem(3))}
+				position={UDim2.fromOffset(rem(7), rem(2))}
+				size={UDim2.fromOffset(rem(30), rem(2.5))}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				textSize={rem(3)}
+				textSize={rem(2.5)}
 				backgroundTransparency={1}
 				textTransparency={backgroundTransparency}
 				textWrapped={true}
@@ -46,7 +50,7 @@ export function CookingProvider() {
 			/>
 			<Image
 				size={UDim2.fromOffset(rem(45), rem(0.25))}
-				position={UDim2.fromOffset(rem(0), rem(7.5))}
+				position={UDim2.fromOffset(rem(0), rem(5.25))}
 				imageTransparency={backgroundTransparency}
 				image={images.ui.misc.divider}
 			/>
