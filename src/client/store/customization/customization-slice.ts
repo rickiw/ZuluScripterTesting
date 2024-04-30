@@ -8,7 +8,11 @@ export interface CustomizationState {
 	selectedModificationMount: BasePart | undefined;
 	modificationPreviews: IModification[];
 	characterSelectedPage: "character" | "teams" | "uniform" | "other";
-	weaponSelectedPage: "primary" | "secondary" | "melee" | "attachments";
+	weaponSelectedPage: "primary" | "secondary" | "melee" | "mods";
+	weaponPageSubtitles: Record<CustomizationState["weaponSelectedPage"], string>;
+	characterPageSubtitles: Record<CustomizationState["characterSelectedPage"], string>;
+	weaponPages: CustomizationState["weaponSelectedPage"][];
+	characterPages: CustomizationState["characterSelectedPage"][];
 }
 
 const initialState: CustomizationState = {
@@ -17,6 +21,20 @@ const initialState: CustomizationState = {
 	selectedWeapon: undefined,
 	selectedModificationMount: undefined,
 	modificationPreviews: [],
+	weaponPageSubtitles: {
+		primary: "Firearm",
+		secondary: "Sidearm",
+		melee: "Melee Weapon",
+		mods: "Attachments",
+	},
+	characterPageSubtitles: {
+		character: "Character",
+		teams: "Teams",
+		uniform: "Uniform",
+		other: "Other",
+	},
+	weaponPages: ["primary", "secondary", "melee", "mods"],
+	characterPages: ["teams", "character", "uniform", "other"],
 	characterSelectedPage: "teams",
 	weaponSelectedPage: "primary",
 };

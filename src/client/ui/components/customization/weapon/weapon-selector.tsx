@@ -7,6 +7,7 @@ import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
+import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 import { WeaponBase } from "shared/constants/weapons";
 
@@ -57,11 +58,7 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 					},
 				}}
 			>
-				<uistroke
-					Color={Color3.fromRGB(255, 255, 255)}
-					ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
-					Transparency={0.5}
-				/>
+				<uistroke Color={palette.surface1} ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Transparency={0.5} />
 
 				<Frame
 					size={new UDim2(1, 0, 0, rem(3))}
@@ -87,7 +84,7 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 					/>
 				</Frame>
 
-				<Frame size={new UDim2(1, 0, 1, -rem(4))} backgroundTransparency={1}>
+				<Frame size={new UDim2(1, 0, 1, -rem(3))} backgroundTransparency={1}>
 					<uipadding
 						PaddingBottom={new UDim(0, rem(1))}
 						PaddingLeft={new UDim(0, rem(1))}
@@ -99,32 +96,34 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 				</Frame>
 
 				<Frame
-					backgroundColor={Color3.fromRGB(33, 38, 41)}
-					size={new UDim2(1, 0, 0, rem(4))}
-					position={new UDim2(0, 0, 1, -rem(4))}
+					backgroundColor={palette.surface1}
+					size={new UDim2(1, 0, 0, rem(3))}
+					position={new UDim2(0, 0, 1, -rem(3))}
 				>
 					<Image
 						position={UDim2.fromOffset(rem(2.5), rem(0))}
-						size={UDim2.fromOffset(rem(4), rem(4))}
+						size={UDim2.fromScale(1, 1)}
 						image={holdingWeapon(weapon) ? images.ui.icons.downselected : images.ui.icons.down}
-					/>
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
 					<Text
-						position={UDim2.fromOffset(rem(7.5), -rem(0.75))}
+						position={UDim2.fromOffset(rem(6), rem(0.5))}
 						textXAlignment="Left"
-						size={UDim2.fromOffset(rem(20), rem(4))}
+						textAutoResize="XY"
 						text={weapon.weaponType.upper()}
 						textColor={Color3.fromRGB(124, 128, 131)}
-						textSize={rem(1.25)}
-						font={fonts.inter.medium}
+						textSize={rem(0.75)}
+						font={fonts.arimo.regular}
 					/>
 					<Text
-						position={UDim2.fromOffset(rem(7.5), rem(0.75))}
+						position={UDim2.fromOffset(rem(6), rem(1))}
 						textXAlignment="Left"
-						size={UDim2.fromOffset(rem(20), rem(4))}
+						textAutoResize="XY"
 						text={weapon.baseTool.Name}
 						textColor={Color3.fromRGB(124, 128, 131)}
-						textSize={rem(2)}
-						font={fonts.inter.medium}
+						textSize={rem(1.5)}
+						font={fonts.arimo.regular}
 					/>
 				</Frame>
 			</Button>

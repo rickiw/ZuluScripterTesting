@@ -12,6 +12,7 @@ export const fonts = {
 	},
 	robotoMono: {
 		regular: Font.fromEnum(Enum.Font.RobotoMono),
+		italic: new Font("rbxasset://fonts/families/RobotoMono.json", Enum.FontWeight.Regular, Enum.FontStyle.Italic),
 	},
 	gothic: {
 		regular: new Font("rbxasset://fonts/families/HighwayGothic.json", Enum.FontWeight.Regular),
@@ -20,5 +21,6 @@ export const fonts = {
 	arimo: {
 		regular: new Font("rbxasset://fonts/families/Arimo.json", Enum.FontWeight.Regular),
 		bold: new Font("rbxasset://fonts/families/Arimo.json", Enum.FontWeight.Bold),
+		italic: new Font("rbxasset://fonts/families/Arimo.json", Enum.FontWeight.Regular, Enum.FontStyle.Italic),
 	},
 };

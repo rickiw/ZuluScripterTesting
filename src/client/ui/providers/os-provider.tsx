@@ -58,6 +58,7 @@ export const OSProvider = () => {
 				font={fonts.inter.bold}
 			/>
 			<SCPTabs
+				size={UDim2.fromOffset(rem(45), rem(7))}
 				position={UDim2.fromOffset(rem(0), rem(5.25))}
 				selectedPage={activeSection}
 				selectedIndex={activeSectionIndex}

@@ -9,6 +9,7 @@ const Story: ObjectStory = {
 	summary: "Weapon Customization UI",
 	story: (props) => {
 		clientStore.setCustomizationOpen(true);
+		clientStore.setCustomizingWeapon(false);
 		return (
 			<RootProvider>
 				<CustomizationProvider />

@@ -30,6 +30,9 @@ export const images: {
 			readonly trash: string;
 			readonly notification: string;
 			readonly scp_badge: string;
+			readonly character_customization_icons: string;
+			readonly weapon_customization_icons: string;
+			readonly weapon_customize: string;
 		};
 		readonly glyphs: {
 			readonly AD: string;

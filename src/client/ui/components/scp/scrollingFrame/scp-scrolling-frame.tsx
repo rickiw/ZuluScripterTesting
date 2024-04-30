@@ -12,7 +12,7 @@ export interface SCPScrollingFrameProps<T extends Instance = ScrollingFrame> ext
 	automaticCanvasSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	automaticSizing?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	scrollBarImageTransparency?: number | Roact.Binding<number>;
-
+	scrollDirection?: Enum.ScrollingDirection;
 	scrollBarTop?: string | Roact.Binding<string>;
 	scrollBarMid?: string | Roact.Binding<string>;
 	scrollBarBottom?: string | Roact.Binding<string>;
@@ -39,6 +39,7 @@ export const SCPScrollingFrame = forwardRef((props: SCPScrollingFrameProps, ref:
 			ZIndex={props.zIndex}
 			LayoutOrder={props.layoutOrder}
 			ScrollBarImageColor3={palette.white}
+			ScrollingDirection={props.scrollDirection || Enum.ScrollingDirection.Y}
 			BorderSizePixel={props.borderSize || 0}
 			ScrollBarImageTransparency={props.scrollBarImageTransparency}
 			TopImage={images.ui.icons.scrollbartop}
