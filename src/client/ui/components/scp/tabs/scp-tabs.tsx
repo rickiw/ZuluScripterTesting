@@ -123,7 +123,8 @@ export const SCPTabs = (props: SCPTabsProps) => {
 
 			{props.selectedPage ? (
 				<Frame
-					size={new UDim2(0, rem(10), 0, rem(1.5))}
+					size={new UDim2(0, rem(5), 0, rem(1.5))}
+					autoSize={"X"}
 					position={UDim2.fromOffset(
 						props.fat ? (math.max(1, props.selectedIndex ?? 0) - 1) * tabSize.Width.Offset : 0,
 						rem(props.fat ? 4 : 4.4),
@@ -131,9 +132,15 @@ export const SCPTabs = (props: SCPTabsProps) => {
 					backgroundColor={Color3.fromRGB(61, 65, 42)}
 					backgroundTransparency={props.backgroundTransparency}
 				>
+					<uipadding PaddingLeft={new UDim(0, rem(0.5))} PaddingRight={new UDim(0, rem(0.5))} />
+					<uilistlayout
+						FillDirection={"Horizontal"}
+						VerticalAlignment={"Center"}
+						HorizontalAlignment={"Center"}
+					/>
 					<Text
-						size={UDim2.fromScale(0.75, 1)}
-						position={UDim2.fromScale(0.15, 0)}
+						layoutOrder={1}
+						textAutoResize="XY"
 						text={props.selectedPage.upper()}
 						textSize={rem(1.25)}
 						textXAlignment="Left"
@@ -141,9 +148,10 @@ export const SCPTabs = (props: SCPTabsProps) => {
 						font={fonts.robotoMono.regular}
 						textTransparency={props.backgroundTransparency}
 					/>
+					<Group layoutOrder={2} size={UDim2.fromOffset(rem(2), rem(1.5))}></Group>
 					<Text
-						size={UDim2.fromScale(0.2, 1)}
-						position={UDim2.fromScale(0.75, 0)}
+						layoutOrder={3}
+						textAutoResize="XY"
 						text={string.format("%02d", props.selectedIndex ?? 0)}
 						textXAlignment="Right"
 						textSize={rem(1.25)}
