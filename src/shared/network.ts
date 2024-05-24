@@ -26,11 +26,13 @@ export interface ClientToServerEvents
 		ClientToServerCookEvents {
 	// Debug | Gives 30 bullets
 	Help(): void;
+	HelpTwo(): void;
 
 	// Objectives
 	StopObjective(objectiveId: ObjectiveID): void;
 
-	ItemAction(opts: { name: string; target?: Player; [key: string]: unknown }): void;
+	// Items
+	ItemAction(obj: unknown): void;
 }
 
 export interface ServerToClientRoombaEvents {
@@ -71,23 +73,23 @@ interface ClientToServerFunctions {
 	EquipFirearm(weapon: Tool): Tool | undefined;
 	JoinTeam(team: TeamAbbreviation): boolean;
 
-	// OS
-	// FILE SYSTEM
-	CreateDocument(filename: string): boolean;
-	DeleteDocument(filename: string): boolean;
-	EditDocument(filename: string, contents: string): boolean;
-	// FACILITY
-	TogglePower(): boolean;
-	ToggleHume(): boolean;
-	ToggleSeismic(): boolean;
-	// AUDIO
+	// // OS
+	// // FILE SYSTEM
+	// CreateDocument(filename: string): boolean;
+	// DeleteDocument(filename: string): boolean;
+	// EditDocument(filename: string, contents: string): boolean;
+	// // FACILITY
+	// TogglePower(): boolean;
+	// ToggleHume(): boolean;
+	// ToggleSeismic(): boolean;
+	// // AUDIO
 	SetAlarm(alarm: FacilityAlarmCode): boolean;
-	ClearAlarm(): boolean;
+	// ClearAlarm(): boolean;
 	SetAnnouncement(announcement: FacilityAnnouncement): boolean;
-	ClearAnnouncement(): boolean;
-	// SECTOR
-	SetSectorStatus(sector: string, status: string): boolean;
-	// POWER
+	// ClearAnnouncement(): boolean;
+	// // SECTOR
+	// SetSectorStatus(sector: string, status: string): boolean;
+	// // POWER
 	SetTeslaGateStatus(gate: string, active: boolean): boolean;
 	SetDoorStatus(door: string, active: boolean): boolean;
 }

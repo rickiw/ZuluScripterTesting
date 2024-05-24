@@ -12,6 +12,7 @@ import { KillEffectProvider } from "./providers/kill-effect-provider";
 import { MenuProvider } from "./providers/menu-provider";
 import { NotificationProvider } from "./providers/notification-provider";
 import { ObjectiveProvider } from "./providers/objective-provider";
+import { OverheadProvider } from "./providers/overhead-provider";
 import { UpgradeProvider } from "./providers/upgrade-provider";
 
 export function App() {
@@ -38,6 +39,7 @@ export function App() {
 				<Crosshair key="crosshair" />
 				<WeaponInfo key="weapon-info" />
 				<KillEffectProvider key="kill-effect-provider" />
+				<OverheadProvider key="overhead-provider" />
 			</Layer>
 
 			<Layer key="aerial-layer">

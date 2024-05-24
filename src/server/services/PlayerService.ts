@@ -1,7 +1,6 @@
 import { Modding, OnStart, Service } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
-import injectOverhead from "server/components/game/Overhead";
 
 export interface PlayerRemoving {
 	playerRemoving(player: Player): void;
@@ -43,8 +42,6 @@ export class PlayerService implements OnStart {
 		for (const listener of this.playerAddedListeners) {
 			task.spawn(() => listener.playerAdded(player));
 		}
-
-		injectOverhead(player);
 
 		const character = player.Character;
 		if (character) {

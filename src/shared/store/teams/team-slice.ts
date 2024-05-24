@@ -1,12 +1,13 @@
 import { createProducer } from "@rbxts/reflex";
 import { images } from "shared/assets/images";
+import { TeamName } from "shared/constants/teams";
 
 export const TeamAbbreviations = ["FP", "SCD", "SD", "E&T", "CLASS-D", "MD", "LOGISTICS"] as const;
 export type TeamAbbreviation = (typeof TeamAbbreviations)[number];
 
 export interface Team<T extends TeamAbbreviation> {
 	abbreviation: T;
-	name: string;
+	name: TeamName;
 	image: keyof typeof images.ui.glyphs;
 	description: string;
 	members: Player[];
@@ -52,7 +53,7 @@ const initialState: TeamState = {
 		},
 		"CLASS-D": {
 			abbreviation: "CLASS-D",
-			name: "Class-D Personnel",
+			name: "Class-D",
 			image: "CD",
 			description: "Class-D Personnel are used for testing purposes and are considered expendable.",
 			members: [],
