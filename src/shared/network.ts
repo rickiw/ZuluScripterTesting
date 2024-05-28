@@ -61,7 +61,12 @@ export interface ServerToClientEvents extends ServerToClientRoombaEvents, Server
 	AreaEntered(title: string, description: string): void;
 }
 
-interface ClientToServerFunctions {
+// -- FUNCTIONS
+interface ClientToServerFunctionsCableCar {
+	getCableCarInfo(): number[];
+}
+
+interface ClientToServerFunctions extends ClientToServerFunctionsCableCar {
 	CreateClan(groupId: GroupID): ClanCreationStatus;
 	JoinClan(groupId: GroupID): ClanJoinStatus;
 	DepositClanFunds(amount: number): ClanDepositStatus;
