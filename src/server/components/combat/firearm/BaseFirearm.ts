@@ -85,7 +85,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			magazine: new FirearmMagazine(this.configuration.Magazine),
 			cooldown: false,
 			reloading: false,
-			reserve: 90,
+			reserve: this.configuration.Magazine.capacity,
 			mode: this.configuration.Barrel.fireModes[0],
 		};
 
@@ -94,7 +94,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		Events.UnequipFirearm.connect((player, weapon) => {
-			if (weapon === this.tool) {
+			if (weapon === this.tool && player === this.wielder) {
 				const state = serverStore.getState();
 				const data = selectPlayerSave(player.UserId)(state);
 				if (!data) {
@@ -155,13 +155,13 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	private getWielder() {
-		return this.instance.Parent?.IsA("Model")
-			? (Players.GetPlayerFromCharacter(this.instance.Parent) as Player & {
-					Character: CharacterRigR15;
-				})
-			: (this.instance.FindFirstAncestorOfClass("Player") as Player & {
-					Character: CharacterRigR15;
-				});
+		const parent = this.instance.Parent;
+		Log.Warn("Getting wielder | Parent: {@Parent}", parent);
+		if (parent && parent.IsA("Model")) {
+			return Players.GetPlayerFromCharacter(parent) as Player & { Character: CharacterRigR15 };
+		} else {
+			return this.instance.FindFirstAncestorOfClass("Player") as Player & { Character: CharacterRigR15 };
+		}
 	}
 
 	loadAnimations() {
@@ -171,7 +171,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.character.WaitForChild("Humanoid");
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
-			this.character.Humanoid,
+			this.character.Humanoid.Animator,
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
@@ -217,16 +217,31 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	initRemotes() {
 		Functions.FireFirearm.setCallback((player, weapon, mousePosition) => {
-			if (player !== this.wielder || weapon !== this.tool || !this.canFire()) {
+			if (!this.equipped || player !== this.wielder || weapon !== this.tool || !this.canFire()) {
+				if (!this.canFire()) {
+					Log.Warn("Cannot fire weapon | BaseFirearm->FireFirearm");
+				}
+				if (!this.equipped && player === this.wielder) {
+					Log.Warn("Weapon not equipped | BaseFirearm->FireFirearm");
+				}
+				if (player === this.wielder && weapon !== this.tool) {
+					Log.Warn(
+						"Player {@Player} weapon {@Weapon} mismatch | BaseFirearm->FireFirearm",
+						player.Name,
+						weapon.Name,
+					);
+				}
 				return false;
 			}
 			const direction = mousePosition.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
 			this.fire(direction);
+			Log.Warn("Firing weapon | BaseFirearm->FireFirearm");
 			return true;
 		});
 
 		this.connections.reloadRemote = Events.ReloadFirearm.connect((player, weapon) => {
-			if (player === this.wielder && weapon === this.tool) {
+			if (player === this.wielder && weapon === this.tool && this.equipped) {
+				Log.Warn("Reloading weapon | BaseFirearm->ReloadFirearm");
 				this.reload();
 			}
 		});
@@ -249,15 +264,18 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	equip() {
+		this.wielder = this.getWielder();
 		serverStore.setWeapon(this.wielder.UserId, this.state);
-		this.equipped = true;
+		Events.ToggleWeaponEquip.fire(this.wielder, true);
 		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve, true);
+		this.equipped = true;
 	}
 
 	unequip() {
 		this.updateState({ reloading: false });
 		serverStore.setWeapon(this.wielder.UserId, undefined);
 		AnimationUtil.stopAll(this.loadedAnimations);
+		Events.ToggleWeaponEquip.fire(this.wielder, false);
 		this.soundManager.play("AimOut");
 		this.equipped = false;
 	}

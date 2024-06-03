@@ -31,6 +31,7 @@ export class FirearmService implements OnStart, CharacterRemoving {
 		});
 
 		Functions.EquipFirearm.setCallback((player, weapon) => {
+			Log.Warn("Player {@Player} is equipping {@Weapon}", player.Name, weapon.Name);
 			return this.equipFirearm(player, weapon);
 		});
 	}

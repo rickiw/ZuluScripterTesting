@@ -59,6 +59,8 @@ export interface ServerToClientEvents extends ServerToClientRoombaEvents, Server
 
 	// AerialIndicator
 	AreaEntered(title: string, description: string): void;
+
+	ToggleWeaponEquip(equipped: boolean): void;
 }
 
 interface ClientToServerFunctions {

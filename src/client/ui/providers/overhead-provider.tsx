@@ -14,7 +14,7 @@ export function OverheadProvider() {
 			{Players.GetPlayers().map((player) => {
 				const character = player.Character as CharacterRigR15 | undefined;
 
-				if (!character) {
+				if (!character || !character.Head) {
 					return undefined;
 				}
 

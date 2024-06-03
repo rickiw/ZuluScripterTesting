@@ -1,6 +1,7 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnRender, OnStart } from "@flamework/core";
 import CameraShaker from "@rbxts/camera-shaker";
+import Log from "@rbxts/log";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, RunService, UserInputService, Workspace } from "@rbxts/services";
 import { Events, Functions } from "client/network";
@@ -82,12 +83,12 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			});
 		});
 
-		this.connections.equipped = this.instance.Equipped.Connect(() => {
-			this.equip();
-		});
-
-		this.connections.unequipped = this.instance.Unequipped.Connect(() => {
-			this.unequip();
+		this.connections.equipped = Events.ToggleWeaponEquip.connect((equipped) => {
+			if (equipped) {
+				this.equip();
+			} else {
+				this.unequip();
+			}
 		});
 
 		this.connections.loop = RunService.RenderStepped.Connect(() => {
@@ -123,18 +124,28 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	private getConfiguration() {
-		return require(this.instance.FindFirstChildOfClass("ModuleScript") as ModuleScript) as FirearmLike;
+		const configModule = this.instance.WaitForChild("Config") as ModuleScript;
+		if (!configModule) {
+			this.instance.GetChildren().forEach((child) => warn(`${child.Name} | ${child.ClassName}`));
+			throw `No configuration module found for ${this.instance.Name} `;
+		}
+		const config = require(configModule) as FirearmLike;
+		return config;
 	}
 
 	loadAnimations() {
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
-			this.character.Humanoid,
+			this.character.Humanoid.Animator,
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
 	fire() {
-		const fired = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).expect();
+		const [success, fired] = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).await();
+		if (!success) {
+			throw "Failed to fire firearm.";
+		}
+
 		if (fired) {
 			this.recoil.ShakeOnce(math.random(1, 2.5), math.random(3, 5), 0.1, 0.05);
 		}
@@ -250,6 +261,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	equip() {
+		Log.Warn("{@Player} is equipping, playing Idle Anim", player.Name);
 		this.loadBinds();
 		this.loadedAnimations.Idle.Play();
 
@@ -339,9 +351,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		if (this.aiming && !this.loadedAnimations.Aim.IsPlaying) {
 			this.loadedAnimations.Idle.Stop();
 			this.loadedAnimations.Aim.Play();
+			Log.Warn("Idle animation stopped Aim Played");
 		} else if (!this.aiming && this.loadedAnimations.Aim.IsPlaying) {
 			this.loadedAnimations.Aim.Stop();
 			this.loadedAnimations.Idle.Play();
+			Log.Warn("Aim animation stopped Idle Played");
 		}
 	}
 }

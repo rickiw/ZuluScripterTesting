@@ -18,7 +18,7 @@ export interface WeaponSelectorProps {
 export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 	const rem = useRem();
 
-	const [selectedWeapon, holdingWeapon, equipWeapon, unequipWeapon] = useWeapon();
+	const { selectedWeapon, holdingWeapon, equipWeapon, unequipWeapon } = useWeapon();
 	const isSelectedWeapon = selectedWeapon && selectedWeapon.baseTool.Name === weapon.baseTool.Name;
 
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);

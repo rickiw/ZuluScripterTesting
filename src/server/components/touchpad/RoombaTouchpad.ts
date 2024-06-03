@@ -5,8 +5,6 @@ import { Events } from "server/network";
 import { ROOMBA_COOLDOWN, ROOMBA_JUMPPOWER, ROOMBA_WALKSPEED } from "shared/constants/roomba";
 import { playSound } from "shared/utils/sounds/play-sound";
 import { BaseTouchpad, TouchpadAttributes, TouchpadInstance } from "./BaseTouchpad";
-import Bool = Enum.StudioScriptEditorColorCategories.Bool;
-import Room = Enum.ReverbType.Room;
 
 function castRayDown(fromCFrame: CFrame, distance: number, blacklist: Instance[]): RaycastResult | undefined {
 	// Create the Ray
