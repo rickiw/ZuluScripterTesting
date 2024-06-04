@@ -4,24 +4,24 @@ import Maid from "@rbxts/maid";
 import { Players, RunService, TweenService, Workspace } from "@rbxts/services";
 import { Functions } from "client/network";
 
-interface CableCar extends Model {
+export interface CableCarInstance extends Model {
 	Cable: Model;
 	Car: Model & {
 		Floor: BasePart;
-		EndPosDoor: DoorModel;
-		StartPosDoor: DoorModel;
+		EndPosDoor: CableCarDoorPair;
+		StartPosDoor: CableCarDoorPair;
 	};
 	Motor: Model;
 	StartPosition: BasePart;
 	EndPosition: BasePart;
 }
 
-interface DoorModel extends Model {
-	LeftDoor: Door;
-	RightDoor: Door;
+export interface CableCarDoorPair extends Model {
+	LeftDoor: CableCarDoor;
+	RightDoor: CableCarDoor;
 }
 
-interface Door extends BasePart {
+export interface CableCarDoor extends Model {
 	Hinge: BasePart;
 }
 
@@ -35,7 +35,7 @@ const DOOR_OPEN_CLOSE_DELAY = 2;
 const DOOR_TWEEN_INFO = new TweenInfo(DOOR_OPEN_CLOSE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.In);
 
 @Component({ tag: "cableCar" })
-export class MyComponent extends BaseComponent<{}, CableCar> implements OnStart {
+export class MyComponent<A, I extends CableCarInstance> extends BaseComponent<A, I> implements OnStart {
 	maid: Maid;
 	startTime: number | undefined;
 	waitingTime: number | undefined;
@@ -188,7 +188,7 @@ export class MyComponent extends BaseComponent<{}, CableCar> implements OnStart 
 		});
 	}
 
-	tweenDoor(door: Door, angle: number): Tween {
+	tweenDoor(door: CableCarDoor, angle: number): Tween {
 		const hinge = door.Hinge;
 		hinge.Anchored = true;
 		const doorAngle = CFrame.Angles(0, angle, 0);
