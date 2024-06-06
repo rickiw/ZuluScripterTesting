@@ -21,7 +21,7 @@ export interface CableCarDoorPair extends Model {
 	RightDoor: CableCarDoor;
 }
 
-export interface CableCarDoor extends Model {
+export interface CableCarDoor extends BasePart {
 	Hinge: BasePart;
 }
 
