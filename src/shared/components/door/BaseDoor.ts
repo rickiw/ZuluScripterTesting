@@ -264,7 +264,7 @@ export class BaseDoor<A extends DoorAttributes, I extends DoorInstance> extends 
 		}
 	}
 
-	dutyCycle() {
+	dutyCycle(player: Player) {
 		if (this.attributes.locked) {
 			return;
 		}

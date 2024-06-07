@@ -1,7 +1,7 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
 import { New } from "@rbxts/fusion";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, TweenService, UserInputService, Workspace } from "@rbxts/services";
+import { Players, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
 import { Events } from "client/network";
 import { clientStore } from "client/store";
@@ -15,6 +15,8 @@ const Player = Players.LocalPlayer;
 const Character = (Player.Character || Player.CharacterAdded.Wait()[0]) as CharacterRigR15;
 
 const camera = Workspace.CurrentCamera!;
+
+const IS_STUDIO = RunService.IsStudio();
 
 @Controller()
 export class MenuController extends HandlesInput implements OnStart, OnRender {
@@ -81,7 +83,7 @@ export class MenuController extends HandlesInput implements OnStart, OnRender {
 
 	getMenuPanelCFrame() {
 		const rootPart = Character.HumanoidRootPart;
-		const position = rootPart.CFrame.LookVector.mul(8);
+		const position = rootPart.CFrame.LookVector.mul(IS_STUDIO ? 8 : 11);
 		const offset = new Vector3(0, 2, 0);
 		return new CFrame(rootPart.Position.add(position).add(offset), rootPart.Position.add(offset));
 	}

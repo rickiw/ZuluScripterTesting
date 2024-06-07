@@ -11,7 +11,10 @@ export class ObjectiveController implements OnStart {
 		Events.SetActiveObjective.connect((objective) => {
 			if (objective) {
 				Log.Warn("Objective {@ObjectiveName} active", objective.name, objective);
-				clientStore.setActiveObjective(objective);
+				clientStore.setActiveObjective(undefined);
+				task.delay(0.1, () => {
+					clientStore.setActiveObjective(objective);
+				});
 			} else {
 				Log.Warn("Objective is undefined");
 				clientStore.stopActiveObjective();

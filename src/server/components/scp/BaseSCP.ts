@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { Component, Components } from "@flamework/components";
 import { Dependency, Modding, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
@@ -80,14 +79,20 @@ export class BaseSCP<A extends SCPAttributes, I extends BaseSCPInstance>
 		let nearestDistance = opts.distance ?? 1000;
 
 		const eachChildren = (child: Instance) => {
-			if (!child.IsA("Model") || child.Name === this.instance.Name) return;
+			if (!child.IsA("Model") || child.Name === this.instance.Name) {
+				return;
+			}
 
-			const humanoidRootPart = child.FindFirstChild<Part>("HumanoidRootPart");
-			if (!humanoidRootPart) return;
+			const humanoidRootPart = child.FindFirstChild("HumanoidRootPart");
+			if (!humanoidRootPart || !humanoidRootPart.IsA("BasePart")) {
+				return;
+			}
 
-			if (!opts.filter(child as BaseCharacter)) return;
+			if (!opts.filter(child as BaseCharacter)) {
+				return;
+			}
 			const distance = humanoidRootPart.Position.sub(
-				this.instance.FindFirstChild<Part>("HumanoidRootPart")!.Position,
+				(this.instance.FindFirstChild("HumanoidRootPart") as BasePart).Position,
 			).Magnitude;
 
 			if (distance < nearestDistance) {
@@ -96,16 +101,18 @@ export class BaseSCP<A extends SCPAttributes, I extends BaseSCPInstance>
 			}
 		};
 
-		for (const child of Workspace.GetChildren()) eachChildren(child);
+		for (const child of Workspace.GetChildren()) {
+			eachChildren(child);
+		}
 
 		return $tuple(nearestPlayer as BaseCharacter | undefined, nearestDistance);
 	}
 
 	moveRandomly() {
 		const humanoid = this.instance.FindFirstChildOfClass("Humanoid")!;
-		const root = this.instance.FindFirstChild<Part>("HumanoidRootPart")!;
+		const humanoidRootPart = this.instance.FindFirstChild("HumanoidRootPart") as BasePart;
 
-		const currentPosition = root.Position;
+		const currentPosition = humanoidRootPart.Position;
 		const randomPosition = new Vector3(
 			currentPosition.X * 2 * math.random(),
 			currentPosition.Y,
@@ -124,9 +131,8 @@ export class BaseSCP<A extends SCPAttributes, I extends BaseSCPInstance>
 	}
 
 	stopMove() {
-		this.instance
-			.FindFirstChildOfClass("Humanoid")!
-			.MoveTo(this.instance.FindFirstChild<Part>("HumanoidRootPart")!.Position);
+		const humanoidRootPart = this.instance.FindFirstChild("HumanoidRootPart") as BasePart;
+		this.instance.FindFirstChildOfClass("Humanoid")!.MoveTo(humanoidRootPart.Position);
 
 		this.movement = MoveStatus.None;
 	}
@@ -159,9 +165,13 @@ export class BaseSCP<A extends SCPAttributes, I extends BaseSCPInstance>
 
 	private _idle = false;
 	idle() {
-		if (this._idle) return;
+		if (this._idle) {
+			return;
+		}
 
-		if (this.movement !== MoveStatus.None) this.stopMove();
+		if (this.movement !== MoveStatus.None) {
+			this.stopMove();
+		}
 		this.moveRandomly();
 
 		this._idle = true;

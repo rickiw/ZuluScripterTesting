@@ -32,6 +32,7 @@ export function RadioProvider() {
 			onTextSubmit={(text) => {
 				// TODO: Add send message logic
 				// TODO: Don't forget you need to call TextService:FilterStringAsync() 
+
 				clientStore.addRadioMessage(currentChannel, {
 					user: currentUser,
 					text,

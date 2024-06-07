@@ -124,7 +124,9 @@ export function Interaction({
 					textColor={response}
 					size={UDim2.fromScale(1, 1)}
 					text={keybind.Name}
-				/>
+				>
+					<uitextsizeconstraint MaxTextSize={100} />
+				</Text>
 				<Text
 					key="progress-text"
 					textTransparency={lerpBinding(progress, 1, 0)}
@@ -146,8 +148,8 @@ export function Interaction({
 					alwaysOnTop={true}
 					face={Enum.NormalId.Back}
 					adornee={adornee as BasePart}
-					sizingMode={Enum.SurfaceGuiSizingMode.FixedSize}
-					canvasSize={new Vector2(2350, 950)}
+					sizingMode={Enum.SurfaceGuiSizingMode.PixelsPerStud}
+					pixelsPerStud={200}
 				>
 					<InteractionState />
 				</SurfaceLayer>

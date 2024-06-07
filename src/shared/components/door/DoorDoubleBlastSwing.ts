@@ -39,7 +39,7 @@ export class DoubleBlastDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 	}
 
 	onDoorInteract(player: Player) {
-		this.dutyCycle();
+		this.dutyCycle(player);
 	}
 
 	onStart() {

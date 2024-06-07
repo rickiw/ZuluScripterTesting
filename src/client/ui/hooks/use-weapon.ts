@@ -8,12 +8,14 @@ import { WeaponBase } from "shared/constants/weapons";
 
 const player = Players.LocalPlayer;
 
-export function useWeapon(): [
-	WeaponBase | undefined,
-	(weapon: WeaponBase) => boolean,
-	(weapon: WeaponBase) => boolean,
-	(weapon: Tool) => void,
-] {
+interface UseWeaponReturn {
+	selectedWeapon: WeaponBase | undefined;
+	holdingWeapon: (weapon: WeaponBase) => boolean;
+	equipWeapon: (weapon: WeaponBase) => boolean;
+	unequipWeapon: (weapon: Tool) => void;
+}
+
+export function useWeapon(): UseWeaponReturn {
 	const selectedWeapon = useSelector(selectSelectedWeapon);
 
 	const inventoryItems = useSelector(selectInventoryItems);
@@ -29,7 +31,11 @@ export function useWeapon(): [
 			}
 		});
 
-		const clonedWeapon = Functions.EquipFirearm.invoke(weapon.baseTool).expect();
+		const [success, clonedWeapon] = Functions.EquipFirearm.invoke(weapon.baseTool).await();
+		if (!success) {
+			throw `Failed to equip weapon ${weapon.baseTool.Name}, unsuccessful server response`;
+		}
+
 		if (!clonedWeapon) {
 			clientStore.setSelectedWeapon(undefined);
 			return false;
@@ -68,5 +74,5 @@ export function useWeapon(): [
 		Events.UnequipFirearm.fire(inventoryItem.tool);
 	};
 
-	return [selectedWeapon, holdingWeapon, equipWeapon, unequipWeapon];
+	return { selectedWeapon, holdingWeapon, equipWeapon, unequipWeapon };
 }

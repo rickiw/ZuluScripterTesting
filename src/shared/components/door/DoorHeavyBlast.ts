@@ -32,7 +32,7 @@ export class HeavyBlastDoor extends BaseDoor<DoorAttributes, DoorInstance> imple
 	}
 
 	onDoorInteract(player: Player) {
-		this.dutyCycle();
+		this.dutyCycle(player);
 	}
 
 	onStart() {
