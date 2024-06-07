@@ -15,8 +15,8 @@ export function CharacterCustomizationPageProvider() {
 	return (
 		<>
 			<Frame
-				position={UDim2.fromOffset(rem(0), rem(17.5))}
-				size={new UDim2(0, rem(45), 1, -rem(27.5))}
+				position={UDim2.fromOffset(rem(0), rem(10.5))}
+				size={new UDim2(1, 0, 1, -rem(20.5))}
 				backgroundTransparency={1}
 			>
 				{selectedPage === "teams" && <CustomizeTeamsPage />}

@@ -23,7 +23,7 @@ export function UpgradeProvider() {
 							modification={modificationMount}
 							clicked={() => {
 								clientStore.setSelectedModificationMount(modificationMount);
-								clientStore.setWeaponCustomizationPage("attachments");
+								clientStore.setWeaponCustomizationPage("mods");
 							}}
 						/>
 					</billboardgui>

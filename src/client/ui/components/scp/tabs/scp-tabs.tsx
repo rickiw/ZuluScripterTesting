@@ -23,6 +23,7 @@ interface SCPTabProps {
 interface SCPTabsProps extends FrameProps {
 	selectedPage?: string;
 	selectedIndex?: number;
+	fat?: boolean;
 }
 
 export const SCPTab = ({ page, onClick, rectOffset, rectSize, icon, selectedPage }: SCPTabProps) => {
@@ -83,18 +84,27 @@ export const SCPTabs = (props: SCPTabsProps) => {
 	const rem = useRem();
 	const tabSize = UDim2.fromOffset(rem(6), rem(4));
 	return (
-		<Group size={UDim2.fromOffset(rem(45), rem(7))} position={props.position}>
+		<Group size={props.size} position={props.position}>
 			<Frame size={UDim2.fromOffset(rem(45), rem(4.5))} backgroundTransparency={1} zIndex={2}>
 				<uigridlayout CellPadding={UDim2.fromOffset(0, rem(0))} CellSize={tabSize} />
 				{props.children}
 			</Frame>
-			<Image
-				size={new UDim2(1, 0, 0, rem(0.2))}
-				position={UDim2.fromOffset(rem(0), rem(4.25))}
-				anchorPoint={new Vector2(0, 0.5)}
-				imageTransparency={props.backgroundTransparency ?? 0}
-				image={images.ui.misc.divider}
-			/>
+			{!props.fat ? (
+				<Image
+					size={new UDim2(1, 0, 0, rem(0.2))}
+					position={UDim2.fromOffset(rem(0), rem(4.25))}
+					anchorPoint={new Vector2(0, 0.5)}
+					imageTransparency={props.backgroundTransparency ?? 0}
+					image={images.ui.misc.divider}
+				/>
+			) : (
+				<Frame
+					size={new UDim2(1, 0, 0, rem(1.5))}
+					position={UDim2.fromOffset(0, rem(4))}
+					backgroundColor={palette.surface1}
+					backgroundTransparency={props.backgroundTransparency}
+				/>
+			)}
 			{props.selectedIndex !== undefined ? (
 				<Image
 					anchorPoint={new Vector2(0.5, 1)}
@@ -113,14 +123,24 @@ export const SCPTabs = (props: SCPTabsProps) => {
 
 			{props.selectedPage ? (
 				<Frame
-					size={new UDim2(0, rem(10), 0, rem(1.5))}
-					position={UDim2.fromOffset(0, rem(4.4))}
+					size={new UDim2(0, rem(5), 0, rem(1.5))}
+					autoSize={"X"}
+					position={UDim2.fromOffset(
+						props.fat ? (math.max(1, props.selectedIndex ?? 0) - 1) * tabSize.Width.Offset : 0,
+						rem(props.fat ? 4 : 4.4),
+					)}
 					backgroundColor={Color3.fromRGB(61, 65, 42)}
 					backgroundTransparency={props.backgroundTransparency}
 				>
+					<uipadding PaddingLeft={new UDim(0, rem(0.5))} PaddingRight={new UDim(0, rem(0.5))} />
+					<uilistlayout
+						FillDirection={"Horizontal"}
+						VerticalAlignment={"Center"}
+						HorizontalAlignment={"Center"}
+					/>
 					<Text
-						size={UDim2.fromScale(0.75, 1)}
-						position={UDim2.fromScale(0.15, 0)}
+						layoutOrder={1}
+						textAutoResize="XY"
 						text={props.selectedPage.upper()}
 						textSize={rem(1.25)}
 						textXAlignment="Left"
@@ -128,9 +148,10 @@ export const SCPTabs = (props: SCPTabsProps) => {
 						font={fonts.robotoMono.regular}
 						textTransparency={props.backgroundTransparency}
 					/>
+					<Group layoutOrder={2} size={UDim2.fromOffset(rem(2), rem(1.5))}></Group>
 					<Text
-						size={UDim2.fromScale(0.2, 1)}
-						position={UDim2.fromScale(0.75, 0)}
+						layoutOrder={3}
+						textAutoResize="XY"
 						text={string.format("%02d", props.selectedIndex ?? 0)}
 						textXAlignment="Right"
 						textSize={rem(1.25)}

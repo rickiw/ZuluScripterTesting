@@ -12,7 +12,7 @@ const Story: WithControls<typeof controls> = {
 	story: (props) => {
 		return (
 			<>
-				<SCPTabs>
+				<SCPTabs size={UDim2.fromOffset(720, 112)}>
 					<SCPTab page="PRIMARY" index={1} icon="rifle" />
 					<SCPTab page="SECONDARY" index={2} icon="handgun" />
 					<SCPTab page="MELEE" index={3} icon="knife" />
