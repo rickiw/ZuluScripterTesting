@@ -56,6 +56,7 @@ return {
 				research = "rbxassetid://17254583568",
 				rifle = "rbxassetid://17151021263",
 				rifleselected = "rbxassetid://17151021382",
+				scp_badge = "rbxassetid://17280979270",
 				scrollbarbot = "rbxassetid://17264959824",
 				scrollbarmid = "rbxassetid://17264959908",
 				scrollbartop = "rbxassetid://17264960001",

@@ -34,10 +34,10 @@ const Story: WithControls<typeof controls> = {
 			},
 		]);
 		clientStore.setPlayerList([
-			{ team: "MTF", members: ["Player1", "Player2", "Player3"], teamColor: new Color3(0, 0, 1) },
-			{ team: "CI", members: ["Player4", "Player5", "Player6"], teamColor: new Color3(1, 0, 0) },
-			{ team: "SCP", members: ["Player7", "Player8", "Player9"], teamColor: new Color3(1, 1, 1) },
-			{ team: "SCD", members: ["Player10", "Player11", "Player12"], teamColor: new Color3(0, 1, 0) },
+			{ team: "MTF", members: ["Player1", "Player2", "Player3"] },
+			{ team: "CI", members: ["Player4", "Player5", "Player6"] },
+			{ team: "SCP", members: ["Player7", "Player8", "Player9"] },
+			{ team: "SCD", members: ["Player10", "Player11", "Player12"] },
 		]);
 		clientStore.setTerminalOpen(props.controls.isOpen);
 		return (

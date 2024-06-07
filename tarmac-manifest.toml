@@ -253,6 +253,11 @@ hash = "f3e09eca3cb8537ffe0b5930750bd44b0861dc0fa39e8660a8d2c12d67670ad4"
 id = 17151021382
 packable = false
 
+[inputs."assets/images/ui/icons/scp_badge.png"]
+hash = "ed1bfbe14008a34ae7313750f4abf6cf8967c25584cbd22c640e5e1177b2fcd9"
+id = 17280979270
+packable = false
+
 [inputs."assets/images/ui/icons/scrollbarbot.png"]
 hash = "a6eab2ab82a8220402ad6cdf8b1f604a8a4195156eb85f180733913126c62455"
 id = 17264959824
