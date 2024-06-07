@@ -53,6 +53,7 @@ export interface ServerToClientEvents extends ServerToClientRoombaEvents, Server
 	ToggleCollision(instance: Instance, toggled: boolean): void;
 	ToggleCookMenu(): void;
 	SetWeaponInfo(weaponName: string, ammo: number, reserve: number, override?: boolean): void;
+	UnloadWeapon(): void;
 
 	PlayHitmarker: Networking.Unreliable<() => void>;
 	EnemyKilled(): void;
@@ -96,7 +97,9 @@ interface ClientToServerFunctions {
 	SetDoorStatus(door: string, active: boolean): boolean;
 }
 
-interface ServerToClientFunctions {}
+interface ServerToClientFunctions {
+	LoadWeapon(weapon: Tool): boolean;
+}
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();
 export const GlobalFunctions = Networking.createFunction<ClientToServerFunctions, ServerToClientFunctions>();

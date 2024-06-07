@@ -7,13 +7,12 @@ import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Option } from "@rbxts/rust-classes";
 import { Players, ReplicatedStorage, RunService, Workspace } from "@rbxts/services";
-import { Events, Functions } from "server/network";
+import { Events } from "server/network";
 import { EnemyService } from "server/services/EnemyService";
 import { FirearmService } from "server/services/FirearmService";
 import { EntityID } from "server/services/IDService";
 import { DamageContributor, DamageSource, HealthChange } from "server/services/variants";
 import { serverStore } from "server/store";
-import { selectPlayerSave } from "server/store/saves";
 import {
 	FirearmAnimations,
 	FirearmLike,
@@ -25,7 +24,14 @@ import {
 	IModificationSave,
 } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
-import { AnimationUtil, Indexable, getCharacterFromHit, getLimbProjectileDamage, isLimb } from "shared/utils";
+import {
+	AnimationUtil,
+	CachedValue,
+	Indexable,
+	getCharacterFromHit,
+	getLimbProjectileDamage,
+	isLimb,
+} from "shared/utils";
 
 export interface FirearmInstance extends Tool {
 	Muzzle: BasePart & {
@@ -45,10 +51,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	extends BaseComponent<A, I>
 	implements OnStart
 {
-	tool: Tool;
-	wielder: Player;
-	character: CharacterRigR15 | undefined;
-
+	wielder = new CachedValue<(Player & { Character: CharacterRigR15 }) | undefined>();
 	equipped: boolean;
 
 	loaded: boolean;
@@ -70,10 +73,9 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		private enemyService: EnemyService,
 	) {
 		super();
+
 		this.configuration = this.getRawConfiguration();
-		this.wielder = this.getWielder();
-		this.tool = this.instance;
-		this.equipped = false;
+		this.equipped = this.wielder !== undefined;
 
 		this.caster = new FastCast();
 		this.loaded = false;
@@ -82,68 +84,54 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 		this.state = {
 			configuration: this.configuration,
-			magazine: new FirearmMagazine(this.configuration.Magazine),
+			magazine: new FirearmMagazine(this.configuration.magazine),
 			cooldown: false,
 			reloading: false,
-			reserve: this.configuration.Magazine.capacity,
-			mode: this.configuration.Barrel.fireModes[0],
+			reserve: this.configuration.magazine.capacity,
+			mode: this.configuration.barrel.fireModes[0],
 		};
 
 		this.state.magazine.onChanged.Connect(() => {
-			serverStore.setWeapon(this.wielder.UserId, this.state);
-		});
-
-		Events.UnequipFirearm.connect((player, weapon) => {
-			if (weapon === this.tool && player === this.wielder) {
-				const state = serverStore.getState();
-				const data = selectPlayerSave(player.UserId)(state);
-				if (!data) {
-					Log.Warn(
-						"Player {@Player} doesn't have save data | FirearmService->PlayerDataRemoving",
-						player.Name,
-					);
-					return;
-				}
-				const weaponData = data.weaponData;
-
-				for (const key of Object.keys(weaponData)) {
-					if (key === this.tool.Name) {
-						const newWeaponData = this.firearmService.getUpdatedWeaponData(weaponData, key, {
-							ammo: this.state.reserve,
-							magazine: this.state.magazine.holding,
-							equipped: true,
-						});
-
-						serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
-					}
-				}
-
-				this.instance.Destroy();
+			const wielder = this.wielder.get();
+			if (!wielder) {
+				Log.Warn("No wielder | BaseFirearm->MagazineChanged");
+				return;
 			}
+			Log.Info("Magazine changed | BaseFirearm->MagazineChanged");
+			this.setWeaponState(wielder, this.state);
 		});
-
-		this.character = this.wielder.Character as CharacterRigR15;
 
 		Events.Help.connect((player) => {
-			if (player === this.wielder) {
-				Log.Warn("Giving extra 30 bullets to {@Player}", this.wielder.Name);
+			const wielder = this.wielder.get();
+			if (player === wielder) {
+				Log.Warn("Giving extra 30 bullets to {@Player}", wielder.Name);
 				this.updateState({ reserve: this.state.reserve + 30 });
 			}
 		});
 	}
 
 	onStart() {
-		this.load();
+		this.instance.Destroying.Connect(() => {
+			Log.Warn("Destroying weapon | BaseFirearm->Destroying");
+			this.unload(this.wielder.get() ?? this.wielder.oldValue!);
+			// this.destroy();
+		});
 
 		this.instance.AncestryChanged.Connect((instance, parent) => {
-			if (parent && (parent.IsA("Model") || parent.IsA("Backpack"))) {
+			if (!parent || !parent.IsDescendantOf(game)) {
+				this.wielder.set(undefined);
+				return;
+			}
+			if (parent.IsA("Model") || parent.IsA("Backpack")) {
 				const player = parent.IsA("Model") ? Players.GetPlayerFromCharacter(parent) : parent.Parent;
+
 				if (player && player.IsA("Player")) {
-					if (player === this.wielder) {
+					if (player === this.wielder.get()) {
 						return;
 					} else {
-						this.unload();
-						this.load();
+						this.wielder.set(player as never);
+						this.unload(player);
+						this.load(player);
 					}
 				}
 			}
@@ -156,7 +144,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	private getWielder() {
 		const parent = this.instance.Parent;
-		Log.Warn("Getting wielder | Parent: {@Parent}", parent);
+
 		if (parent && parent.IsA("Model")) {
 			return Players.GetPlayerFromCharacter(parent) as Player & { Character: CharacterRigR15 };
 		} else {
@@ -165,36 +153,52 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	loadAnimations() {
-		while (!this.character || !this.character.IsDescendantOf(Workspace)) {
-			wait();
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->LoadAnimations");
+			return;
 		}
-		this.character.WaitForChild("Humanoid");
+
+		wielder.Character.WaitForChild("Humanoid", 5);
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
-			this.character.Humanoid.Animator,
+			wielder.Character.Humanoid.Animator,
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
-	load() {
+	load(player: Player) {
+		Log.Info("ServerSide weapon loaded | BaseFirearm->Load");
+		serverStore.setWeapon(player.UserId, this.state);
+
 		this.initBehavior();
 		this.initRemotes();
 		this.loadAnimations();
+
 		this.loaded = true;
 	}
 
-	unload() {
+	unload(player: Player) {
 		for (const key of Object.keys(this.connections)) {
 			this.connections[key].Disconnect();
 		}
+
+		Events.UnloadWeapon.fire(player);
+		this.firearmService.unloadWeapon(this.instance);
 		this.loaded = false;
 	}
 
 	initBehavior() {
-		if (!this.character) {
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->initBehavior");
+			return;
+		}
+
+		if (!wielder.Character) {
 			return;
 		}
 		const params = new RaycastParams();
-		params.FilterDescendantsInstances = [this.character, this.tool];
+		params.FilterDescendantsInstances = [wielder.Character, this.instance];
 		params.FilterType = Enum.RaycastFilterType.Exclude;
 
 		this.behavior = FastCast.newBehavior();
@@ -216,83 +220,86 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	initRemotes() {
-		Functions.FireFirearm.setCallback((player, weapon, mousePosition) => {
-			if (!this.equipped || player !== this.wielder || weapon !== this.tool || !this.canFire()) {
-				if (!this.canFire()) {
-					Log.Warn("Cannot fire weapon | BaseFirearm->FireFirearm");
-				}
-				if (!this.equipped && player === this.wielder) {
-					Log.Warn("Weapon not equipped | BaseFirearm->FireFirearm");
-				}
-				if (player === this.wielder && weapon !== this.tool) {
-					Log.Warn(
-						"Player {@Player} weapon {@Weapon} mismatch | BaseFirearm->FireFirearm",
-						player.Name,
-						weapon.Name,
-					);
-				}
-				return false;
-			}
-			const direction = mousePosition.sub(this.configuration.Barrel.firePoint.WorldPosition).Unit;
-			this.fire(direction);
-			Log.Warn("Firing weapon | BaseFirearm->FireFirearm");
-			return true;
-		});
-
-		this.connections.reloadRemote = Events.ReloadFirearm.connect((player, weapon) => {
-			if (player === this.wielder && weapon === this.tool && this.equipped) {
-				Log.Warn("Reloading weapon | BaseFirearm->ReloadFirearm");
-				this.reload();
-			}
-		});
-
 		this.connections.update = RunService.Heartbeat.Connect(() => {
 			this.state.configuration = this.configuration;
 		});
 
 		this.connections.magUpdate = this.state.magazine.onChanged.Connect(() => {
-			serverStore.setWeapon(this.wielder.UserId, this.state);
+			const wielder = this.wielder.get();
+			if (!wielder) {
+				Log.Warn("No wielder | BaseFirearm->MagazineChanged");
+				return;
+			}
+			Log.Info("Magazine changed | BaseFirearm->MagazineChanged");
+			this.setWeaponState(wielder, this.state);
 		});
 
-		this.connections.equipped = this.tool.Equipped.Connect(() => {
+		this.connections.equipped = this.instance.Equipped.Connect(() => {
 			this.equip();
 		});
 
-		this.connections.unequipped = this.tool.Unequipped.Connect(() => {
+		this.connections.unequipped = this.instance.Unequipped.Connect(() => {
 			this.unequip();
 		});
 	}
 
+	setWeaponState(player: Player, state: FirearmState | undefined) {
+		if (!state) {
+			Log.Warn("No state to set | BaseFirearm->SetWeaponState");
+		}
+		serverStore.updateWeapon(player.UserId, state as never);
+	}
+
 	equip() {
-		this.wielder = this.getWielder();
-		serverStore.setWeapon(this.wielder.UserId, this.state);
-		Events.ToggleWeaponEquip.fire(this.wielder, true);
-		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve, true);
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->Equip");
+			return;
+		}
+		Events.ToggleWeaponEquip.fire(wielder, true);
+		this.updateClientState(wielder, true);
+		this.setWeaponState(wielder, this.state);
 		this.equipped = true;
 	}
 
 	unequip() {
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->Unequip");
+			return;
+		}
 		this.updateState({ reloading: false });
-		serverStore.setWeapon(this.wielder.UserId, undefined);
 		AnimationUtil.stopAll(this.loadedAnimations);
-		Events.ToggleWeaponEquip.fire(this.wielder, false);
+		Events.ToggleWeaponEquip.fire(wielder, false);
 		this.soundManager.play("AimOut");
 		this.equipped = false;
 	}
 
 	getVelocity() {
-		return this.configuration.Barrel.velocity + this.configuration.Barrel.chambered.velocity;
+		return this.configuration.barrel.velocity + this.configuration.barrel.chambered.velocity;
 	}
 
 	updateState(update: Partial<FirearmState>) {
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->UpdateState");
+			return;
+		}
 		this.state = { ...this.state, ...update };
-		serverStore.setWeapon(this.wielder.UserId, this.state);
-		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
+		Log.Info("Updated state | BaseFirearm->UpdateState");
+		this.setWeaponState(wielder, this.state);
+		this.updateClientState(wielder);
 	}
 
 	updateMagazineHolding(holding: number) {
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->UpdateMagazineHolding");
+			return;
+		}
 		this.state.magazine.holding = holding;
-		serverStore.setWeapon(this.wielder.UserId, this.state);
+		Log.Info("Updated magazine holding | BaseFirearm->UpdateMagazineHolding");
+		this.setWeaponState(wielder, this.state);
 	}
 
 	updateToolAttachmentsByName(weapon: Tool, modifications: IModificationSave[]) {
@@ -354,15 +361,17 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	fire(direction: Vector3) {
-		if (this.state.magazine === undefined || (this.state.magazine.holding <= 0 && this.state.reserve <= 0)) {
+		if (this.state.magazine === undefined || this.state.magazine.holding <= 0) {
 			this.soundManager.play("ChamberEmpty");
 		}
+
 		if (!this.canFire()) {
+			Log.Warn("Cannot fire weapon last check | BaseFirearm->Fire");
 			return;
 		}
 
 		this.caster.Fire(
-			this.configuration.Barrel.firePoint.WorldPosition,
+			this.configuration.barrel.firePoint.WorldPosition,
 			direction,
 			this.getVelocity(),
 			this.behavior,
@@ -376,24 +385,48 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			this.instance.Muzzle.MuzzleLight.Enabled = false;
 		});
 
-		this.state.cooldown = true;
-		serverStore.setWeapon(this.wielder.UserId, this.state);
-		task.delay(60 / this.configuration.Barrel.rpm, () => {
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->Fire");
+			return;
+		}
+
+		this.updateState({ cooldown: true });
+		this.setWeaponState(wielder, this.state);
+		task.delay(60 / this.configuration.barrel.rpm, () => {
 			this.updateState({ cooldown: false });
 		});
 
 		this.soundManager.play("Fire", { volume: 0.6 });
 		this.loadedAnimations.Fire.Play();
 		this.state.magazine.take();
-		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
+		this.updateClientState(wielder);
+	}
+
+	updateClientState(player: Player, override?: boolean) {
+		Log.Warn("Updated client state | BaseFirearm->UpdateClientState");
+		Events.SetWeaponInfo.fire(
+			player,
+			this.instance.Name,
+			this.state.magazine.holding,
+			this.state.reserve,
+			override ?? false,
+		);
 	}
 
 	reload() {
 		if (this.state.reloading) {
+			Log.Warn("Already reloading | BaseFirearm->Reload");
 			return;
 		}
 		if (this.state.reserve <= 0) {
+			Log.Warn("No bullets in reserve | BaseFirearm->Reload");
 			this.soundManager.play("ChamberEmpty");
+			return;
+		}
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->Reload");
 			return;
 		}
 
@@ -407,30 +440,36 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.loadedAnimations.Reload.Stopped.Wait();
 
 		if (!this.state.reloading) {
+			Log.Warn("Reload cancelled | BaseFirearm->Reload");
 			return;
 		}
 
 		this.updateState({ reserve: this.state.reserve - bulletsToFill, reloading: false });
 		this.updateMagazineHolding(this.state.magazine.holding + bulletsToFill);
-		Events.SetWeaponInfo.fire(this.wielder, this.tool.Name, this.state.magazine.holding, this.state.reserve);
+		this.updateClientState(wielder);
 	}
 
 	cycleFireModes() {
-		// mode is a string
 		this.state.mode =
-			this.configuration.Barrel.fireModes[
-				(this.configuration.Barrel.fireModes.indexOf(this.state.mode) + 1) %
-					this.configuration.Barrel.fireModes.size()
+			this.configuration.barrel.fireModes[
+				(this.configuration.barrel.fireModes.indexOf(this.state.mode) + 1) %
+					this.configuration.barrel.fireModes.size()
 			];
 
-		serverStore.setWeapon(this.wielder.UserId, this.state);
+		const wielder = this.wielder.get();
+		if (!wielder) {
+			Log.Warn("No wielder | BaseFirearm->CycleFireModes");
+			return;
+		}
+		Log.Info("Cycled fire mode | BaseFirearm->CycleFireModes");
+		this.setWeaponState(wielder, this.state);
 	}
 
 	makeProjectile(result: RaycastResult) {
 		return {
-			...this.configuration.Barrel.chambered,
-			from: this.configuration.Barrel.firePoint.Position,
-			direction: this.configuration.Barrel.firePoint.Position.sub(result.Position).Unit,
+			...this.configuration.barrel.chambered,
+			from: this.configuration.barrel.firePoint.Position,
+			direction: this.configuration.barrel.firePoint.Position.sub(result.Position).Unit,
 		} as FirearmProjectile;
 	}
 
@@ -441,6 +480,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const projectileData = this.makeProjectile(result);
 			const healthBefore = humanoid.Health;
 			const damage = getLimbProjectileDamage(result.Instance, projectileData);
+			const wielder = this.wielder.get();
+			if (!wielder) {
+				Log.Warn("No wielder | BaseFirearm->OnHit");
+				return;
+			}
 
 			const invincible = character.GetAttribute("invincible") as boolean;
 			if (invincible) {
@@ -449,7 +493,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			const characterEntityId = character.GetAttribute("entityId") as EntityID;
 			humanoid.TakeDamage(damage);
 			if (healthBefore > 0) {
-				Events.PlayHitmarker.fire(this.wielder);
+				Events.PlayHitmarker.fire(wielder);
 			}
 			if (characterEntityId === undefined) {
 				Log.Warn(
@@ -459,7 +503,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				return;
 			}
 
-			const shooter = this.wielder.Character!;
+			const shooter = wielder.Character!;
 			const crit = humanoid.Health <= 0;
 			const healthChange: HealthChange = {
 				amount: damage,
@@ -469,7 +513,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				crit,
 			};
 			if (crit && healthBefore > 0) {
-				Events.EnemyKilled.fire(this.wielder);
+				Events.EnemyKilled.fire(wielder);
 			}
 			this.enemyService.handleDamage(characterEntityId, healthChange);
 		}
