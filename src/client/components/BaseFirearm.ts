@@ -10,7 +10,7 @@ import { selectCameraBias, selectCameraOffset } from "client/store/camera";
 import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
-import { AnimationUtil, ExtendedMaid, ExtendedMaidTest } from "shared/utils";
+import { AnimationUtil, ExtendedMaid } from "shared/utils";
 import { ControlSet } from "./controls";
 
 export interface FirearmInstance extends Tool {}
@@ -44,8 +44,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	loaded = false;
 	equipped = false;
 	debug = false;
-	_connections = new ExtendedMaid();
-	connections = new ExtendedMaidTest<
+	connections = new ExtendedMaid<
 		"activated" | "updateInfo" | "equipped" | "unequipped" | "loop" | "onClean" | "unload"
 	>();
 
@@ -93,7 +92,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 					);
 					return;
 				}
-				Log.Warn("Activated | BaseFirearm->Activated");
 				this.fire();
 			}),
 		);
@@ -125,10 +123,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 					if (!this.firing || !this.state || this.state.cooldown || this.state.mode !== "Automatic") {
 						if (!this.state) {
 							Log.Warn("No State");
-						} else if (this.state.cooldown) {
-							Log.Warn("Cooldown: {@Cooldown}", this.state.cooldown);
-						} else if (this.state.mode !== "Automatic") {
-							Log.Warn("Mode: {@Mode}", this.state.mode);
 						} else if (!this.firing && this.debug) {
 							Log.Warn("not Firing");
 						}
@@ -149,7 +143,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				return true;
 			}
 
-			Log.Warn("Not this weapon | BaseFirearm->onStart");
 			return false;
 		});
 	}
@@ -202,9 +195,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	fire() {
 		const [success, fired] = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).await();
-		Log.Warn("Fired: {@Fired}", fired);
 		if (!success) {
 			throw "Failed to fire firearm.";
+		} else if (!fired) {
+			Log.Warn("Failed to fire firearm | BaseFirearm->fire");
+			return;
 		}
 
 		if (fired) {
@@ -262,8 +257,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		});
 
 		this.controls.add({
-			ID: "rejr",
-			Name: "test",
+			ID: "weapon-debug",
+			Name: "Deubg",
 			Enabled: false,
 			Mobile: false,
 			controls: [Enum.KeyCode.KeypadFive],

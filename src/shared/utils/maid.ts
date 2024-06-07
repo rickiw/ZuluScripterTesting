@@ -4,7 +4,7 @@ import Object from "@rbxts/object-utils";
 import Signal from "@rbxts/signal";
 import { Indexable } from "./array";
 
-export class ExtendedMaidTest<T extends string> {
+export class ExtendedMaid<T extends string> {
 	connections: Indexable<T, RBXScriptConnection> = {} as Indexable<T, RBXScriptConnection>;
 	threads: Array<thread> = [];
 
@@ -32,7 +32,7 @@ export class ExtendedMaidTest<T extends string> {
 	}
 }
 
-export class ExtendedMaid {
+export class ExtendedMaidTest {
 	private maid: Maid;
 	private tasks = 0;
 

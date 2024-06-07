@@ -55,10 +55,13 @@ export class FirearmService implements OnStart, CharacterRemoving {
 			}
 
 			const wielder = mappedWeapon.wielder.get();
-			if (player !== wielder || weapon !== mappedWeapon.instance) {
+			if (player !== wielder || weapon !== mappedWeapon.instance || !mappedWeapon.equipped) {
 				return false;
 			}
-			if (!mappedWeapon.equipped || !mappedWeapon.canFire()) {
+			if (!mappedWeapon.canFire()) {
+				if (mappedWeapon.state.magazine.holding === 0) {
+					mappedWeapon.soundManager.play("ChamberEmpty");
+				}
 				return false;
 			}
 			const direction = mousePosition.sub(mappedWeapon.configuration.barrel.firePoint.WorldPosition).Unit;
@@ -157,11 +160,9 @@ export class FirearmService implements OnStart, CharacterRemoving {
 		this.mappedWeapons.set(weaponClone, firearmClass);
 		firearmClass.wielder.set(player as never);
 		firearmClass.load(player);
-		Log.Info("Updating client state");
 		firearmClass.updateState({
 			reserve: weaponData[weapon.Name as WEAPON].reserve,
 		});
-		Log.Info("Updated client state");
 		firearmClass.updateMagazineHolding(weaponData[weapon.Name as WEAPON].magazine);
 		firearmClass.updateToolAttachmentsByName(weaponClone, modifications);
 		return weaponClone;

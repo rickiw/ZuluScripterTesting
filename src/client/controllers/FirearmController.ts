@@ -29,7 +29,7 @@ export class FirearmController implements OnStart {
 				Log.Warn("No loaded weapon | BaseFirearm->SetWeaponInfo");
 				return;
 			}
-			Log.Error("Setting weapon info | BaseFirearm->SetWeaponInfo");
+
 			const equippedWeaponInfo = clientStore.getState(selectEquippedWeaponInfo);
 			if (loadedWeapon.instance.Name !== weaponName || (!override && !equippedWeaponInfo)) {
 				Log.Warn("Weapon name does not match or override is false, returning | BaseFirearm->SetWeaponInfo");

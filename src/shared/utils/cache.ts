@@ -1,4 +1,3 @@
-import Log from "@rbxts/log";
 import Signal from "@rbxts/signal";
 
 export class CachedValue<T> {
@@ -19,6 +18,5 @@ export class CachedValue<T> {
 		if (this.value !== this.oldValue) {
 			this.onChanged.Fire(this.value, this.oldValue);
 		}
-		Log.Warn("Set Value: {@Value}", this.value);
 	}
 }

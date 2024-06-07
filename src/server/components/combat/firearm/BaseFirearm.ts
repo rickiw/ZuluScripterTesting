@@ -97,7 +97,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				Log.Warn("No wielder | BaseFirearm->MagazineChanged");
 				return;
 			}
-			Log.Info("Magazine changed | BaseFirearm->MagazineChanged");
 			this.setWeaponState(wielder, this.state);
 		});
 
@@ -112,9 +111,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	onStart() {
 		this.instance.Destroying.Connect(() => {
-			Log.Warn("Destroying weapon | BaseFirearm->Destroying");
 			this.unload(this.wielder.get() ?? this.wielder.oldValue!);
-			// this.destroy();
 		});
 
 		this.instance.AncestryChanged.Connect((instance, parent) => {
@@ -142,16 +139,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		return require(this.instance.FindFirstChildOfClass("ModuleScript")!) as FirearmLike;
 	}
 
-	private getWielder() {
-		const parent = this.instance.Parent;
-
-		if (parent && parent.IsA("Model")) {
-			return Players.GetPlayerFromCharacter(parent) as Player & { Character: CharacterRigR15 };
-		} else {
-			return this.instance.FindFirstAncestorOfClass("Player") as Player & { Character: CharacterRigR15 };
-		}
-	}
-
 	loadAnimations() {
 		const wielder = this.wielder.get();
 		if (!wielder) {
@@ -167,7 +154,11 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	load(player: Player) {
-		Log.Info("ServerSide weapon loaded | BaseFirearm->Load");
+		Log.Info(
+			"ServerSide weapon loaded {@Weapon} for {@Player} | BaseFirearm->Load",
+			this.instance.Name,
+			player.Name,
+		);
 		serverStore.setWeapon(player.UserId, this.state);
 
 		this.initBehavior();
@@ -214,7 +205,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		);
 
 		this.connections.rayHit = this.caster.RayHit.Connect((caster, result, segmentVelocity) => {
-			Log.Verbose("Hit something");
 			this.onHit(result, segmentVelocity);
 		});
 	}
@@ -230,7 +220,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 				Log.Warn("No wielder | BaseFirearm->MagazineChanged");
 				return;
 			}
-			Log.Info("Magazine changed | BaseFirearm->MagazineChanged");
 			this.setWeaponState(wielder, this.state);
 		});
 
@@ -286,7 +275,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			return;
 		}
 		this.state = { ...this.state, ...update };
-		Log.Info("Updated state | BaseFirearm->UpdateState");
 		this.setWeaponState(wielder, this.state);
 		this.updateClientState(wielder);
 	}
@@ -298,7 +286,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			return;
 		}
 		this.state.magazine.holding = holding;
-		Log.Info("Updated magazine holding | BaseFirearm->UpdateMagazineHolding");
 		this.setWeaponState(wielder, this.state);
 	}
 
@@ -404,7 +391,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 	}
 
 	updateClientState(player: Player, override?: boolean) {
-		Log.Warn("Updated client state | BaseFirearm->UpdateClientState");
 		Events.SetWeaponInfo.fire(
 			player,
 			this.instance.Name,
