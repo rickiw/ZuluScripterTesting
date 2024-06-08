@@ -167,6 +167,10 @@ export class CameraController implements OnStart, OnRender {
 
 	matchCharacterCamera(recoil: CFrame, newCFrame: CFrame) {
 		const state = clientStore.getState();
+		const weaponEquipped = selectWeaponEquipped(state);
+		if (!weaponEquipped) {
+			return;
+		}
 		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
 		if (!isAiming) {
 			character.UpperTorso.Waist.C0 = character.UpperTorso.Waist.C0.Lerp(this.originalCFrames.upperTorso, 0.15);

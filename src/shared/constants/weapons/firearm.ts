@@ -64,6 +64,7 @@ export interface FirearmAnimations<T extends number | string | AnimationTrack | 
 	Reload: T;
 	Aim: T;
 	Fire: T;
+	Run: T;
 }
 
 export interface FirearmSounds {

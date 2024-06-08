@@ -2,11 +2,13 @@ import { BaseComponent, Component } from "@flamework/components";
 import { OnRender, OnStart } from "@flamework/core";
 import CameraShaker from "@rbxts/camera-shaker";
 import Log from "@rbxts/log";
+import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, RunService, UserInputService } from "@rbxts/services";
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
 import { selectCameraBias, selectCameraOffset } from "client/store/camera";
+import { selectSprinting } from "client/store/character";
 import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
@@ -52,6 +54,8 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	state!: FirearmState | undefined;
 	soundManager: FirearmSoundManager<FirearmSounds>;
+
+	maid = new Maid();
 
 	constructor() {
 		super();
@@ -151,6 +155,16 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		this.loadAnimations();
 
 		clientStore.setLoadedWeapon(this);
+
+		this.maid.GiveTask(() => {
+			clientStore.subscribe(selectSprinting, (sprinting) => {
+				if (sprinting) {
+					this.loadedAnimations.Run.Play();
+				} else {
+					this.loadedAnimations.Run.Stop();
+				}
+			});
+		});
 
 		clientStore.subscribe(selectWeapon(player.UserId), (weaponState, oldWeaponState) => {
 			if (oldWeaponState !== undefined && weaponState === undefined) {

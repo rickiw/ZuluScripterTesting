@@ -1,4 +1,4 @@
-import Roact, { useEffect } from "@rbxts/roact";
+import Roact, { useEffect, useState } from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { useWeapon } from "client/ui/hooks/use-weapon";
 import { Button } from "client/ui/library/button/button";
@@ -24,6 +24,8 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
 
+	const [dontTouch, setDontTouch] = useState(false);
+
 	useEffect(() => {
 		if (isSelectedWeapon) {
 			effectTransparencyMotion.spring(0.4, springs.responsive);
@@ -39,9 +41,15 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 				event={{
 					MouseButton1Click: () => {
 						const newSelectedWeapon = selectedWeapon === weapon ? undefined : weapon;
+						if (dontTouch) {
+							return;
+						}
 
 						if (newSelectedWeapon) {
+							// setDontTouch(true);
+							// unequipWeapon(weapon.baseTool);
 							equipWeapon(newSelectedWeapon);
+							// });
 						} else {
 							unequipWeapon(weapon.baseTool);
 						}
