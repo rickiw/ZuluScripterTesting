@@ -1,12 +1,18 @@
 import Log from "@rbxts/log";
 import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
-import Roact from "@rbxts/roact";
+import Roact, { useEffect } from "@rbxts/roact";
 import { Players, RunService } from "@rbxts/services";
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
-import { selectActiveObjective, selectMenuObjective, selectPlayerSave } from "client/store/menu";
+import {
+	selectActiveObjective,
+	selectActiveObservingObjective,
+	selectPlayerSave,
+	selectSelectedObjective,
+} from "client/store/menu";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
@@ -26,31 +32,75 @@ function Objective({ objective }: ObjectiveProps) {
 
 	const { name, description, priority } = objective;
 	const playerSave = useSelector(selectPlayerSave);
+	const selectedObjective = useSelector(selectSelectedObjective);
+	const observingObjective = useSelector(selectActiveObservingObjective);
+
 	const [hover, hoverMotion] = useMotion(0);
+	const [ending, endingMotion] = useMotion(0.01);
+
+	useEffect(() => {
+		if (selectedObjective?.id === objective.id) {
+			endingMotion.tween(0.8, { time: 0.5, style: Enum.EasingStyle.Quint });
+		} else {
+			endingMotion.tween(0.01, { time: 0.25, style: Enum.EasingStyle.Linear });
+		}
+	}, [selectedObjective]);
 
 	return (
-		<Frame key={name} backgroundColor={Color3.fromRGB(227, 227, 227)}>
+		<Button
+			key={name}
+			backgroundColor={Color3.fromRGB(227, 227, 227)}
+			event={{
+				MouseButton1Click: () => {
+					if (!RunService.IsRunning()) {
+						clientStore.setSelectedObjective({ ...objective, active: math.random() > 0.5 });
+						return;
+					}
+					if (!playerSave) {
+						Log.Warn("Player save not found");
+						return;
+					}
+					const objectiveData = playerSave.objectiveCompletion.find((o) => o.id === objective.id);
+					clientStore.setSelectedObjective({ ...objective, ...objectiveData });
+				},
+			}}
+			backgroundTransparency={selectedObjective?.id !== objective.id ? 0.95 : 0}
+		>
+			{selectedObjective?.id !== objective.id && (
+				<uistroke
+					ApplyStrokeMode="Border"
+					Color={
+						selectedObjective?.id === objective.id
+							? Color3.fromRGB(255, 156, 0)
+							: Color3.fromRGB(255, 255, 255)
+					}
+				/>
+			)}
 			<uigradient
 				Color={
-					new ColorSequence([
-						new ColorSequenceKeypoint(0, Color3.fromRGB(143, 143, 143)),
-						new ColorSequenceKeypoint(1, Color3.fromRGB(0, 0, 0)),
-					])
+					selectedObjective?.id === objective.id
+						? new ColorSequence([
+								new ColorSequenceKeypoint(0, Color3.fromRGB(245, 146, 0)),
+								new ColorSequenceKeypoint(1, Color3.fromRGB(252, 212, 120)),
+							])
+						: new ColorSequence([
+								new ColorSequenceKeypoint(0, Color3.fromRGB(255, 255, 255)),
+								new ColorSequenceKeypoint(1, Color3.fromRGB(122, 122, 122)),
+							])
 				}
 				Transparency={
-					new NumberSequence([new NumberSequenceKeypoint(0, 0.5), new NumberSequenceKeypoint(1, 0.5)])
+					new NumberSequence([
+						new NumberSequenceKeypoint(0, 0.5),
+						new NumberSequenceKeypoint(ending.getValue(), 1),
+						new NumberSequenceKeypoint(1, 1),
+					])
 				}
 			/>
 			<Frame
 				key="status-marker"
-				position={UDim2.fromScale(0.016, 0)}
-				size={UDim2.fromScale(0.025, 1)}
+				size={UDim2.fromOffset(rem(2.5), rem(10))}
 				backgroundColor={
-					priority === 1
-						? Color3.fromRGB(143, 143, 143)
-						: priority === 2
-							? Color3.fromRGB(171, 179, 0)
-							: Color3.fromRGB(245, 0, 0)
+					selectedObjective?.id === objective.id ? Color3.fromRGB(255, 156, 0) : Color3.fromRGB(210, 210, 210)
 				}
 			/>
 			<Text
@@ -66,7 +116,7 @@ function Objective({ objective }: ObjectiveProps) {
 				text={description}
 				font={fonts.gothic.regular}
 				textColor={Color3.fromRGB(255, 255, 255)}
-				position={UDim2.fromOffset(rem(5), rem(2))}
+				position={UDim2.fromOffset(rem(5), rem(2.5))}
 				size={UDim2.fromScale(0.3, 0.5)}
 				textSize={rem(1.5)}
 				textXAlignment="Left"
@@ -94,21 +144,23 @@ function Objective({ objective }: ObjectiveProps) {
 					TextScaled={true}
 					Event={{
 						MouseButton1Down: () => {
-							if (!RunService.IsRunning()) {
-								clientStore.setSelectedObjective({ ...objective, active: math.random() > 0.5 });
+							if (observingObjective && observingObjective.id === objective.id) {
+								clientStore.setActiveObservingObjective(undefined);
 								return;
 							}
-							if (!playerSave) {
-								Log.Warn("Player save not found");
+							if (observingObjective) {
+								clientStore.setActiveObservingObjective(undefined);
+								task.delay(0.5, () => {
+									clientStore.setActiveObservingObjective(objective);
+								});
 								return;
 							}
-							const objectiveData = playerSave.objectiveCompletion.find((o) => o.id === objective.id);
-							clientStore.setSelectedObjective({ ...objective, ...objectiveData });
+							clientStore.setActiveObservingObjective(objective);
 						},
 					}}
 				/>
 			</Frame>
-		</Frame>
+		</Button>
 	);
 }
 
@@ -116,7 +168,7 @@ export function ObjectivesPage() {
 	const rem = useRem();
 
 	const objectives = useSelector(selectObjective("FP"));
-	const selectedObjective = useSelector(selectMenuObjective);
+	const selectedObjective = useSelector(selectSelectedObjective);
 	const activeObjective = useSelector(selectActiveObjective);
 
 	return (
@@ -136,8 +188,9 @@ export function ObjectivesPage() {
 				<uigridlayout
 					FillDirectionMaxCells={0}
 					FillDirection={Enum.FillDirection.Horizontal}
-					SortOrder={Enum.SortOrder.LayoutOrder}
 					CellSize={UDim2.fromOffset(rem(65), rem(10))}
+					CellPadding={UDim2.fromOffset(0, rem(0.5))}
+					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				{objectives
 					.sort((a, b) => a.id < b.id)

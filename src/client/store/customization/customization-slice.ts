@@ -35,7 +35,7 @@ const initialState: CustomizationState = {
 	},
 	weaponPages: ["primary", "secondary", "melee", "mods"],
 	characterPages: ["teams", "character", "uniform", "other"],
-	characterSelectedPage: "teams",
+	characterSelectedPage: "uniform",
 	weaponSelectedPage: "primary",
 };
 

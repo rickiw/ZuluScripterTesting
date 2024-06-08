@@ -15,6 +15,7 @@ import { radioSlice } from "./radio";
 import { shopSlice } from "./shop";
 import { terminalSlice } from "./terminal";
 import { vitalsSlice } from "./vitals";
+import { wardrobeSlice } from "./wardrobe";
 import { weaponSlice } from "./weapon";
 
 type Store = typeof clientStore;
@@ -36,6 +37,7 @@ function createStore() {
 		customization: customizationSlice,
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
+		wardrobe: wardrobeSlice,
 		weapon: weaponSlice,
 		cooking: cookingSlice,
 		notifications: notificationSlice,

@@ -5,7 +5,7 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useState } from "@rbxts/roact";
 import { Players, Workspace } from "@rbxts/services";
 import { selectCustomizationIsOpen } from "client/store/customization";
-import { useRem } from "client/ui/hooks";
+import { useMotion, useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
@@ -29,11 +29,13 @@ export function ObjectiveMarker({ objective }: ObjectiveMarkerProps) {
 	const [distance, setDistance] = useState(0);
 	const [adornee, setAdornee] = useState<BasePart | undefined>(undefined);
 
+	const [transparency, transparencyMotion] = useMotion(1);
+
 	useInterval(() => {
 		if (character && character.PrimaryPart) {
 			setDistance(character.PrimaryPart.Position.sub(objectivePosition).Magnitude);
 		}
-	}, 0.5);
+	}, 0.35);
 
 	useMountEffect(() => {
 		const adornee = New("Part")({
@@ -48,6 +50,10 @@ export function ObjectiveMarker({ objective }: ObjectiveMarkerProps) {
 		});
 
 		setAdornee(adornee);
+
+		task.delay(0.5, () => {
+			transparencyMotion.tween(0.15, { time: 1.5, style: Enum.EasingStyle.Quart });
+		});
 	});
 
 	useUnmountEffect(() => {
@@ -70,6 +76,7 @@ export function ObjectiveMarker({ objective }: ObjectiveMarkerProps) {
 							position={new UDim2(0.5, 0, 0, rem(5))}
 							size={UDim2.fromOffset(rem(5), rem(5))}
 							image={images.ui.misc.objectivemarker}
+							imageTransparency={transparency}
 						/>
 						<Text
 							anchorPoint={new Vector2(0.5, 0.5)}
@@ -78,6 +85,7 @@ export function ObjectiveMarker({ objective }: ObjectiveMarkerProps) {
 							text={`${string.format("%.1f", distance)}m`}
 							textSize={rem(3)}
 							textColor={Color3.fromRGB(255, 255, 255)}
+							textTransparency={transparency}
 							size={UDim2.fromOffset(rem(5), rem(2.5))}
 						/>
 					</Frame>

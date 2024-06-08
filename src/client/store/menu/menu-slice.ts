@@ -11,14 +11,16 @@ export interface MenuState {
 	readonly menuPage: MenuPage;
 	readonly menuPanel: BasePart | undefined;
 	readonly selectedObjective: (Objective & { active: boolean }) | undefined;
+	readonly activeObservingObjective: Objective | undefined;
 	readonly activeObjective: Objective | undefined;
 }
 
 const initialState: MenuState = {
 	menuOpen: false,
-	menuPage: "Shop",
+	menuPage: "Objectives",
 	menuPanel: undefined,
 	selectedObjective: undefined,
+	activeObservingObjective: undefined,
 	activeObjective: undefined,
 	playerSave: undefined,
 };
@@ -31,6 +33,10 @@ export const menuSlice = createProducer(initialState, {
 	setActiveObjective: (state, objective: Objective | undefined) => ({
 		...state,
 		activeObjective: objective,
+	}),
+	setActiveObservingObjective: (state, objective: Objective | undefined) => ({
+		...state,
+		activeObservingObjective: objective,
 	}),
 	stopActiveObjective: (state) => ({
 		...state,
