@@ -14,7 +14,7 @@ import {
 	selectSeismicStatus,
 	selectTeslaGateStatuses,
 } from "shared/store/os";
-import { PlayerList } from "../playerList";
+import { PlayerList } from "../player-list";
 import { SCPScrollingFrame, SCPTable, SCPTextTableItem } from "../scp";
 
 const ActivePersonnel = ({ backgroundTransparency }: { backgroundTransparency?: Roact.Binding<number> | number }) => {

@@ -1,16 +1,19 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { selectSelectedModificationMount, selectSelectedWeapon } from "client/store/customization";
+import { selectModificationMounts } from "client/store/interaction";
 import { SCPScrollingFrame } from "client/ui/components/scp";
 import { useRem } from "client/ui/hooks";
 import { getModifications } from "shared/constants/weapons";
 import { ModificationSelector } from "../modification-selector";
+import { ModificationTypeSelector } from "../modification-type-selector";
 
 export function CustomizeAttachmentsPage() {
 	const rem = useRem();
 
 	const selectedWeapon = useSelector(selectSelectedWeapon);
 	const matchingModifications = selectedWeapon ? getModifications(selectedWeapon.baseTool.Name as WEAPON)! : [];
+	const modificationMounts = useSelector(selectModificationMounts);
 	const selectedModificationMount = useSelector(selectSelectedModificationMount);
 
 	return (
@@ -36,6 +39,18 @@ export function CustomizeAttachmentsPage() {
 							.map((modification) => (
 								<ModificationSelector modification={modification} previewImage="attachments" />
 							))}
+					</>
+				)}
+				{selectedWeapon && !selectedModificationMount && (
+					<>
+						{modificationMounts.map((modification) => (
+							<ModificationTypeSelector
+								forWeapon={selectedWeapon.baseTool.Name}
+								modificationType={modification.Name}
+								modificationMount={modification}
+								previewImage="attachments"
+							/>
+						))}
 					</>
 				)}
 			</SCPScrollingFrame>

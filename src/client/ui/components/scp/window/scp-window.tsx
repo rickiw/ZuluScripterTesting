@@ -3,7 +3,7 @@ import { useRem } from "client/ui/hooks";
 import { palette } from "shared/constants/palette";
 import { Frame } from "../../../library/frame";
 import { Vignette } from "../../vignette";
-import { SCPCloseButton } from "../closeButton";
+import { SCPCloseButton } from "../close-button";
 
 interface SCPWindowProps extends Roact.PropsWithChildren {
 	isOpen: boolean;

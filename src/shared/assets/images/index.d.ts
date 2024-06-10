@@ -12,6 +12,7 @@ export const images: {
 			readonly down: string;
 			readonly downselected: string;
 			readonly downselectedcd: string;
+			readonly downselectedwhite: string;
 			readonly toparrow: string;
 			readonly handgun: string;
 			readonly handgunselected: string;
@@ -70,6 +71,7 @@ export const images: {
 			readonly vignette: string;
 			readonly objectivemarker: string;
 			readonly close: string;
+			readonly selectionbackground: string;
 		};
 	};
 };

@@ -3,7 +3,13 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useCallback } from "@rbxts/roact";
 import { UserInputService } from "@rbxts/services";
 import { clientStore } from "client/store";
-import { selectIsCustomizingWeapon, selectWeaponCustomizationPageSubtitle } from "client/store/customization";
+import {
+	selectCustomizationPage,
+	selectSelectedModificationMount,
+	selectSelectedWeapon,
+	selectWeaponCustomizationPage,
+	selectWeaponCustomizationPageSubtitle,
+} from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Group } from "client/ui/library/group";
 import { Image } from "client/ui/library/image";
@@ -14,17 +20,27 @@ import { palette } from "shared/constants/palette";
 
 export function WeaponCustomizationFooter() {
 	const rem = useRem();
+
 	const subtitle = useSelector(selectWeaponCustomizationPageSubtitle);
-	const customizingWeapon = useSelector(selectIsCustomizingWeapon);
+	const customizationPage = useSelector(selectCustomizationPage);
+	const selectedWeapon = useSelector(selectSelectedWeapon);
+	const weaponSelectedPage = useSelector(selectWeaponCustomizationPage);
+	const selectedModificationMount = useSelector(selectSelectedModificationMount);
+
 	const advance = useCallback(() => {
-		clientStore.setCustomizingWeapon(!customizingWeapon);
-	}, [customizingWeapon]);
+		// clientStore.setCustomizationOpen(false);
+	}, [customizationPage]);
+
 	const goback = useCallback(() => {
-		clientStore.setCustomizationOpen(false);
-	}, [customizingWeapon]);
+		if (weaponSelectedPage === "mods" && selectedWeapon && selectedModificationMount) {
+			clientStore.setSelectedModificationMount(undefined);
+			return;
+		}
+		clientStore.setCustomizationPage("character");
+	}, [customizationPage, weaponSelectedPage, selectedWeapon, selectedModificationMount]);
 
 	useEventListener(UserInputService.InputBegan, (input) => {
-		if (input.KeyCode === Enum.KeyCode.Escape) {
+		if (input.KeyCode === Enum.KeyCode.LeftShift) {
 			goback();
 		}
 		if (input.KeyCode === Enum.KeyCode.Return) {
@@ -61,9 +77,6 @@ export function WeaponCustomizationFooter() {
 						Position={new UDim2(0, 0, 0.5, 0)}
 						AutomaticSize={Enum.AutomaticSize.X}
 						Size={new UDim2(0, rem(8), 1, 0)}
-						Event={{
-							MouseButton1Click: goback,
-						}}
 					>
 						<uilistlayout
 							HorizontalAlignment={"Center"}
@@ -74,7 +87,7 @@ export function WeaponCustomizationFooter() {
 						/>
 						<textlabel
 							LayoutOrder={1}
-							Text={"ESC"}
+							Text={"SHFT"}
 							TextColor3={palette.white}
 							BackgroundTransparency={1}
 							FontFace={fonts.arimo.regular}
@@ -100,9 +113,6 @@ export function WeaponCustomizationFooter() {
 						Position={new UDim2(1, 0, 0.5, 0)}
 						AutomaticSize={Enum.AutomaticSize.X}
 						Size={new UDim2(0, rem(8), 1, 0)}
-						Event={{
-							MouseButton1Click: advance,
-						}}
 					>
 						<uilistlayout
 							HorizontalAlignment={"Center"}

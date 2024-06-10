@@ -1,7 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { selectIsCustomizingWeapon } from "client/store/customization";
+import { selectCustomizationPage } from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Image } from "client/ui/library/image";
@@ -11,7 +11,7 @@ import { fonts } from "shared/constants/fonts";
 export function CustomizationActionButton() {
 	const rem = useRem();
 
-	const customizingWeapon = useSelector(selectIsCustomizingWeapon);
+	const customizationPage = useSelector(selectCustomizationPage);
 
 	return (
 		<>
@@ -26,7 +26,7 @@ export function CustomizationActionButton() {
 				textSize={rem(1.75)}
 				event={{
 					MouseButton1Click: () => {
-						clientStore.setCustomizingWeapon(!customizingWeapon);
+						clientStore.setCustomizationPage(customizationPage === "character" ? "weapon" : "character");
 					},
 				}}
 			>

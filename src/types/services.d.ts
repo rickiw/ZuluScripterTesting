@@ -27,6 +27,7 @@ interface ReplicatedStorage extends Instance {
 		Weapons: Folder & {
 			[key in WEAPON]: Tool;
 		};
+		BaseCharacter: import("promise-character").CharacterRigR15;
 	};
 }
 

@@ -75,6 +75,7 @@ interface ClientToServerFunctions {
 	BeginObjective(objectiveId: ObjectiveID): false | Objective;
 	EquipFirearm(weapon: Tool): Tool | undefined;
 	JoinTeam(team: TeamAbbreviation): boolean;
+	GetAssetAccessory(assetId: number): Accessory;
 
 	// // OS
 	// // FILE SYSTEM

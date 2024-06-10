@@ -1,14 +1,15 @@
 import Roact from "@rbxts/roact";
+import { CharacterCustomizationPageProvider } from "client/ui/components/customization/character/character-customization-page-provider";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
-import { CharacterCustomizationPageProvider } from "client/ui/providers/character-customization-page-provider";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { CharacterCustomizationFooter } from "./character-customization-footer";
 import { CharacterCustomizationRow } from "./character-customization-row";
+import { CharacterCustomizationViewport } from "./character-customization-viewport";
 
 export function CharacterCustomization() {
 	const rem = useRem();
@@ -45,6 +46,7 @@ export function CharacterCustomization() {
 				<CharacterCustomizationPageProvider />
 				<CharacterCustomizationFooter />
 			</Frame>
+			<CharacterCustomizationViewport />
 		</>
 	);
 }

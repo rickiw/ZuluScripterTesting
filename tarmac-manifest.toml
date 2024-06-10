@@ -178,6 +178,11 @@ hash = "ce84c8c69bd613e711a56afe8f1d89c9a734052a5dc13e18209f6c47216d62f4"
 id = 17153428318
 packable = false
 
+[inputs."assets/images/ui/icons/downselectedwhite.png"]
+hash = "f1ef2b519f1cf49bde14d42e1fb10a3f6adb037c0ab78ee6aa7ac2591edd72ce"
+id = 17798339306
+packable = false
+
 [inputs."assets/images/ui/icons/edit.png"]
 hash = "25497c4ad785523237e7cdecb1d9d999e6d3bfd3aa5e7829933f68e10fca0e2a"
 id = 17276434560
@@ -331,6 +336,11 @@ packable = false
 [inputs."assets/images/ui/misc/objectivemarker.png"]
 hash = "d82a2ce870116a8375f059e5d63943968e09b400b246018f164b51842c219827"
 id = 17249239160
+packable = false
+
+[inputs."assets/images/ui/misc/selectionbackground.png"]
+hash = "669dae135d7e75bd5f6bf245fc23efe22e28db929aa1eb3b05260b2a51dd8b68"
+id = 17785115600
 packable = false
 
 [inputs."assets/images/ui/misc/vignette.png"]

@@ -48,6 +48,7 @@
     "@rbxts/iris": "^1.0.1",
     "@rbxts/log": "^0.6.3",
     "@rbxts/maid": "^1.1.0",
+    "@rbxts/make": "^1.0.6",
     "@rbxts/net": "^3.0.9",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/octo-tree": "^0.3.1",

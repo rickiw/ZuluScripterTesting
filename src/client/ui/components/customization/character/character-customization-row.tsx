@@ -61,7 +61,7 @@ export function CharacterCustomizationRow() {
 				rectOffset={new Vector2(128, 128)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setCharacterCustomizationPage("other");
+					clientStore.setCharacterCustomizationPage("armor");
 				}}
 				icon={images.ui.icons.character_customization_icons}
 			/>
@@ -88,7 +88,7 @@ export function CharacterCustomizationRow() {
 					selectedIcon="pencilselected"
 				/>
 				<CharacterButtonRowButton title="UNIFORM 03" page="uniform" icon="shirt" selectedIcon="shirtselected" />
-				<CharacterButtonRowButton title="N/A 04" page="other" icon="vest" />
+				<CharacterButtonRowButton title="N/A 04" page="armor" icon="vest" />
 			</Frame>
 			<Frame
 				zIndex={1}

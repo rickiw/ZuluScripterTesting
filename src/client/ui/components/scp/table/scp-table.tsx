@@ -6,7 +6,7 @@ import { Group } from "client/ui/library/group";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
-import { SCPScrollingFrame } from "../scrollingFrame";
+import { SCPScrollingFrame } from "../scrolling-frame";
 
 const TableHeader = (props: { header: string; backgroundTransparency?: Roact.Binding<number> | number }) => {
 	const rem = useRem();

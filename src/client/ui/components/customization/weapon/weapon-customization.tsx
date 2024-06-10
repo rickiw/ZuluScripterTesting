@@ -1,9 +1,9 @@
 import Roact from "@rbxts/roact";
+import { WeaponCustomizationPageProvider } from "client/ui/components/customization/weapon/weapon-customization-page-provider";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
-import { WeaponCustomizationPageProvider } from "client/ui/providers/weapon-customization-page-provider";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";

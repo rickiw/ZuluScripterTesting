@@ -23,14 +23,20 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 	const isSelectedWeapon = selectedWeapon && selectedWeapon.baseTool.Name === weapon.baseTool.Name;
 
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
+	const [selectEffect, selectEffectMotion] = useMotion(1);
+	const [selectNegEffect, selectNegEffectMotion] = useMotion(0);
 
 	const [dontTouch, setDontTouch] = useState(false);
 
 	useEffect(() => {
 		if (isSelectedWeapon) {
 			effectTransparencyMotion.spring(0.4, springs.responsive);
+			selectEffectMotion.spring(0, springs.responsive);
+			selectNegEffectMotion.spring(1, springs.responsive);
 		} else {
 			effectTransparencyMotion.spring(1, springs.responsive);
+			selectEffectMotion.spring(1, springs.responsive);
+			selectNegEffectMotion.spring(0, springs.responsive);
 		}
 	}, [selectedWeapon]);
 
@@ -46,10 +52,7 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 						}
 
 						if (newSelectedWeapon) {
-							// setDontTouch(true);
-							// unequipWeapon(weapon.baseTool);
 							equipWeapon(newSelectedWeapon);
-							// });
 						} else {
 							unequipWeapon(weapon.baseTool);
 						}
@@ -66,38 +69,18 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 					},
 				}}
 			>
-				<uistroke Color={palette.surface1} ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Transparency={0.5} />
-
-				<Frame
-					size={new UDim2(1, 0, 0, rem(3))}
-					backgroundTransparency={holdingWeapon(weapon) ? 0 : effectTransparency}
-					zIndex={3}
-				>
-					<uigradient
-						Transparency={
-							new NumberSequence([
-								new NumberSequenceKeypoint(0, 0),
-								new NumberSequenceKeypoint(0.6, 0.5),
-								new NumberSequenceKeypoint(1, 1),
-							])
-						}
-						Color={
-							new ColorSequence([
-								new ColorSequenceKeypoint(0, Color3.fromRGB(162, 175, 65)),
-								new ColorSequenceKeypoint(0.4, Color3.fromRGB(202, 205, 95)),
-								new ColorSequenceKeypoint(1, Color3.fromRGB(255, 255, 255)),
-							])
-						}
-						Rotation={88}
-					/>
-				</Frame>
+				<uistroke
+					Color={Color3.fromRGB(255, 255, 255)}
+					ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
+					Transparency={0.5}
+				/>
 
 				<Frame size={new UDim2(1, 0, 1, -rem(3))} backgroundTransparency={1}>
-					<uipadding
-						PaddingBottom={new UDim(0, rem(1))}
-						PaddingLeft={new UDim(0, rem(1))}
-						PaddingRight={new UDim(0, rem(1))}
-						PaddingTop={new UDim(0, rem(1))}
+					<Image
+						size={UDim2.fromScale(1, 1)}
+						scaleType="Stretch"
+						image={images.ui.misc.selectionbackground}
+						imageTransparency={effectTransparency}
 					/>
 					{/* <ViewportFrame /> */}
 					<Image size={UDim2.fromScale(1, 1)} scaleType="Fit" image={images.ui.icons[previewImage]} />
@@ -111,7 +94,17 @@ export function WeaponSelector({ weapon, previewImage }: WeaponSelectorProps) {
 					<Image
 						position={UDim2.fromOffset(rem(2.5), rem(0))}
 						size={UDim2.fromScale(1, 1)}
-						image={holdingWeapon(weapon) ? images.ui.icons.downselected : images.ui.icons.down}
+						imageTransparency={selectNegEffect}
+						image={images.ui.icons.down}
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
+					<Image
+						position={UDim2.fromOffset(rem(2.5), rem(0))}
+						size={UDim2.fromScale(1, 1)}
+						image={images.ui.icons.downselectedwhite}
+						imageTransparency={selectEffect}
+						zIndex={2}
 					>
 						<uiaspectratioconstraint AspectRatio={1} />
 					</Image>

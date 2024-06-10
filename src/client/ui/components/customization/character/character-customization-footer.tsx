@@ -3,7 +3,7 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useCallback } from "@rbxts/roact";
 import { UserInputService } from "@rbxts/services";
 import { clientStore } from "client/store";
-import { selectCharacterCustomizationPageSubtitle, selectIsCustomizingWeapon } from "client/store/customization";
+import { selectCharacterCustomizationPageSubtitle, selectCustomizationPage } from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Group } from "client/ui/library/group";
 import { Image } from "client/ui/library/image";
@@ -15,16 +15,16 @@ import { palette } from "shared/constants/palette";
 export function CharacterCustomizationFooter() {
 	const rem = useRem();
 	const subtitle = useSelector(selectCharacterCustomizationPageSubtitle);
-	const customizingWeapon = useSelector(selectIsCustomizingWeapon);
+	const customizationPage = useSelector(selectCustomizationPage);
 	const advance = useCallback(() => {
-		clientStore.setCustomizationOpen(false);
-	}, [customizingWeapon]);
+		clientStore.setCustomizationPage("weapon");
+	}, [customizationPage]);
 	const goback = useCallback(() => {
-		clientStore.setCustomizingWeapon(true);
-	}, [customizingWeapon]);
+		// clientStore.setCustomizationOpen(false);
+	}, [customizationPage]);
 
 	useEventListener(UserInputService.InputBegan, (input) => {
-		if (input.KeyCode === Enum.KeyCode.Escape) {
+		if (input.KeyCode === Enum.KeyCode.LeftShift) {
 			goback();
 		}
 		if (input.KeyCode === Enum.KeyCode.Return) {
@@ -61,9 +61,6 @@ export function CharacterCustomizationFooter() {
 						Position={new UDim2(0, 0, 0.5, 0)}
 						AutomaticSize={Enum.AutomaticSize.X}
 						Size={new UDim2(0, rem(8), 1, 0)}
-						Event={{
-							MouseButton1Click: goback,
-						}}
 					>
 						<uilistlayout
 							HorizontalAlignment={"Center"}
@@ -74,7 +71,7 @@ export function CharacterCustomizationFooter() {
 						/>
 						<textlabel
 							LayoutOrder={1}
-							Text={"ESC"}
+							Text={"SHFT"}
 							TextColor3={palette.white}
 							BackgroundTransparency={1}
 							FontFace={fonts.arimo.regular}
@@ -100,9 +97,6 @@ export function CharacterCustomizationFooter() {
 						Position={new UDim2(1, 0, 0.5, 0)}
 						AutomaticSize={Enum.AutomaticSize.X}
 						Size={new UDim2(0, rem(8), 1, 0)}
-						Event={{
-							MouseButton1Click: advance,
-						}}
 					>
 						<uilistlayout
 							HorizontalAlignment={"Center"}
