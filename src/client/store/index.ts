@@ -9,9 +9,13 @@ import { interactionSlice } from "./interaction/interaction-slice";
 import { inventorySlice } from "./inventory";
 import { menuSlice } from "./menu";
 import { receiverMiddleware } from "./middleware/receiver";
+import { notificationSlice } from "./notifications/notification-slice";
 import { perkSlice } from "./perks";
+import { radioSlice } from "./radio";
 import { shopSlice } from "./shop";
+import { terminalSlice } from "./terminal";
 import { vitalsSlice } from "./vitals";
+import { weaponSlice } from "./weapon";
 
 type Store = typeof clientStore;
 
@@ -32,7 +36,11 @@ function createStore() {
 		customization: customizationSlice,
 		vitals: vitalsSlice,
 		inventory: inventorySlice,
+		weapon: weaponSlice,
 		cooking: cookingSlice,
+		notifications: notificationSlice,
+		terminal: terminalSlice,
+		radio: radioSlice,
 	});
 	clientStore.applyMiddleware(receiverMiddleware());
 	return clientStore;

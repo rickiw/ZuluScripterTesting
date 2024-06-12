@@ -49,7 +49,7 @@ export class DoubleSwingDoor extends BaseDoor<BaseDoorAttributes, DoorInstance> 
 			const dotProduct = this.instance.Center.CFrame.LookVector.Dot(diffVector);
 			this.openMotor = dotProduct > 0 ? 1 : -1;
 		}
-		this.dutyCycle();
+		this.dutyCycle(player);
 	}
 
 	onStart() {

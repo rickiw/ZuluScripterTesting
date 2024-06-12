@@ -14,6 +14,7 @@ import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
+import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 import { IModification } from "shared/constants/weapons";
 
@@ -30,12 +31,18 @@ export function ModificationSelector({ modification, previewImage }: Modificatio
 	const selectedWeapon = useSelector(selectSelectedWeapon)!;
 
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
+	const [selectEffect, selectEffectMotion] = useMotion(1);
+	const [selectNegEffect, selectNegEffectMotion] = useMotion(0);
 
 	useEffect(() => {
 		if (isModificationEquipped) {
 			effectTransparencyMotion.spring(0.4, springs.responsive);
+			selectEffectMotion.spring(0, springs.responsive);
+			selectNegEffectMotion.spring(1, springs.responsive);
 		} else {
 			effectTransparencyMotion.spring(1, springs.responsive);
+			selectEffectMotion.spring(1, springs.responsive);
+			selectNegEffectMotion.spring(0, springs.responsive);
 		}
 	}, [isModificationEquipped]);
 
@@ -52,7 +59,8 @@ export function ModificationSelector({ modification, previewImage }: Modificatio
 						});
 
 						const updatedModificationPreviews =
-							clientStore.toggleModificationPreview(modification).customization.modificationPreviews;
+							clientStore.toggleModificationPreview(modification).customization.weapon
+								.modificationPreviews;
 
 						Events.UpdateFirearm.fire(selectedWeapon.baseTool, updatedModificationPreviews);
 					},
@@ -74,67 +82,56 @@ export function ModificationSelector({ modification, previewImage }: Modificatio
 					Transparency={0.5}
 				/>
 
-				<Frame
-					size={new UDim2(1, 0, 0, rem(3))}
-					backgroundTransparency={isModificationEquipped ? 0 : effectTransparency}
-					zIndex={3}
-				>
-					<uigradient
-						Transparency={
-							new NumberSequence([
-								new NumberSequenceKeypoint(0, 0),
-								new NumberSequenceKeypoint(0.6, 0.5),
-								new NumberSequenceKeypoint(1, 1),
-							])
-						}
-						Color={
-							new ColorSequence([
-								new ColorSequenceKeypoint(0, Color3.fromRGB(162, 175, 65)),
-								new ColorSequenceKeypoint(0.4, Color3.fromRGB(202, 205, 95)),
-								new ColorSequenceKeypoint(1, Color3.fromRGB(255, 255, 255)),
-							])
-						}
-						Rotation={88}
+				<Frame size={new UDim2(1, 0, 1, -rem(3))} backgroundTransparency={1}>
+					<Image
+						size={UDim2.fromScale(1, 1)}
+						scaleType="Stretch"
+						image={images.ui.misc.selectionbackground}
+						imageTransparency={effectTransparency}
 					/>
-				</Frame>
-
-				<Frame size={new UDim2(1, 0, 1, -rem(4))} backgroundTransparency={1}>
-					<uipadding
-						PaddingBottom={new UDim(0, rem(1))}
-						PaddingLeft={new UDim(0, rem(1))}
-						PaddingRight={new UDim(0, rem(1))}
-						PaddingTop={new UDim(0, rem(1))}
-					/>
+					{/* <ViewportFrame /> */}
 					<Image size={UDim2.fromScale(1, 1)} scaleType="Fit" image={images.ui.icons[previewImage]} />
 				</Frame>
 
 				<Frame
-					backgroundColor={Color3.fromRGB(33, 38, 41)}
-					size={new UDim2(1, 0, 0, rem(4))}
-					position={new UDim2(0, 0, 1, -rem(4))}
+					backgroundColor={palette.surface1}
+					size={new UDim2(1, 0, 0, rem(3))}
+					position={new UDim2(0, 0, 1, -rem(3))}
 				>
 					<Image
 						position={UDim2.fromOffset(rem(2.5), rem(0))}
-						size={UDim2.fromOffset(rem(4), rem(4))}
-						image={isModificationEquipped ? images.ui.icons.downselected : images.ui.icons.down}
-					/>
+						size={UDim2.fromScale(1, 1)}
+						imageTransparency={selectNegEffect}
+						image={images.ui.icons.down}
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
+					<Image
+						position={UDim2.fromOffset(rem(2.5), rem(0))}
+						size={UDim2.fromScale(1, 1)}
+						image={images.ui.icons.downselectedwhite}
+						imageTransparency={selectEffect}
+						zIndex={2}
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
 					<Text
-						position={UDim2.fromOffset(rem(7.5), -rem(0.75))}
+						position={UDim2.fromOffset(rem(6), rem(0.5))}
 						textXAlignment="Left"
-						size={UDim2.fromOffset(rem(20), rem(4))}
+						textAutoResize="XY"
 						text={modification.type.upper()}
 						textColor={Color3.fromRGB(124, 128, 131)}
-						textSize={rem(1.25)}
-						font={fonts.inter.medium}
+						textSize={rem(0.75)}
+						font={fonts.arimo.regular}
 					/>
 					<Text
-						position={UDim2.fromOffset(rem(7.5), rem(0.75))}
+						position={UDim2.fromOffset(rem(6), rem(1))}
 						textXAlignment="Left"
-						size={UDim2.fromOffset(rem(20), rem(4))}
+						textAutoResize="XY"
 						text={modification.name}
 						textColor={Color3.fromRGB(124, 128, 131)}
-						textSize={rem(2)}
-						font={fonts.inter.medium}
+						textSize={rem(1.5)}
+						font={fonts.arimo.regular}
 					/>
 				</Frame>
 			</Button>

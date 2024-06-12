@@ -3,17 +3,17 @@ import { PlayerProfile } from "shared/utils";
 
 export const defaultWeaponData: FirearmDataSave = {
 	"AK-105": {
-		ammo: 30,
+		reserve: 30,
 		equipped: false,
 		attachments: [],
-		magazine: 90,
+		magazine: 30,
 		weaponName: "AK-105",
 	},
 	"AK-105S": {
-		ammo: 30,
+		reserve: 30,
 		equipped: false,
 		attachments: [],
-		magazine: 120,
+		magazine: 30,
 		weaponName: "AK-105S",
 	},
 };

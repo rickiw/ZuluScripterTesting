@@ -1,6 +1,8 @@
 import { lerpBinding } from "@rbxts/pretty-react-hooks";
+import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
+import { selectMenuPage } from "client/store/menu";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
@@ -16,6 +18,8 @@ export function MenuButtonRow() {
 	const [objectivesHover, objectivesHoverMotion] = useMotion(0);
 	const [clanHover, clanHoverMotion] = useMotion(0);
 	const [perksHover, perksHoverMotion] = useMotion(0);
+
+	const activeMenuPage = useSelector(selectMenuPage);
 
 	return (
 		<Frame
@@ -34,7 +38,9 @@ export function MenuButtonRow() {
 					<Button
 						key={button.upper()}
 						text={button.upper()}
-						backgroundColor={Color3.fromRGB(0, 0, 0)}
+						backgroundColor={
+							activeMenuPage === button ? Color3.fromRGB(200, 200, 200) : Color3.fromRGB(0, 0, 0)
+						}
 						backgroundTransparency={0.6}
 						borderColor={Color3.fromRGB(255, 255, 255)}
 						borderSize={1}

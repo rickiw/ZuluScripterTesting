@@ -1,6 +1,7 @@
 import { Modding, OnStart, Service } from "@flamework/core";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players } from "@rbxts/services";
+import { serverStore } from "server/store";
 
 export interface PlayerRemoving {
 	playerRemoving(player: Player): void;
@@ -25,30 +26,28 @@ export class PlayerService implements OnStart {
 	private characterRemovingListeners = new Set<CharacterRemoving>();
 	private playerRemovingListeners = new Set<PlayerRemoving>();
 
-	characterAdded(character: Model) {
-		character.AddTag("character");
-
+	characterAdded(character: CharacterRigR15) {
 		for (const listener of this.characterAddedListeners) {
 			task.spawn(() => listener.characterAdded(character as CharacterRigR15));
 		}
 	}
 
 	playerAdded(player: Player) {
-		player.AddTag("player");
+		serverStore.addPlayer({ player, alive: true });
 
 		for (const listener of this.playerAddedListeners) {
 			task.spawn(() => listener.playerAdded(player));
 		}
 
-		const character = player.Character;
-		if (character) {
-			this.characterAdded(character);
+		if (player.Character) {
+			this.characterAdded(player.Character as CharacterRigR15);
 		}
-
-		player.CharacterAdded.Connect((character) => this.characterAdded(character));
+		player.CharacterAdded.Connect((character) => this.characterAdded(character as CharacterRigR15));
 	}
 
 	characterRemoving(player: Player, character: CharacterRigR15) {
+		serverStore.removePlayer(player);
+
 		for (const listener of this.characterRemovingListeners) {
 			task.spawn(() => listener.characterRemoving(player, character));
 		}

@@ -1,11 +1,13 @@
 import Roact from "@rbxts/roact";
+import { WeaponCustomizationPageProvider } from "client/ui/components/customization/weapon/weapon-customization-page-provider";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
-import { WeaponCustomizationPageProvider } from "client/ui/providers/weapon-customization-page-provider";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
+import { palette } from "shared/constants/palette";
+import { WeaponCustomizationFooter } from "./weapon-customization-footer";
 import { WeaponCustomizationRow } from "./weapon-customization-row";
 
 export function WeaponCustomization() {
@@ -13,39 +15,35 @@ export function WeaponCustomization() {
 
 	return (
 		<>
-			<Frame size={new UDim2(0, rem(45), 1, 0)} backgroundColor={Color3.fromRGB(16, 20, 21)}>
+			<Frame size={new UDim2(0, rem(36), 1, 0)} backgroundColor={palette.base}>
 				<Image
-					size={UDim2.fromOffset(rem(5), rem(5))}
-					position={UDim2.fromOffset(rem(1), rem(4))}
-					image={images.ui.icons.customize}
+					size={UDim2.fromOffset(rem(3), rem(3))}
+					position={UDim2.fromOffset(rem(2), rem(1))}
+					image={images.ui.icons.weapon_customize}
 				/>
 				<Text
 					text="WEAPON CUSTOMIZATION"
-					position={UDim2.fromOffset(rem(5.5), rem(4))}
-					size={UDim2.fromOffset(rem(37.5), rem(5))}
-					textColor={Color3.fromRGB(255, 255, 255)}
-					textSize={rem(2.75)}
+					position={UDim2.fromOffset(rem(7), rem(2.5))}
+					textAutoResize="XY"
+					textColor={palette.white}
+					textSize={rem(2)}
+					anchorPoint={new Vector2(0, 0.5)}
 					backgroundTransparency={1}
-					textWrapped={true}
-					textXAlignment="Center"
+					textWrapped={false}
+					textXAlignment="Left"
 					textYAlignment="Center"
-					font={fonts.inter.medium}
+					font={fonts.arimo.regular}
 				/>
 				<Image
-					size={UDim2.fromOffset(rem(45), rem(0.25))}
-					position={UDim2.fromOffset(rem(0), rem(10))}
+					size={new UDim2(1, 0, 0, rem(0.2))}
+					anchorPoint={new Vector2(0, 0.5)}
+					position={UDim2.fromOffset(rem(0), rem(5))}
 					image={images.ui.misc.divider}
 				/>
 
 				<WeaponCustomizationRow />
-
 				<WeaponCustomizationPageProvider />
-
-				<Image
-					size={UDim2.fromOffset(rem(45), rem(0.25))}
-					position={new UDim2(0, rem(0), 1, -rem(7.5))}
-					image={images.ui.misc.divider}
-				/>
+				<WeaponCustomizationFooter />
 			</Frame>
 		</>
 	);

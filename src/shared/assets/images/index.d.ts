@@ -12,6 +12,7 @@ export const images: {
 			readonly down: string;
 			readonly downselected: string;
 			readonly downselectedcd: string;
+			readonly downselectedwhite: string;
 			readonly toparrow: string;
 			readonly handgun: string;
 			readonly handgunselected: string;
@@ -22,6 +23,17 @@ export const images: {
 			readonly attachments: string;
 			readonly attachmentsselected: string;
 			readonly arrowright: string;
+			readonly os_icons: string;
+			readonly scrollbartop: string;
+			readonly scrollbarbot: string;
+			readonly scrollbarmid: string;
+			readonly edit: string;
+			readonly trash: string;
+			readonly notification: string;
+			readonly scp_badge: string;
+			readonly character_customization_icons: string;
+			readonly weapon_customization_icons: string;
+			readonly weapon_customize: string;
 		};
 		readonly glyphs: {
 			readonly AD: string;
@@ -57,6 +69,9 @@ export const images: {
 			readonly foundationlogo: string;
 			readonly divider: string;
 			readonly vignette: string;
+			readonly objectivemarker: string;
+			readonly close: string;
+			readonly selectionbackground: string;
 		};
 	};
 };

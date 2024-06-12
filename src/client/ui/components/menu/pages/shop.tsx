@@ -1,13 +1,12 @@
-import { lerpBinding } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { clientStore } from "client/store";
 import { ShopItem as BaseShopItem, selectActiveShopItem, selectDevProducts, selectGamePasses } from "client/store/shop";
 import { useMotion, useRem } from "client/ui/hooks";
+import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
-import { springs } from "shared/constants/springs";
 import { SideInformation } from "../side-information";
 
 function ShopItem(props: { shopItem: BaseShopItem }) {
@@ -15,29 +14,52 @@ function ShopItem(props: { shopItem: BaseShopItem }) {
 
 	const { title, color } = props.shopItem;
 	const itemType = props.shopItem.type;
-	const darkenedColor = color.Lerp(Color3.fromRGB(0, 0, 0), 0.5);
-	const lightenedColor = color.Lerp(Color3.fromRGB(255, 255, 255), 0.5);
+	const selectedShopItem = useSelector(selectActiveShopItem);
 
 	const [hover, hoverMotion] = useMotion(0);
 
 	return (
-		<Frame key={title} backgroundColor={Color3.fromRGB(227, 227, 227)}>
+		<Button
+			key={title}
+			backgroundColor={Color3.fromRGB(227, 227, 227)}
+			event={{
+				MouseButton1Click: () => clientStore.setSelectedShopItem(props.shopItem),
+			}}
+			backgroundTransparency={selectedShopItem !== props.shopItem ? 0.95 : 0}
+		>
+			{selectedShopItem !== props.shopItem && (
+				<uistroke
+					ApplyStrokeMode="Border"
+					Color={
+						selectedShopItem === props.shopItem
+							? Color3.fromRGB(255, 156, 0)
+							: Color3.fromRGB(255, 255, 255)
+					}
+				/>
+			)}
 			<uigradient
 				Color={
-					new ColorSequence([
-						new ColorSequenceKeypoint(0, color),
-						new ColorSequenceKeypoint(1, darkenedColor),
-					])
+					selectedShopItem === props.shopItem
+						? new ColorSequence([
+								new ColorSequenceKeypoint(0, Color3.fromRGB(245, 146, 0)),
+								new ColorSequenceKeypoint(1, Color3.fromRGB(252, 212, 120)),
+							])
+						: new ColorSequence([
+								new ColorSequenceKeypoint(0, Color3.fromRGB(255, 255, 255)),
+								new ColorSequenceKeypoint(1, Color3.fromRGB(122, 122, 122)),
+							])
 				}
 				Transparency={
-					new NumberSequence([new NumberSequenceKeypoint(0, 0.5), new NumberSequenceKeypoint(1, 0.5)])
+					new NumberSequence([new NumberSequenceKeypoint(0, 0.5), new NumberSequenceKeypoint(1, 1)])
 				}
 			/>
+
 			<Frame
 				key="status-marker"
-				position={UDim2.fromOffset(rem(1), 0)}
 				size={UDim2.fromOffset(rem(2.5), rem(10))}
-				backgroundColor={lightenedColor}
+				backgroundColor={
+					selectedShopItem === props.shopItem ? Color3.fromRGB(255, 156, 0) : Color3.fromRGB(210, 210, 210)
+				}
 			/>
 			<Text
 				text={title}
@@ -59,33 +81,7 @@ function ShopItem(props: { shopItem: BaseShopItem }) {
 				textXAlignment="Left"
 				textYAlignment="Top"
 			/>
-			<Frame
-				key="location-marker"
-				backgroundTransparency={0.6}
-				backgroundColor={Color3.fromRGB(0, 0, 0)}
-				borderColor={Color3.fromRGB(255, 255, 255)}
-				borderSize={1}
-				anchorPoint={new Vector2(0.5, 0.5)}
-				position={UDim2.fromOffset(rem(60), rem(5))}
-				size={lerpBinding(hover, UDim2.fromOffset(40, 40), UDim2.fromOffset(45, 45))}
-				event={{
-					MouseEnter: () => hoverMotion.spring(1, springs.responsive),
-					MouseLeave: () => hoverMotion.spring(0, springs.responsive),
-				}}
-			>
-				<textbutton
-					BackgroundTransparency={1}
-					Size={UDim2.fromScale(1, 1)}
-					Text="!"
-					TextColor3={Color3.fromRGB(255, 255, 255)}
-					FontFace={fonts.gothic.bold}
-					TextScaled={true}
-					Event={{
-						MouseButton1Down: () => clientStore.setSelectedShopItem(props.shopItem),
-					}}
-				/>
-			</Frame>
-		</Frame>
+		</Button>
 	);
 }
 
@@ -114,6 +110,7 @@ export function ShopPage() {
 					FillDirectionMaxCells={0}
 					FillDirection={Enum.FillDirection.Horizontal}
 					CellSize={UDim2.fromOffset(rem(65), rem(10))}
+					CellPadding={UDim2.fromOffset(0, rem(0.5))}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				<Frame key="gamepass-header" backgroundTransparency={1}>

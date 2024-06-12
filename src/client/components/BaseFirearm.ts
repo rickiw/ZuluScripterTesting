@@ -1,16 +1,18 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnRender, OnStart } from "@flamework/core";
 import CameraShaker from "@rbxts/camera-shaker";
+import Log from "@rbxts/log";
+import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Players, RunService, UserInputService, Workspace } from "@rbxts/services";
+import { Players, RunService, UserInputService } from "@rbxts/services";
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
 import { selectCameraBias, selectCameraOffset } from "client/store/camera";
-import { selectEquippedWeaponInfo } from "client/store/inventory";
+import { selectSprinting } from "client/store/character";
 import { FirearmAnimations, FirearmLike, FirearmSoundManager, FirearmSounds } from "shared/constants/weapons";
 import { FirearmState } from "shared/constants/weapons/state";
 import { selectWeapon } from "shared/store/combat";
-import { AnimationUtil, Indexable } from "shared/utils";
+import { AnimationUtil, ExtendedMaid } from "shared/utils";
 import { ControlSet } from "./controls";
 
 export interface FirearmInstance extends Tool {}
@@ -18,7 +20,6 @@ export interface FirearmInstance extends Tool {}
 export interface FirearmAttributes {}
 
 const player = Players.LocalPlayer;
-const camera = Workspace.CurrentCamera!;
 
 const CAMERA_X_OFFSET = 1;
 const CAMERA_Z_OFFSET = 0.2;
@@ -44,97 +45,177 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 
 	loaded = false;
 	equipped = false;
-	connections: Indexable<"activated" | "updateInfo" | "equipped" | "unequipped" | "loop", RBXScriptConnection> =
-		{} as any;
+	debug = false;
+	connections = new ExtendedMaid<
+		"activated" | "updateInfo" | "equipped" | "unequipped" | "loop" | "onClean" | "unload"
+	>();
 
-	recoil = new CameraShaker(Enum.RenderPriority.Camera.Value, (shakeCFrame) => clientStore.setRecoil(shakeCFrame));
+	recoil: CameraShaker;
 
 	state!: FirearmState | undefined;
 	soundManager: FirearmSoundManager<FirearmSounds>;
+
+	maid = new Maid();
 
 	constructor() {
 		super();
 		this.configuration = this.getConfiguration();
 		this.soundManager = new FirearmSoundManager(this.configuration.sounds, this.instance);
+		this.recoil = new CameraShaker(Enum.RenderPriority.Camera.Value, (shakeCFrame) =>
+			clientStore.setRecoil(shakeCFrame),
+		);
 	}
 
-	onStart() {
-		this.load();
+	injectConnections() {
+		Log.Warn("Injecting connections | BaseFirearm->injectConnections");
 
-		this.connections.activated = this.instance.Activated.Connect(() => {
-			if (this.state?.cooldown || this.state?.magazine === undefined) {
-				return;
-			}
-			this.fire();
-		});
+		this.connections.setTask(
+			"onClean",
+			UserInputService.InputBegan.Connect((inp) => {
+				if (inp.KeyCode === Enum.KeyCode.K) {
+					Log.Warn("Hello from {@Component}", this.configuration.name);
+				}
+			}),
+		);
 
-		this.connections.updateInfo = Events.SetWeaponInfo.connect((weaponName, ammo, reserve, override) => {
-			if (
-				this.instance.Name !== weaponName ||
-				(!override && clientStore.getState(selectEquippedWeaponInfo) === undefined)
-			) {
-				return;
-			}
-			clientStore.setEquippedWeaponInfo({
-				weaponName,
-				ammo,
-				reserve,
-			});
-		});
+		this.connections.setTask(
+			"unload",
+			Events.UnloadWeapon.connect(() => {
+				this.unload();
+			}),
+		);
 
-		this.connections.equipped = this.instance.Equipped.Connect(() => {
-			this.equip();
-		});
+		this.connections.setTask(
+			"activated",
+			this.instance.Activated.Connect(() => {
+				if (!this.state || this.state.cooldown) {
+					Log.Warn(
+						"State Defined: {@State} | cooldown: {@Cooldown} | magazine: {@Magazine}",
+						this.state,
+						this.state?.cooldown,
+					);
+					return;
+				}
+				this.fire();
+			}),
+		);
 
-		this.connections.unequipped = this.instance.Unequipped.Connect(() => {
-			this.unequip();
-		});
+		this.connections.setTask(
+			"equipped",
+			Events.ToggleWeaponEquip.connect((equipped) => {
+				if (equipped) {
+					this.equip();
+				} else {
+					this.unequip();
+				}
+			}),
+		);
 
-		this.connections.loop = RunService.RenderStepped.Connect(() => {
-			if (!this.state) {
-				return;
-			}
-			this.configuration = this.state.configuration as FirearmLike;
-		});
+		this.connections.setTask(
+			"loop",
+			RunService.RenderStepped.Connect(() => {
+				if (!this.state) {
+					return;
+				}
+				this.configuration = this.state.configuration as FirearmLike;
+			}),
+		);
 
-		coroutine.resume(
-			coroutine.create(() => {
-				while (wait(60 / this.configuration.Barrel.rpm)[0]) {
-					if (this.state?.cooldown || this.state?.magazine === undefined) {
+		this.connections.setThread(
+			task.spawn(() => {
+				while (task.wait(60 / this.configuration.barrel.rpm)) {
+					if (!this.firing || !this.state || this.state.cooldown || this.state.mode !== "Automatic") {
+						if (!this.state) {
+							Log.Warn("No State");
+						} else if (!this.firing && this.debug) {
+							Log.Warn("not Firing");
+						}
 						continue;
 					}
-					if (!this.firing || this.state.mode !== "Automatic") {
-						continue;
-					}
+
 					this.fire();
 				}
 			}),
 		);
 	}
 
+	onStart() {
+		Functions.LoadWeapon.setCallback((weapon) => {
+			if (weapon === this.instance) {
+				Log.Warn("Loading | BaseFirearm->onStart");
+				this.load();
+				return true;
+			}
+
+			return false;
+		});
+	}
+
 	load() {
 		this.loadAnimations();
 
-		clientStore.subscribe(selectWeapon(player.UserId), (weapon) => {
-			this.state = weapon as FirearmState | undefined;
+		clientStore.setLoadedWeapon(this);
+
+		this.maid.GiveTask(() => {
+			clientStore.subscribe(selectSprinting, (sprinting) => {
+				if (sprinting) {
+					this.loadedAnimations.Run.Play();
+				} else {
+					this.loadedAnimations.Run.Stop();
+				}
+			});
+		});
+
+		clientStore.subscribe(selectWeapon(player.UserId), (weaponState, oldWeaponState) => {
+			if (oldWeaponState !== undefined && weaponState === undefined) {
+				return;
+			}
+
+			if (!this.connections.hasTasks()) {
+				this.injectConnections();
+			}
+
+			this.state = weaponState as FirearmState | undefined;
 		});
 
 		this.loaded = true;
 	}
 
+	unload() {
+		Log.Warn("Unloading | BaseFirearm->unload");
+		this.unequip();
+		clientStore.setLoadedWeapon(undefined);
+		this.connections.clean();
+		this.state = undefined;
+		this.loaded = false;
+		this.destroy();
+	}
+
 	private getConfiguration() {
-		return require(this.instance.FindFirstChildOfClass("ModuleScript") as ModuleScript) as FirearmLike;
+		const configModule = this.instance.WaitForChild("Config") as ModuleScript;
+		if (!configModule) {
+			throw `No configuration module found for ${this.instance.Name} `;
+		}
+		const config = require(configModule) as FirearmLike;
+		return config;
 	}
 
 	loadAnimations() {
 		this.loadedAnimations = AnimationUtil.convertDictionaryToTracks(
 			this.configuration.animations,
-			this.character.Humanoid,
+			this.character.Humanoid.Animator,
 		) as FirearmAnimations<AnimationTrack>;
 	}
 
 	fire() {
-		const fired = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).expect();
+		const [success, fired] = Functions.FireFirearm.invoke(this.instance, player.GetMouse().Hit.Position).await();
+		if (!success) {
+			throw "Failed to fire firearm.";
+		} else if (!fired) {
+			Log.Warn("Failed to fire firearm | BaseFirearm->fire");
+			return;
+		}
+
 		if (fired) {
 			this.recoil.ShakeOnce(math.random(1, 2.5), math.random(3, 5), 0.1, 0.05);
 		}
@@ -151,11 +232,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			once: (state) => (this.firing = state === Enum.UserInputState.Begin),
 
 			onBegin: () => {
-				if (this.state?.cooldown || this.state?.magazine === undefined) {
-					return;
-				}
-
-				switch (this.state.mode) {
+				switch (this.state?.mode ?? "Automatic") {
 					case "Semi-Automatic": {
 						this.fire();
 						break;
@@ -166,7 +243,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 							break;
 						}
 						this.burstFiring = true;
-						for (let i = 0; i < this.configuration.Barrel.burstCount; i++) {
+						for (let i = 0; i < this.configuration.barrel.burstCount; i++) {
 							this.fire();
 						}
 						this.burstFiring = false;
@@ -181,15 +258,6 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			onEnd: () => (this.firing = false),
 		});
 
-		if (UserInputService.TouchEnabled) {
-			UserInputService.TouchTap.Connect((touchPositions, gameProcessedEvent) => {
-				if (this.state?.cooldown || this.state?.magazine === undefined || gameProcessedEvent) {
-					return;
-				}
-				this.fire();
-			});
-		}
-
 		this.controls.add({
 			ID: `reload-${this.instance.Name}`,
 			Name: "Reload",
@@ -200,6 +268,18 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 			onBegin: () => {
 				Events.ReloadFirearm.fire(this.instance);
 			},
+		});
+
+		this.controls.add({
+			ID: "weapon-debug",
+			Name: "Deubg",
+			Enabled: false,
+			Mobile: false,
+			controls: [Enum.KeyCode.KeypadFive],
+
+			onBegin: () => (this.debug = true),
+
+			onEnd: () => (this.debug = false),
 		});
 
 		this.controls.add({
@@ -257,6 +337,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setShiftLocked(false);
 		clientStore.setFovOffset(0);
 		clientStore.setCameraFlag("FirearmIsAiming", false);
+		clientStore.setWeaponEquipped(true);
 		this.recoil.Start();
 
 		this.equipped = true;
@@ -277,6 +358,7 @@ export class BaseFirearm<A extends FirearmAttributes, I extends FirearmInstance>
 		clientStore.setFovOffset(0);
 		clientStore.setWalkspeedMultiplier(1);
 		clientStore.setEquippedWeaponInfo(undefined);
+		clientStore.setWeaponEquipped(false);
 		this.recoil.Stop();
 
 		this.equipped = false;

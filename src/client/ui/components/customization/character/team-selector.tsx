@@ -5,10 +5,12 @@ import { Functions } from "client/network";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
+import { Group } from "client/ui/library/group";
 import { Image } from "client/ui/library/image";
 import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
+import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 import { Team, TeamAbbreviation, selectPlayerTeam } from "shared/store/teams";
 
@@ -78,92 +80,82 @@ export function TeamSelector<T extends TeamAbbreviation>({ team }: TeamSelectorP
 					ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
 					Transparency={0.5}
 				/>
-
-				{/* <Frame
-					size={new UDim2(1, 0, 0, rem(3))}
-					backgroundTransparency={selectedTeam === team.abbreviation ? 0 : effectTransparency}
-					zIndex={3}
-				>
-					<uigradient
-						Transparency={
-							new NumberSequence([
-								new NumberSequenceKeypoint(0, 0),
-								new NumberSequenceKeypoint(0.6, 0.5),
-								new NumberSequenceKeypoint(1, 1),
-							])
-						}
-						Color={
-							new ColorSequence([
-								new ColorSequenceKeypoint(0, Color3.fromRGB(162, 175, 65)),
-								new ColorSequenceKeypoint(0.4, Color3.fromRGB(202, 205, 95)),
-								new ColorSequenceKeypoint(1, Color3.fromRGB(255, 255, 255)),
-							])
-						}
-						Rotation={88}
+				<Group size={new UDim2(1, 0, 1, -rem(3))}>
+					<Text
+						position={UDim2.fromOffset(rem(1), rem(1))}
+						size={new UDim2(0.5, 0, 1, 0)}
+						textYAlignment="Top"
+						textXAlignment="Left"
+						textWrapped={true}
+						text={team.description}
+						textColor={palette.surface2}
+						textSize={rem(1.25)}
+						font={fonts.arimo.italic}
 					/>
-				</Frame> */}
 
-				<Text
-					position={UDim2.fromOffset(rem(1), rem(1))}
-					size={new UDim2(0.5, 0, 1, -rem(5.5))}
-					textYAlignment="Top"
-					textXAlignment="Left"
-					textWrapped={true}
-					text={team.description}
-					textColor={Color3.fromRGB(124, 128, 131)}
-					textSize={rem(1.75)}
-					font={fonts.robotoMono.regular}
-				/>
-
-				<Image
-					position={UDim2.fromScale(0.6, 0)}
-					size={new UDim2(0.4, 0, 1, -rem(4))}
-					image={images.ui.glyphs[team.image]}
-					backgroundTransparency={1}
-					imageTransparency={defaultTransparency}
-				/>
-				<Image
-					position={UDim2.fromScale(0.6, 0)}
-					size={new UDim2(0.4, 0, 1, -rem(4))}
-					image={images.ui.glyphs[`${team.image}selected` as keyof typeof images.ui.glyphs]}
-					backgroundTransparency={1}
-					imageTransparency={selectedTransparency}
-				/>
-				<Image
-					position={UDim2.fromScale(0.6, 0)}
-					size={new UDim2(0.4, 0, 1, -rem(4))}
-					image={images.ui.glyphs[`${team.image}hovered` as keyof typeof images.ui.glyphs]}
-					backgroundTransparency={1}
-					imageTransparency={hoveredTransparency}
-				/>
+					<Image
+						position={UDim2.fromScale(1, 1)}
+						anchorPoint={new Vector2(1, 1)}
+						size={new UDim2(1, 0, 1, -rem(2))}
+						image={images.ui.glyphs[team.image]}
+						backgroundTransparency={1}
+						imageTransparency={defaultTransparency}
+					>
+						<uiaspectratioconstraint AspectRatio={1.34736} DominantAxis={Enum.DominantAxis.Height} />
+					</Image>
+					<Image
+						position={UDim2.fromScale(1, 1)}
+						anchorPoint={new Vector2(1, 1)}
+						size={new UDim2(1, 0, 1, -rem(2))}
+						image={images.ui.glyphs[`${team.image}selected` as keyof typeof images.ui.glyphs]}
+						backgroundTransparency={1}
+						imageTransparency={selectedTransparency}
+					>
+						<uiaspectratioconstraint AspectRatio={1.34736} DominantAxis={Enum.DominantAxis.Height} />
+					</Image>
+					<Image
+						position={UDim2.fromScale(1, 1)}
+						anchorPoint={new Vector2(1, 1)}
+						size={new UDim2(1, 0, 1, -rem(2))}
+						image={images.ui.glyphs[`${team.image}hovered` as keyof typeof images.ui.glyphs]}
+						backgroundTransparency={1}
+						imageTransparency={hoveredTransparency}
+					>
+						<uiaspectratioconstraint AspectRatio={1.34736} DominantAxis={Enum.DominantAxis.Height} />
+					</Image>
+				</Group>
 
 				<Frame
 					backgroundColor={Color3.fromRGB(33, 38, 41)}
-					size={new UDim2(1, 0, 0, rem(4))}
-					position={new UDim2(0, 0, 1, -rem(4))}
+					size={new UDim2(1, 0, 0, rem(3))}
+					position={new UDim2(0, 0, 1, -rem(3))}
 				>
 					<Image
 						position={UDim2.fromOffset(rem(5), rem(0))}
-						size={UDim2.fromOffset(rem(4), rem(4))}
+						size={UDim2.fromScale(1, 1)}
 						image={images.ui.icons.down}
 						imageTransparency={unselectedTransparency}
-					/>
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
 					<Image
 						position={UDim2.fromOffset(rem(5), rem(0))}
-						size={UDim2.fromOffset(rem(4), rem(4))}
+						size={UDim2.fromScale(1, 1)}
 						image={
 							selectedTeam === "CLASS-D" ? images.ui.icons.downselectedcd : images.ui.icons.downselected
 						}
 						imageTransparency={selectedTransparency}
-					/>
+					>
+						<uiaspectratioconstraint AspectRatio={1} />
+					</Image>
 					<Text
-						position={UDim2.fromOffset(rem(12.5), rem(0))}
+						position={UDim2.fromOffset(rem(8), rem(0))}
 						textXAlignment="Left"
 						size={UDim2.fromOffset(rem(20), rem(4))}
 						text={team.name}
-						textColor={Color3.fromRGB(124, 128, 131)}
-						textSize={rem(2)}
-						font={fonts.inter.bold}
+						textColor={palette.subtext1}
+						textSize={rem(1.5)}
+						font={fonts.arimo.bold}
 					/>
 				</Frame>
 			</Button>

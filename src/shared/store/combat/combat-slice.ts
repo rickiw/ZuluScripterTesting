@@ -1,6 +1,7 @@
 import { createProducer } from "@rbxts/reflex";
 import { PlayerID } from "shared/constants/clans";
 import { WeaponState } from "shared/constants/weapons";
+import { mapProperty } from "shared/utils";
 
 export interface ICombatState {
 	weapon?: WeaponState;
@@ -21,4 +22,10 @@ export const combatSlice = createProducer(initialState, {
 			hasWeapon: !!weapon,
 		},
 	}),
+	updateWeapon: (state, userId: number, update: Partial<WeaponState>) => {
+		return mapProperty(state, userId, (state) => ({
+			...state,
+			...update,
+		}));
+	},
 });

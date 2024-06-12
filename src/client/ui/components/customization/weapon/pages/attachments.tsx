@@ -1,24 +1,32 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { selectSelectedModificationMount, selectSelectedWeapon } from "client/store/customization";
+import { selectModificationMounts } from "client/store/interaction";
+import { SCPScrollingFrame } from "client/ui/components/scp";
 import { useRem } from "client/ui/hooks";
-import { ScrollingFrame } from "client/ui/library/frame";
 import { getModifications } from "shared/constants/weapons";
 import { ModificationSelector } from "../modification-selector";
+import { ModificationTypeSelector } from "../modification-type-selector";
 
 export function CustomizeAttachmentsPage() {
 	const rem = useRem();
 
 	const selectedWeapon = useSelector(selectSelectedWeapon);
 	const matchingModifications = selectedWeapon ? getModifications(selectedWeapon.baseTool.Name as WEAPON)! : [];
+	const modificationMounts = useSelector(selectModificationMounts);
 	const selectedModificationMount = useSelector(selectSelectedModificationMount);
 
 	return (
 		<>
-			<ScrollingFrame size={UDim2.fromScale(1, 1)} backgroundTransparency={1} automaticSizing="Y">
-				<uipadding PaddingTop={new UDim(0, rem(1.5))} />
+			<SCPScrollingFrame
+				size={UDim2.fromScale(1, 1)}
+				backgroundTransparency={1}
+				automaticCanvasSizing={"Y"}
+				canvasSize={UDim2.fromScale(1, 0)}
+			>
+				<uipadding PaddingTop={new UDim(0, rem(1))} />
 				<uigridlayout
-					CellSize={UDim2.fromOffset(rem(20), rem(12.5))}
+					CellSize={UDim2.fromOffset(rem(16), rem(10))}
 					VerticalAlignment="Top"
 					HorizontalAlignment="Center"
 					CellPadding={UDim2.fromOffset(rem(1), rem(1))}
@@ -33,7 +41,19 @@ export function CustomizeAttachmentsPage() {
 							))}
 					</>
 				)}
-			</ScrollingFrame>
+				{selectedWeapon && !selectedModificationMount && (
+					<>
+						{modificationMounts.map((modification) => (
+							<ModificationTypeSelector
+								forWeapon={selectedWeapon.baseTool.Name}
+								modificationType={modification.Name}
+								modificationMount={modification}
+								previewImage="attachments"
+							/>
+						))}
+					</>
+				)}
+			</SCPScrollingFrame>
 		</>
 	);
 }

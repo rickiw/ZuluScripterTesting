@@ -15,6 +15,8 @@ import {
 	selectCameraShiftLocked,
 	selectCameraZoomDistance,
 } from "client/store/camera";
+import { selectWeaponEquipped } from "client/store/character";
+import { selectMenuOpen } from "client/store/menu";
 import { springs } from "shared/constants/springs";
 
 const SENSITIVITY = () => UserSettings().GetService("UserGameSettings").MouseSensitivity / 100;
@@ -56,6 +58,13 @@ export class CameraController implements OnStart, OnRender {
 
 		clientStore.subscribe(selectCameraOffset, (offset) => {
 			this.offsetSpring.spring(offset, springs.orbit);
+		});
+
+		clientStore.subscribe(selectWeaponEquipped, (equipped) => {
+			if (!equipped) {
+				UserInputService.MouseIconEnabled = true;
+				UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
+			}
 		});
 
 		clientStore.subscribe(selectCameraBias, (bias) => {
@@ -158,6 +167,10 @@ export class CameraController implements OnStart, OnRender {
 
 	matchCharacterCamera(recoil: CFrame, newCFrame: CFrame) {
 		const state = clientStore.getState();
+		const weaponEquipped = selectWeaponEquipped(state);
+		if (!weaponEquipped) {
+			return;
+		}
 		const isAiming = selectCameraFlag("FirearmIsAiming")(state);
 		if (!isAiming) {
 			character.UpperTorso.Waist.C0 = character.UpperTorso.Waist.C0.Lerp(this.originalCFrames.upperTorso, 0.15);
@@ -208,8 +221,18 @@ export class CameraController implements OnStart, OnRender {
 
 	updateCamera() {
 		const state = clientStore.getState();
+		const weaponEquipped = clientStore.getState(selectWeaponEquipped);
+		const inMenu = clientStore.getState(selectMenuOpen);
+
 		const rootPart = character.HumanoidRootPart;
 		if (selectCameraLock(state)) {
+			return;
+		}
+
+		if (!weaponEquipped) {
+			this.matchCharacterCamera(new CFrame(), camera.CFrame);
+			UserInputService.MouseIconEnabled = true;
+			camera.CameraType = Enum.CameraType.Custom;
 			return;
 		}
 
@@ -252,7 +275,7 @@ export class CameraController implements OnStart, OnRender {
 		this.matchCharacterCamera(recoil, finalCameraTarget);
 		this.matchCharacterRotation();
 
-		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, 0, math.rad(160));
+		this.phi = math.clamp(this.phi - this.gamepadState.Y * SENSITIVITY() * math.pi, math.rad(40), math.rad(160));
 		this.theta += this.gamepadState.X * SENSITIVITY() * math.pi;
 	}
 

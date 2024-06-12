@@ -4,7 +4,7 @@ import Log from "@rbxts/log";
 import Object from "@rbxts/object-utils";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { CollectionService, ReplicatedStorage } from "@rbxts/services";
-import { BaseFirearm } from "server/components/combat/firearm/BaseFirearm";
+import { BaseFirearm, FirearmAttributes, FirearmInstance } from "server/components/combat/firearm/BaseFirearm";
 import { defaultWeaponData } from "server/data";
 import { Events, Functions } from "server/network";
 import { serverStore } from "server/store";
@@ -15,6 +15,8 @@ import { CharacterRemoving } from "./PlayerService";
 
 @Service()
 export class FirearmService implements OnStart, CharacterRemoving {
+	mappedWeapons = new Map<Tool, BaseFirearm<FirearmAttributes, FirearmInstance>>();
+
 	constructor() {}
 
 	getPlayerWeaponData(playerId: PlayerID) {
@@ -25,13 +27,100 @@ export class FirearmService implements OnStart, CharacterRemoving {
 		return weaponData ?? defaultWeaponData;
 	}
 
+	unloadWeapon(weapon: Tool) {
+		this.mappedWeapons.delete(weapon);
+	}
+
 	onStart() {
+		this.initRemotes();
+	}
+
+	initRemotes() {
 		Events.UpdateFirearm.connect((player, weapon, modifications) => {
 			this.updateAttachments(player, weapon, modifications);
 		});
 
 		Functions.EquipFirearm.setCallback((player, weapon) => {
 			return this.equipFirearm(player, weapon);
+		});
+
+		Functions.FireFirearm.setCallback((player, weapon, mousePosition) => {
+			const mappedWeapon = this.mappedWeapons.get(weapon);
+			if (!mappedWeapon) {
+				Log.Warn(
+					"Player {@Player} tried to fire an unmapped weapon | FirearmService->FireFirearm",
+					player.Name,
+				);
+				return false;
+			}
+
+			const wielder = mappedWeapon.wielder.get();
+			if (player !== wielder || weapon !== mappedWeapon.instance || !mappedWeapon.equipped) {
+				return false;
+			}
+			if (!mappedWeapon.canFire()) {
+				if (mappedWeapon.state.magazine.holding === 0) {
+					mappedWeapon.soundManager.play("ChamberEmpty");
+				}
+				return false;
+			}
+			const direction = mousePosition.sub(mappedWeapon.configuration.barrel.firePoint.WorldPosition).Unit;
+			mappedWeapon.fire(direction);
+			return true;
+		});
+
+		Events.UnequipFirearm.connect((player, weapon) => {
+			const mappedWeapon = this.mappedWeapons.get(weapon);
+			if (!mappedWeapon) {
+				Log.Warn(
+					"Player {@Player} tried to unequip an unmapped weapon | FirearmService->FireFirearm",
+					player.Name,
+				);
+				return false;
+			}
+
+			if (weapon === mappedWeapon.instance && player === mappedWeapon.wielder.get()) {
+				const state = serverStore.getState();
+				const data = selectPlayerSave(player.UserId)(state);
+				if (!data) {
+					Log.Warn(
+						"Player {@Player} doesn't have save data | FirearmService->PlayerDataRemoving",
+						player.Name,
+					);
+					return;
+				}
+				const weaponData = data.weaponData;
+
+				for (const key of Object.keys(weaponData)) {
+					if (key === mappedWeapon.instance.Name) {
+						const newWeaponData = this.getUpdatedWeaponData(weaponData, key, {
+							reserve: mappedWeapon.state.reserve,
+							magazine: mappedWeapon.state.magazine.holding,
+							equipped: true,
+						});
+
+						serverStore.updatePlayerSave(player.UserId, { weaponData: newWeaponData });
+					}
+				}
+
+				mappedWeapon.instance.Destroy();
+			}
+		});
+
+		Events.ReloadFirearm.connect((player, weapon) => {
+			const mappedWeapon = this.mappedWeapons.get(weapon);
+			if (!mappedWeapon) {
+				Log.Warn(
+					"Player {@Player} tried to reload an unmapped weapon | FirearmService->FireFirearm",
+					player.Name,
+				);
+				return false;
+			}
+
+			if (player === mappedWeapon.wielder.get() && weapon === mappedWeapon.instance && mappedWeapon.equipped) {
+				Log.Warn("Reloading weapon | BaseFirearm->ReloadFirearm");
+				mappedWeapon.reload();
+			}
 		});
 	}
 
@@ -58,8 +147,21 @@ export class FirearmService implements OnStart, CharacterRemoving {
 			);
 			return;
 		}
+		const [success, response] = Functions.LoadWeapon.invoke(player, weaponClone).await();
+		if (!success || !response) {
+			Log.Warn(
+				"Failed to load weapon ({@Success}|{@Response}) | FirearmService->EquipFirearm",
+				success,
+				response,
+			);
+			weaponClone.Destroy();
+			return;
+		}
+		this.mappedWeapons.set(weaponClone, firearmClass);
+		firearmClass.wielder.set(player as never);
+		firearmClass.load(player);
 		firearmClass.updateState({
-			reserve: weaponData[weapon.Name as WEAPON].ammo,
+			reserve: weaponData[weapon.Name as WEAPON].reserve,
 		});
 		firearmClass.updateMagazineHolding(weaponData[weapon.Name as WEAPON].magazine);
 		firearmClass.updateToolAttachmentsByName(weaponClone, modifications);
@@ -162,7 +264,7 @@ export class FirearmService implements OnStart, CharacterRemoving {
 				return;
 			}
 			const newWeaponData = this.getUpdatedWeaponData(weaponData, key, {
-				ammo: firearmClass.state.reserve,
+				reserve: firearmClass.state.reserve,
 				magazine: firearmClass.state.magazine.holding,
 				equipped: true,
 			});

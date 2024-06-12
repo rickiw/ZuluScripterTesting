@@ -52,7 +52,7 @@ export class SlidingDoor extends BaseDoor<DoorAttributes, DoorInstance> implemen
 	}
 
 	onDoorInteract(player: Player) {
-		this.dutyCycle();
+		this.dutyCycle(player);
 	}
 
 	onStart() {

@@ -49,14 +49,13 @@ export function getNewWeaponEntry(weapon: WEAPON, weaponData: FirearmDataSave, e
 export interface FirearmSave {
 	equipped: boolean;
 	magazine: number;
-	ammo: number;
+	reserve: number;
 	attachments: IModificationSave[];
 }
 
 export interface FirearmLike extends WeaponLike {
-	Barrel: BarrelConfig;
-	Magazine: MagazineConfig;
-	Sight: SightConfig;
+	barrel: BarrelConfig;
+	magazine: MagazineConfig;
 	animations: FirearmAnimations<number | string>;
 }
 
@@ -65,6 +64,7 @@ export interface FirearmAnimations<T extends number | string | AnimationTrack | 
 	Reload: T;
 	Aim: T;
 	Fire: T;
+	Run: T;
 }
 
 export interface FirearmSounds {

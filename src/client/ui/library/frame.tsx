@@ -7,6 +7,7 @@ export interface FrameProps<T extends Instance = Frame> extends Roact.PropsWithC
 	change?: Roact.JsxInstanceChangeEvents<T>;
 	size?: UDim2 | Roact.Binding<UDim2>;
 	position?: UDim2 | Roact.Binding<UDim2>;
+	autoSize?: AutomaticSize | "None" | "X" | "Y" | "XY" | Roact.Binding<AutomaticSize>;
 	anchorPoint?: Vector2 | Roact.Binding<Vector2>;
 	rotation?: number | Roact.Binding<number>;
 	backgroundColor?: Color3 | Roact.Binding<Color3>;
@@ -34,6 +35,7 @@ export const Frame = forwardRef((props: FrameProps, ref: Ref<Frame>) => {
 	return (
 		<frame
 			ref={ref}
+			AutomaticSize={props.autoSize}
 			Size={props.size}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}
@@ -59,6 +61,7 @@ export const ScrollingFrame = forwardRef((props: ScrollingFrameProps, ref: Ref<S
 	return (
 		<scrollingframe
 			ref={ref}
+			AutomaticSize={props.autoSize}
 			Size={props.size}
 			Position={props.position}
 			AnchorPoint={props.anchorPoint}

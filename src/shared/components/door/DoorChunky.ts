@@ -32,7 +32,7 @@ export class ChunkyDoor extends BaseDoor<DoorAttributes, DoorInstance> implement
 	}
 
 	onDoorInteract(player: Player) {
-		this.dutyCycle();
+		this.dutyCycle(player);
 	}
 
 	onStart() {

@@ -153,6 +153,7 @@ export class CharacterController extends HandlesInput implements OnStart, OnTick
 		}
 
 		const state = clientStore.getState();
+
 		const sprinting = selectSprinting(state);
 		const walkspeedMultiplier = selectWalkspeedMultiplier(state);
 

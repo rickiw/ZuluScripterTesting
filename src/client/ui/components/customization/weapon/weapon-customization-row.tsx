@@ -1,79 +1,103 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect } from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { selectCustomizationIsOpen, selectWeaponCustomizationPage } from "client/store/customization";
+import {
+	selectCustomizationIsOpen,
+	selectWeaponCustomizationPage,
+	selectWeaponCustomizationPageIndex,
+} from "client/store/customization";
 import { selectPrimaryWeapon, selectSecondaryWeapon, selectWeapons } from "client/store/inventory";
 import { useRem } from "client/ui/hooks";
-import { Frame } from "client/ui/library/frame";
-import { WeaponButtonRowButton } from "./weapon-button-row-button";
+import { images } from "shared/assets/images";
+import { SCPTab, SCPTabs } from "../../scp";
 
 export function WeaponCustomizationRow() {
 	const rem = useRem();
 
 	const isCustomizationOpen = useSelector(selectCustomizationIsOpen);
-	const weaponPage = useSelector(selectWeaponCustomizationPage);
+	const selectedPage = useSelector(selectWeaponCustomizationPage);
+	const selectedIndex = useSelector(selectWeaponCustomizationPageIndex);
 
 	const allWeapons = useSelector(selectWeapons);
 	const primaryWeapon = useSelector(selectPrimaryWeapon);
 	const secondaryWeapon = useSelector(selectSecondaryWeapon);
 
 	useEffect(() => {
-		if (!primaryWeapon && weaponPage === "primary") {
+		if (!primaryWeapon && selectedPage === "primary") {
 			clientStore.setSelectedWeapon(undefined);
-		} else if (!secondaryWeapon && weaponPage === "secondary") {
+		} else if (!secondaryWeapon && selectedPage === "secondary") {
 			clientStore.setSelectedWeapon(undefined);
 		}
 
-		if (primaryWeapon && weaponPage === "primary") {
+		if (primaryWeapon && selectedPage === "primary") {
 			const matchingWeapon = allWeapons.find(
 				(weapon) => weapon.baseTool.Name === primaryWeapon.Name && weapon.weaponType === "Primary",
 			);
 			clientStore.setSelectedWeapon(matchingWeapon);
-		} else if (secondaryWeapon && weaponPage === "secondary") {
+		} else if (secondaryWeapon && selectedPage === "secondary") {
 			const matchingWeapon = allWeapons.find(
 				(weapon) => weapon.baseTool.Name === secondaryWeapon.Name && weapon.weaponType === "Secondary",
 			);
 			clientStore.setSelectedWeapon(matchingWeapon);
 		}
-	}, [weaponPage]);
+	}, [selectedPage]);
 
 	useEffect(() => {
 		clientStore.setWeaponCustomizationPage("primary");
 	}, [isCustomizationOpen]);
 
 	return (
-		<>
-			<Frame
-				position={UDim2.fromOffset(rem(0), rem(10.25))}
-				size={UDim2.fromOffset(rem(45), rem(4.75))}
-				backgroundTransparency={1}
-				zIndex={2}
-			>
-				<uigridlayout
-					CellPadding={UDim2.fromOffset(rem(1), rem(1))}
-					CellSize={UDim2.fromOffset(rem(6), rem(5))}
-				/>
-				<WeaponButtonRowButton title="PRIMARY 01" page="primary" icon="rifle" selectedIcon="rifleselected" />
-				<WeaponButtonRowButton
-					title="SECONDARY 02"
-					page="secondary"
-					icon="handgun"
-					selectedIcon="handgunselected"
-				/>
-				<WeaponButtonRowButton title="MELEE 03" page="melee" icon="knife" selectedIcon="knifeselected" />
-				<WeaponButtonRowButton
-					title="MODS 04"
-					page="attachments"
-					icon="attachments"
-					selectedIcon="attachmentsselected"
-				/>
-			</Frame>
-			<Frame
-				zIndex={1}
-				backgroundColor={Color3.fromRGB(33, 38, 41)}
-				size={UDim2.fromOffset(rem(45), rem(2))}
-				position={UDim2.fromOffset(rem(0), rem(15.25))}
+		<SCPTabs
+			size={new UDim2(1, 0, 0, rem(4.5))}
+			position={UDim2.fromOffset(rem(0), rem(5))}
+			selectedPage={selectedPage}
+			selectedIndex={selectedIndex}
+			fat
+		>
+			<SCPTab
+				page="PRIMARY"
+				index={1}
+				rectSize={new Vector2(128, 128)}
+				rectOffset={new Vector2(128, 128)}
+				selectedPage={selectedPage.upper()}
+				onClick={() => {
+					// clientStore.setWeaponCustomizationPage("primary");
+				}}
+				icon={images.ui.icons.weapon_customization_icons}
 			/>
-		</>
+			<SCPTab
+				page="SECONDARY"
+				index={2}
+				rectSize={new Vector2(128, 128)}
+				rectOffset={new Vector2(128, 0)}
+				selectedPage={selectedPage.upper()}
+				onClick={() => {
+					// clientStore.setWeaponCustomizationPage("secondary");
+				}}
+				icon={images.ui.icons.weapon_customization_icons}
+			/>
+			<SCPTab
+				page="MELEE"
+				index={3}
+				rectSize={new Vector2(128, 128)}
+				rectOffset={new Vector2(0, 128)}
+				selectedPage={selectedPage.upper()}
+				onClick={() => {
+					// clientStore.setWeaponCustomizationPage("melee");
+				}}
+				icon={images.ui.icons.weapon_customization_icons}
+			/>
+			<SCPTab
+				page="MODS"
+				index={4}
+				rectSize={new Vector2(128, 128)}
+				rectOffset={new Vector2(0, 0)}
+				selectedPage={selectedPage.upper()}
+				onClick={() => {
+					// clientStore.setWeaponCustomizationPage("mods");
+				}}
+				icon={images.ui.icons.weapon_customization_icons}
+			/>
+		</SCPTabs>
 	);
 }
