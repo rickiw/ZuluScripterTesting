@@ -9,7 +9,6 @@ import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { CharacterCustomizationFooter } from "./character-customization-footer";
 import { CharacterCustomizationRow } from "./character-customization-row";
-import { CharacterCustomizationViewport } from "./character-customization-viewport";
 
 export function CharacterCustomization() {
 	const rem = useRem();
@@ -46,7 +45,6 @@ export function CharacterCustomization() {
 				<CharacterCustomizationPageProvider />
 				<CharacterCustomizationFooter />
 			</Frame>
-			<CharacterCustomizationViewport />
 		</>
 	);
 }

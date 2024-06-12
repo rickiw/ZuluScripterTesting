@@ -1,4 +1,6 @@
+import Object from "@rbxts/object-utils";
 import Roact from "@rbxts/roact";
+import { Outfits } from "client/store/customization";
 import { SCPScrollingFrame } from "client/ui/components/scp";
 import { useRem } from "client/ui/hooks";
 import { UniformSelector } from "../uniform-selector";
@@ -21,10 +23,7 @@ export function CustomizeUniformPage() {
 				CellPadding={UDim2.fromOffset(rem(1), rem(1))}
 			/>
 
-			{[
-				{ uniformType: "TYPE", uniformName: "UNIFORM" },
-				{ uniformType: "TYPE", uniformName: "UNIFORM 2" },
-			].map((uniform) => (
+			{Object.values(Outfits).map((uniform) => (
 				<UniformSelector uniform={uniform} previewImage="shirt" />
 			))}
 		</SCPScrollingFrame>

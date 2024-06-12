@@ -1,4 +1,3 @@
-import { CharacterRigR15 } from "@rbxts/promise-character";
 import { createProducer } from "@rbxts/reflex";
 import { IModification, WeaponBase } from "shared/constants/weapons";
 
@@ -36,10 +35,16 @@ export const HairOptions: RobloxAsset[] = [
 	{ name: "Circle Gray Framed Glasses", assetID: 5063562714 },
 ];
 
+export type CharacterOutfit = {
+	shirt: number;
+	pants: number;
+};
+
 export type CharacterOptions = {
 	skinColor: Color3;
 	face: number;
 	hair: number[];
+	outfit: CharacterOutfit;
 };
 
 export interface CustomizationState {
@@ -53,17 +58,21 @@ export interface CustomizationState {
 		modificationPreviews: IModification[];
 	};
 	character: CharacterOptions;
-	characterCustomizationModel?: CharacterRigR15;
 	weaponPageSubtitles: Record<CustomizationState["weaponSelectedPage"], string>;
 	characterPageSubtitles: Record<CustomizationState["characterSelectedPage"], string>;
 	weaponPages: CustomizationState["weaponSelectedPage"][];
 	characterPages: CustomizationState["characterSelectedPage"][];
 }
 
+export const Outfits = {
+	"CLASS-D": { uniformName: "CLASS-D", uniformType: "Type", shirt: 13958124520, pants: 13958120032 },
+	"LEVEL-0": { uniformName: "LEVEL-0", uniformType: "Type", shirt: 14035981578, pants: 14035990968 },
+} as const;
+
 const initialState: CustomizationState = {
 	isOpen: false,
 	customizationPage: "character",
-	characterSelectedPage: "character",
+	characterSelectedPage: "teams",
 	weaponSelectedPage: "primary",
 	weapon: {
 		selectedWeapon: undefined,
@@ -74,8 +83,8 @@ const initialState: CustomizationState = {
 		skinColor: Color3.fromHex("#C69C6D"),
 		face: 144080495,
 		hair: [4212534746],
+		outfit: Outfits["CLASS-D"],
 	},
-	characterCustomizationModel: undefined,
 	weaponPageSubtitles: {
 		primary: "Firearm",
 		secondary: "Sidearm",
@@ -126,9 +135,12 @@ export const customizationSlice = createProducer(initialState, {
 			hair,
 		},
 	}),
-	setCharacterCustomizationModel: (state, characterCustomizationModel: CharacterRigR15 | undefined) => ({
+	setCharacterOutfit: (state, outfit: CharacterOutfit) => ({
 		...state,
-		characterCustomizationModel,
+		character: {
+			...state.character,
+			outfit,
+		},
 	}),
 	setCharacterCustomizationPage: (state, characterSelectedPage: CustomizationState["characterSelectedPage"]) => ({
 		...state,

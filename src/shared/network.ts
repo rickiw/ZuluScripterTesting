@@ -1,4 +1,5 @@
 import { Networking } from "@flamework/networking";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Clan, GroupID } from "./constants/clans";
 import { FacilityAlarmCode, FacilityAnnouncement } from "./constants/os";
 import { IModification } from "./constants/weapons";
@@ -33,6 +34,9 @@ export interface ClientToServerEvents
 
 	// Items
 	ItemAction(obj: unknown): void;
+
+	// Customization
+	SetAccessories(character: CharacterRigR15, accessories: number[]): void;
 }
 
 export interface ServerToClientRoombaEvents {
@@ -76,6 +80,7 @@ interface ClientToServerFunctions {
 	EquipFirearm(weapon: Tool): Tool | undefined;
 	JoinTeam(team: TeamAbbreviation): boolean;
 	GetAssetAccessory(assetId: number): Accessory;
+	GetCustomizationCharacter(): CharacterRigR15;
 
 	// // OS
 	// // FILE SYSTEM

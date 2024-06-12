@@ -57,12 +57,12 @@ export const selectCharacterHair = (state: RootState) => {
 	return state.customization.character.hair;
 };
 
-export const selectCharacterSkinColor = (state: RootState) => {
-	return state.customization.character.skinColor;
+export const selectCharacterOutfit = (state: RootState) => {
+	return state.customization.character.outfit;
 };
 
-export const selectCharacterCustomizationModel = (state: RootState) => {
-	return state.customization.characterCustomizationModel;
+export const selectCharacterSkinColor = (state: RootState) => {
+	return state.customization.character.skinColor;
 };
 
 export const selectIsPreviewingModification = (modificationName: string) => (state: RootState) => {

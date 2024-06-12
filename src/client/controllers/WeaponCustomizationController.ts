@@ -103,7 +103,7 @@ export class WeaponCustomizationController implements OnStart, OnRender {
 					child.Anchored = true;
 				}
 			});
-			this.weapon.Parent = Workspace.CustomizationBox.Weapons;
+			this.weapon.Parent = Workspace.CustomizationBox.Assets;
 			this.populateModifications(this.weapon);
 			const savedWeaponModifications = this.getWeaponModifications(weapon.baseTool);
 			savedWeaponModifications.forEach((modification) => {
@@ -158,6 +158,7 @@ export class WeaponCustomizationController implements OnStart, OnRender {
 	}
 
 	cleanPreview() {
+		this.maid.DoCleaning();
 		clientStore.resetWeaponPreview();
 		clientStore.setSelectedWeapon(undefined);
 	}
@@ -166,7 +167,7 @@ export class WeaponCustomizationController implements OnStart, OnRender {
 		return clientStore.subscribe(selectSelectedWeapon, (newWeapon) => {
 			clientStore.resetWeaponPreview();
 			clientStore.clearModificationMounts();
-			Workspace.CustomizationBox.Weapons.ClearAllChildren();
+			Workspace.CustomizationBox.Assets.ClearAllChildren();
 
 			if (newWeapon) {
 				Log.Warn("Setting up viewport for weapon {@Weapon}", newWeapon);

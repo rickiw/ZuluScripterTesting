@@ -1,3 +1,3 @@
 {
-	"conventionalCommits.scopes": ["clans", "weapons", "objectives", "menu", "camera"]
+	"conventionalCommits.scopes": ["clans", "weapons", "objectives", "menu", "camera", "customization"]
 }

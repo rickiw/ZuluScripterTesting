@@ -61,7 +61,7 @@ export function WeaponCustomizationRow() {
 				rectOffset={new Vector2(128, 128)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setWeaponCustomizationPage("primary");
+					// clientStore.setWeaponCustomizationPage("primary");
 				}}
 				icon={images.ui.icons.weapon_customization_icons}
 			/>
@@ -72,7 +72,7 @@ export function WeaponCustomizationRow() {
 				rectOffset={new Vector2(128, 0)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setWeaponCustomizationPage("secondary");
+					// clientStore.setWeaponCustomizationPage("secondary");
 				}}
 				icon={images.ui.icons.weapon_customization_icons}
 			/>
@@ -83,7 +83,7 @@ export function WeaponCustomizationRow() {
 				rectOffset={new Vector2(0, 128)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setWeaponCustomizationPage("melee");
+					// clientStore.setWeaponCustomizationPage("melee");
 				}}
 				icon={images.ui.icons.weapon_customization_icons}
 			/>
@@ -94,7 +94,7 @@ export function WeaponCustomizationRow() {
 				rectOffset={new Vector2(0, 0)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setWeaponCustomizationPage("mods");
+					// clientStore.setWeaponCustomizationPage("mods");
 				}}
 				icon={images.ui.icons.weapon_customization_icons}
 			/>

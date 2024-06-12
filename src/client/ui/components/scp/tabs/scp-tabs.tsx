@@ -1,4 +1,4 @@
-import Roact, { useEffect, useState } from "@rbxts/roact";
+import Roact, { useState } from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame, FrameProps } from "client/ui/library/frame";
@@ -8,7 +8,6 @@ import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
-import { springs } from "shared/constants/springs";
 
 interface SCPTabProps {
 	page: string;
@@ -33,10 +32,10 @@ export const SCPTab = ({ page, onClick, rectOffset, rectSize, icon, selectedPage
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
 
-	useEffect(() => {
-		backgroundTransparencyMotion.spring(hovered ? 0.75 : 1, springs.gentle);
-		effectTransparencyMotion.spring(hovered ? 0 : 1, springs.gentle);
-	}, [hovered]);
+	// useEffect(() => {
+	// 	backgroundTransparencyMotion.spring(hovered ? 0.75 : 1, springs.gentle);
+	// 	effectTransparencyMotion.spring(hovered ? 0 : 1, springs.gentle);
+	// }, [hovered]);
 
 	return (
 		<Button

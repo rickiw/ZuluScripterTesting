@@ -3,7 +3,11 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useCallback } from "@rbxts/roact";
 import { UserInputService } from "@rbxts/services";
 import { clientStore } from "client/store";
-import { selectCharacterCustomizationPageSubtitle, selectCustomizationPage } from "client/store/customization";
+import {
+	selectCharacterCustomizationPage,
+	selectCharacterCustomizationPageSubtitle,
+	selectCustomizationPage,
+} from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Group } from "client/ui/library/group";
 import { Image } from "client/ui/library/image";
@@ -16,12 +20,34 @@ export function CharacterCustomizationFooter() {
 	const rem = useRem();
 	const subtitle = useSelector(selectCharacterCustomizationPageSubtitle);
 	const customizationPage = useSelector(selectCustomizationPage);
+	const characterPage = useSelector(selectCharacterCustomizationPage);
 	const advance = useCallback(() => {
-		clientStore.setCustomizationPage("weapon");
-	}, [customizationPage]);
+		const page = (
+			{
+				teams: "character",
+				character: "uniform",
+				uniform: "armor",
+				armor: "weapon",
+			} as const
+		)[characterPage];
+
+		if (page === "weapon") {
+			clientStore.setCustomizationPage("weapon");
+		} else {
+			clientStore.setCharacterCustomizationPage(page);
+		}
+	}, [customizationPage, characterPage]);
 	const goback = useCallback(() => {
-		// clientStore.setCustomizationOpen(false);
-	}, [customizationPage]);
+		const page = (
+			{
+				teams: "teams",
+				character: "teams",
+				uniform: "character",
+				armor: "uniform",
+			} as const
+		)[characterPage];
+		clientStore.setCharacterCustomizationPage(page);
+	}, [customizationPage, characterPage]);
 
 	useEventListener(UserInputService.InputBegan, (input) => {
 		if (input.KeyCode === Enum.KeyCode.LeftShift) {

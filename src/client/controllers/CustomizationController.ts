@@ -102,7 +102,7 @@ export class CustomizationController implements OnStart {
 		this.character.Humanoid.WalkSpeed = 1;
 		this.controlSet.remove("character-rotation");
 		this.maid.DoCleaning();
-		Workspace.CustomizationBox.Weapons.ClearAllChildren();
+		Workspace.CustomizationBox.Assets.ClearAllChildren();
 	}
 
 	cleanPreviews() {

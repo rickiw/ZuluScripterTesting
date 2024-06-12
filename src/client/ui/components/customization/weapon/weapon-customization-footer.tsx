@@ -1,3 +1,4 @@
+import Log from "@rbxts/log";
 import { useEventListener } from "@rbxts/pretty-react-hooks";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useCallback } from "@rbxts/roact";
@@ -24,20 +25,42 @@ export function WeaponCustomizationFooter() {
 	const subtitle = useSelector(selectWeaponCustomizationPageSubtitle);
 	const customizationPage = useSelector(selectCustomizationPage);
 	const selectedWeapon = useSelector(selectSelectedWeapon);
-	const weaponSelectedPage = useSelector(selectWeaponCustomizationPage);
+	const weaponPage = useSelector(selectWeaponCustomizationPage);
 	const selectedModificationMount = useSelector(selectSelectedModificationMount);
 
 	const advance = useCallback(() => {
-		// clientStore.setCustomizationOpen(false);
-	}, [customizationPage]);
+		const page = (
+			{
+				primary: "secondary",
+				secondary: "melee",
+				melee: "mods",
+				mods: "done",
+			} as const
+		)[weaponPage];
+
+		if (page === "done") {
+			Log.Warn("Closing menu");
+		} else {
+			clientStore.setWeaponCustomizationPage(page);
+		}
+	}, [customizationPage, weaponPage]);
 
 	const goback = useCallback(() => {
-		if (weaponSelectedPage === "mods" && selectedWeapon && selectedModificationMount) {
-			clientStore.setSelectedModificationMount(undefined);
-			return;
+		const page = (
+			{
+				primary: "character",
+				secondary: "primary",
+				melee: "secondary",
+				mods: "melee",
+			} as const
+		)[weaponPage];
+
+		if (page === "character") {
+			clientStore.setCustomizationPage("character");
+		} else {
+			clientStore.setWeaponCustomizationPage(page);
 		}
-		clientStore.setCustomizationPage("character");
-	}, [customizationPage, weaponSelectedPage, selectedWeapon, selectedModificationMount]);
+	}, [customizationPage, weaponPage]);
 
 	useEventListener(UserInputService.InputBegan, (input) => {
 		if (input.KeyCode === Enum.KeyCode.LeftShift) {

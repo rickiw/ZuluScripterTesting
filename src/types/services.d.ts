@@ -5,7 +5,7 @@ interface Workspace extends Instance {
 	Bullets: Folder;
 	CustomizationBox: Model & {
 		Mount: BasePart;
-		Weapons: Folder;
+		Assets: Folder;
 	};
 }
 

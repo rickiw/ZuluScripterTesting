@@ -1,6 +1,5 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
-import { clientStore } from "client/store";
 import { selectCharacterCustomizationPage, selectCharacterCustomizationPageIndex } from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
@@ -28,7 +27,7 @@ export function CharacterCustomizationRow() {
 				rectOffset={new Vector2(0, 0)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setCharacterCustomizationPage("teams");
+					// clientStore.setCharacterCustomizationPage("teams");
 				}}
 				icon={images.ui.icons.character_customization_icons}
 			/>
@@ -39,7 +38,7 @@ export function CharacterCustomizationRow() {
 				rectOffset={new Vector2(128, 0)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setCharacterCustomizationPage("character");
+					// clientStore.setCharacterCustomizationPage("character");
 				}}
 				icon={images.ui.icons.character_customization_icons}
 			/>
@@ -50,18 +49,18 @@ export function CharacterCustomizationRow() {
 				rectOffset={new Vector2(0, 128)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setCharacterCustomizationPage("uniform");
+					// clientStore.setCharacterCustomizationPage("uniform");
 				}}
 				icon={images.ui.icons.character_customization_icons}
 			/>
 			<SCPTab
-				page="OTHER"
+				page="ARMOR"
 				index={4}
 				rectSize={new Vector2(128, 128)}
 				rectOffset={new Vector2(128, 128)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					clientStore.setCharacterCustomizationPage("armor");
+					// clientStore.setCharacterCustomizationPage("armor");
 				}}
 				icon={images.ui.icons.character_customization_icons}
 			/>
