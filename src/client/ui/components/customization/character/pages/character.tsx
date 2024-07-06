@@ -14,7 +14,7 @@ import { Group } from "client/ui/library/group";
 import { Text } from "client/ui/library/text";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
-import { OptionSelector } from "./option-selector";
+import { OptionSelector } from "../option-selector";
 
 const skinColors = [
 	Color3.fromHex("#C69C6D"),

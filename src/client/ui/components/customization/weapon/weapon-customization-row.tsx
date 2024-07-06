@@ -49,7 +49,7 @@ export function WeaponCustomizationRow() {
 	return (
 		<SCPTabs
 			size={new UDim2(1, 0, 0, rem(4.5))}
-			position={UDim2.fromOffset(rem(0), rem(5))}
+			position={UDim2.fromOffset(rem(0), rem(7.5))}
 			selectedPage={selectedPage}
 			selectedIndex={selectedIndex}
 			fat
@@ -94,7 +94,7 @@ export function WeaponCustomizationRow() {
 				rectOffset={new Vector2(0, 0)}
 				selectedPage={selectedPage.upper()}
 				onClick={() => {
-					// clientStore.setWeaponCustomizationPage("mods");
+					clientStore.setWeaponCustomizationPage("mods");
 				}}
 				icon={images.ui.icons.weapon_customization_icons}
 			/>

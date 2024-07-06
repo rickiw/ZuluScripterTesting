@@ -1,4 +1,4 @@
-import Roact, { useState } from "@rbxts/roact";
+import Roact, { useEffect, useState } from "@rbxts/roact";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame, FrameProps } from "client/ui/library/frame";
@@ -8,6 +8,7 @@ import { Text } from "client/ui/library/text";
 import { images } from "shared/assets/images";
 import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
+import { springs } from "shared/constants/springs";
 
 interface SCPTabProps {
 	page: string;
@@ -27,15 +28,28 @@ interface SCPTabsProps extends FrameProps {
 
 export const SCPTab = ({ page, onClick, rectOffset, rectSize, icon, selectedPage }: SCPTabProps) => {
 	const rem = useRem();
+
 	const active = selectedPage === page;
 	const [hovered, setHovered] = useState(false);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
-	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
+	const [effectTransparency, effectTransparencyMotion] = useMotion(active ? 0 : 1);
 
 	// useEffect(() => {
 	// 	backgroundTransparencyMotion.spring(hovered ? 0.75 : 1, springs.gentle);
 	// 	effectTransparencyMotion.spring(hovered ? 0 : 1, springs.gentle);
 	// }, [hovered]);
+
+	useEffect(() => {
+		if (selectedPage !== page) {
+			effectTransparencyMotion.tween(1, { time: 0.05 });
+		}
+	}, [selectedPage]);
+
+	useEffect(() => {
+		if (active) {
+			effectTransparencyMotion.spring(0, springs.gentle);
+		}
+	}, [active]);
 
 	return (
 		<Button
@@ -50,13 +64,13 @@ export const SCPTab = ({ page, onClick, rectOffset, rectSize, icon, selectedPage
 			}}
 		>
 			<Frame
-				backgroundTransparency={active ? 0 : effectTransparency}
+				backgroundTransparency={effectTransparency}
 				backgroundColor={palette.overlay2}
 				size={UDim2.fromScale(1, 1)}
 				position={UDim2.fromScale(0, 0)}
 			/>
 			<Frame
-				backgroundTransparency={active ? 0 : effectTransparency}
+				backgroundTransparency={effectTransparency}
 				anchorPoint={new Vector2(0.5, 0.5)}
 				position={UDim2.fromScale(0.5, 0.5)}
 				backgroundColor={palette.overlay0}

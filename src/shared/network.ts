@@ -1,5 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { CharacterOptions } from "./constants/character";
 import { Clan, GroupID } from "./constants/clans";
 import { FacilityAlarmCode, FacilityAnnouncement } from "./constants/os";
 import { IModification } from "./constants/weapons";
@@ -81,6 +82,7 @@ interface ClientToServerFunctions {
 	JoinTeam(team: TeamAbbreviation): boolean;
 	GetAssetAccessory(assetId: number): Accessory;
 	GetCustomizationCharacter(): CharacterRigR15;
+	SetCharacterCustomization(options: CharacterOptions): CharacterRigR15;
 
 	// // OS
 	// // FILE SYSTEM

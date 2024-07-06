@@ -28,6 +28,16 @@ export const defaultPlayerProfile: PlayerProfile = {
 	purchasedPerks: [],
 	objectiveCompletion: [],
 	weaponData: defaultWeaponData,
+	characterOptions: {
+		skinColor: "#C69C6D",
+		face: 144080495,
+		hair: [4212534746],
+		outfit: {
+			shirt: 13958124520,
+			pants: 13958120032,
+		},
+		armor: undefined,
+	},
 	credits: 0,
 };
 

@@ -61,6 +61,10 @@ export const selectCharacterOutfit = (state: RootState) => {
 	return state.customization.character.outfit;
 };
 
+export const selectCharacterArmor = (state: RootState) => {
+	return state.customization.character.armor;
+};
+
 export const selectCharacterSkinColor = (state: RootState) => {
 	return state.customization.character.skinColor;
 };

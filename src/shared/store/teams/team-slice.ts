@@ -2,7 +2,18 @@ import { createProducer } from "@rbxts/reflex";
 import { images } from "shared/assets/images";
 import { TeamName } from "shared/constants/teams";
 
-export const TeamAbbreviations = ["FP", "SCD", "SD", "E&T", "CLASS-D", "MD", "LOGISTICS"] as const;
+export const TeamAbbreviations = [
+	"FP",
+	"SCD",
+	"SD",
+	"E&T",
+	"CLASS-D",
+	"MD",
+	"LOGISTICS",
+	"DEA",
+	"CHAOS",
+	"AD",
+] as const;
 export type TeamAbbreviation = (typeof TeamAbbreviations)[number];
 
 export interface Team<T extends TeamAbbreviation> {
@@ -70,6 +81,27 @@ const initialState: TeamState = {
 			name: "Logistics Department",
 			image: "LD",
 			description: "The Logistics Department is responsible for the transportation and delivery of goods.",
+			members: [],
+		},
+		DEA: {
+			abbreviation: "DEA",
+			name: "Department of External Affairs",
+			image: "DEA",
+			description: "The Department of External Affairs is responsible for communications with external entities.",
+			members: [],
+		},
+		CHAOS: {
+			abbreviation: "CHAOS",
+			name: "Chaos Insurgency",
+			image: "CI",
+			description: "The Chaos Insurgency is a rival organization that seeks to exploit SCP objects.",
+			members: [],
+		},
+		AD: {
+			abbreviation: "AD",
+			name: "Administrative Department",
+			image: "AD",
+			description: "The Administrative Department is responsible for managing the facility's operations.",
 			members: [],
 		},
 	},

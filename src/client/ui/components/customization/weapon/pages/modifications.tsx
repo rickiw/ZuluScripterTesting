@@ -2,19 +2,22 @@ import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { selectSelectedModificationMount, selectSelectedWeapon } from "client/store/customization";
 import { selectModificationMounts } from "client/store/interaction";
+import { selectWeapons } from "client/store/inventory";
 import { SCPScrollingFrame } from "client/ui/components/scp";
 import { useRem } from "client/ui/hooks";
 import { getModifications } from "shared/constants/weapons";
 import { ModificationSelector } from "../modification-selector";
 import { ModificationTypeSelector } from "../modification-type-selector";
+import { WeaponSelector } from "../weapon-selector";
 
-export function CustomizeAttachmentsPage() {
+export function CustomizeModificationsPage() {
 	const rem = useRem();
 
 	const selectedWeapon = useSelector(selectSelectedWeapon);
 	const matchingModifications = selectedWeapon ? getModifications(selectedWeapon.baseTool.Name as WEAPON)! : [];
 	const modificationMounts = useSelector(selectModificationMounts);
 	const selectedModificationMount = useSelector(selectSelectedModificationMount);
+	const allWeapons = useSelector(selectWeapons);
 
 	return (
 		<>
@@ -32,6 +35,15 @@ export function CustomizeAttachmentsPage() {
 					CellPadding={UDim2.fromOffset(rem(1), rem(1))}
 				/>
 
+				{!selectedWeapon && (
+					<>
+						{allWeapons
+							.sort((a, b) => a.baseTool.Name < b.baseTool.Name)
+							.map((weapon) => (
+								<WeaponSelector weapon={weapon} previewImage="handgun" />
+							))}
+					</>
+				)}
 				{selectedWeapon && selectedModificationMount && (
 					<>
 						{matchingModifications

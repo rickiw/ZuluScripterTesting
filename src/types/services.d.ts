@@ -18,6 +18,11 @@ interface ReplicatedStorage extends Instance {
 	};
 	Assets: Folder & {
 		Bullet: BasePart;
+		Armor: Folder & {
+			Cadet: Model;
+			Guard: Model;
+			Specialist: Model;
+		};
 		Sounds: Folder & {
 			HitMarker: Sound;
 		};

@@ -3,8 +3,8 @@ import Roact from "@rbxts/roact";
 import { selectWeaponCustomizationPage } from "client/store/customization";
 import { useRem } from "client/ui/hooks";
 import { Frame } from "client/ui/library/frame";
-import { CustomizeAttachmentsPage } from "./pages/attachments";
 import { CustomizeMeleePage } from "./pages/melee";
+import { CustomizeModificationsPage } from "./pages/modifications";
 import { CustomizePrimaryPage } from "./pages/primary";
 import { CustomizeSecondaryPage } from "./pages/secondary";
 
@@ -16,14 +16,14 @@ export function WeaponCustomizationPageProvider() {
 	return (
 		<>
 			<Frame
-				position={UDim2.fromOffset(rem(0), rem(10.5))}
-				size={new UDim2(1, 0, 1, -rem(20.5))}
+				position={UDim2.fromOffset(rem(0), rem(13))}
+				size={new UDim2(1, 0, 1, -rem(23))}
 				backgroundTransparency={1}
 			>
 				{selectedPage === "primary" && <CustomizePrimaryPage />}
 				{selectedPage === "secondary" && <CustomizeSecondaryPage />}
 				{selectedPage === "melee" && <CustomizeMeleePage />}
-				{selectedPage === "mods" && <CustomizeAttachmentsPage />}
+				{selectedPage === "mods" && <CustomizeModificationsPage />}
 			</Frame>
 		</>
 	);

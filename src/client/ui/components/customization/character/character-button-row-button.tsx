@@ -32,6 +32,12 @@ export function CharacterButtonRowButton({ title, page, icon, selectedIcon }: Bu
 		effectTransparencyMotion.spring(hovered ? 0 : 1, springs.gentle);
 	}, [hovered]);
 
+	useEffect(() => {
+		if (selectedPage !== page) {
+			effectTransparencyMotion.spring(1, springs.gentle);
+		}
+	}, [selectedPage]);
+
 	return (
 		<>
 			<Button
@@ -46,56 +52,54 @@ export function CharacterButtonRowButton({ title, page, icon, selectedIcon }: Bu
 				}}
 			>
 				<Frame
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
+					backgroundTransparency={effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
 					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0, 0)}
 				/>
 				<Frame
-					backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
+					backgroundTransparency={effectTransparency}
 					backgroundColor={Color3.fromRGB(143, 149, 111)}
 					size={UDim2.fromScale(0.1, 1)}
 					position={UDim2.fromScale(0.9, 0)}
 				/>
-				{selectedPage === page && (
-					<>
-						<Image
-							anchorPoint={new Vector2(0.5, 0.5)}
-							size={UDim2.fromOffset(rem(1.5), rem(1.5))}
-							scaleType="Fit"
-							position={UDim2.fromScale(0.5, 0.95)}
-							image={images.ui.icons.toparrow}
+				<>
+					<Image
+						anchorPoint={new Vector2(0.5, 0.5)}
+						size={UDim2.fromOffset(rem(1.5), rem(1.5))}
+						scaleType="Fit"
+						position={UDim2.fromScale(0.5, 0.95)}
+						image={images.ui.icons.toparrow}
+					/>
+					<Frame
+						size={new UDim2(1.15, 0, 0, rem(2))}
+						position={UDim2.fromScale(0, 1)}
+						backgroundColor={Color3.fromRGB(61, 65, 42)}
+						backgroundTransparency={effectTransparency}
+					>
+						<Text
+							size={UDim2.fromScale(0.75, 1)}
+							text={title.split(" ")[0]}
+							textSize={rem(1.15)}
+							textXAlignment="Center"
+							textColor={Color3.fromRGB(106, 109, 81)}
+							font={fonts.inter.bold}
+							textTransparency={effectTransparency}
 						/>
-						<Frame
-							size={new UDim2(1.15, 0, 0, rem(2))}
-							position={UDim2.fromScale(0, 1)}
-							backgroundColor={Color3.fromRGB(61, 65, 42)}
-							backgroundTransparency={selectedPage === page ? 0 : effectTransparency}
-						>
-							<Text
-								size={UDim2.fromScale(0.75, 1)}
-								text={title.split(" ")[0]}
-								textSize={rem(1.15)}
-								textXAlignment="Center"
-								textColor={Color3.fromRGB(106, 109, 81)}
-								font={fonts.inter.bold}
-								textTransparency={selectedPage === page ? 0 : effectTransparency}
-							/>
-							<Text
-								size={UDim2.fromScale(0.2, 1)}
-								position={UDim2.fromScale(0.75, 0)}
-								text={title.split(" ")[1] ?? "N/A"}
-								textXAlignment="Right"
-								textSize={rem(1.15)}
-								textColor={Color3.fromRGB(106, 109, 81)}
-								borderSize={0}
-								zIndex={3}
-								font={fonts.inter.bold}
-								textTransparency={selectedPage === page ? 0 : effectTransparency}
-							/>
-						</Frame>
-					</>
-				)}
+						<Text
+							size={UDim2.fromScale(0.2, 1)}
+							position={UDim2.fromScale(0.75, 0)}
+							text={title.split(" ")[1] ?? "N/A"}
+							textXAlignment="Right"
+							textSize={rem(1.15)}
+							textColor={Color3.fromRGB(106, 109, 81)}
+							borderSize={0}
+							zIndex={3}
+							font={fonts.inter.bold}
+							textTransparency={effectTransparency}
+						/>
+					</Frame>
+				</>
 
 				<Image
 					anchorPoint={new Vector2(0.5, 0.5)}

@@ -94,6 +94,12 @@ export function TeamSelector<T extends TeamAbbreviation>({ team }: TeamSelectorP
 					/>
 
 					<Image
+						size={UDim2.fromScale(1, 1)}
+						image={images.ui.misc.selectionbackground}
+						imageTransparency={hoveredTransparency}
+						zIndex={-1}
+					/>
+					<Image
 						position={UDim2.fromScale(1, 1)}
 						anchorPoint={new Vector2(1, 1)}
 						size={new UDim2(1, 0, 1, -rem(2))}
@@ -142,7 +148,9 @@ export function TeamSelector<T extends TeamAbbreviation>({ team }: TeamSelectorP
 						position={UDim2.fromOffset(rem(5), rem(0))}
 						size={UDim2.fromScale(1, 1)}
 						image={
-							selectedTeam === "CLASS-D" ? images.ui.icons.downselectedcd : images.ui.icons.downselected
+							selectedTeam === "CLASS-D"
+								? images.ui.icons.downselectedcd
+								: images.ui.icons.downselectedwhite
 						}
 						imageTransparency={selectedTransparency}
 					>

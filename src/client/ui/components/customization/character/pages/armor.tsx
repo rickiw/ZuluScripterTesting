@@ -2,15 +2,15 @@ import Object from "@rbxts/object-utils";
 import { useSelector } from "@rbxts/react-reflex";
 import Roact from "@rbxts/roact";
 import { Players } from "@rbxts/services";
-import { Outfits } from "client/store/customization";
+import { Armors } from "client/store/customization";
 import { SCPScrollingFrame } from "client/ui/components/scp";
 import { useRem } from "client/ui/hooks";
 import { selectPlayerTeam } from "shared/store/teams";
-import { UniformSelector } from "../uniform-selector";
+import { AromrSelector } from "../armor-selector";
 
 const player = Players.LocalPlayer;
 
-export function CustomizeUniformPage() {
+export function CustomizeArmorPage() {
 	const rem = useRem();
 
 	const team = useSelector(selectPlayerTeam(player));
@@ -30,13 +30,12 @@ export function CustomizeUniformPage() {
 				CellPadding={UDim2.fromOffset(rem(1), rem(1))}
 			/>
 
-			{Object.values(Outfits).map((uniform) => (
+			{Object.values(Armors).map((armor) => (
 				<>
-					{uniform
+					{armor
 						.filter((outfit) => outfit.team === team)
-						.sort((a, b) => a.uniformName < b.uniformName)
 						.map((outfit) => (
-							<UniformSelector uniform={outfit} previewImage="shirt" />
+							<AromrSelector armor={outfit} previewImage="shirt" />
 						))}
 				</>
 			))}

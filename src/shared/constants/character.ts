@@ -14,3 +14,20 @@ export const THIRST_RECOVER_PER_SECOND = 0.2;
 
 export const UNSATIATED_DAMAGE_PER_SECOND = 5;
 export const CREDIT_AMOUNT_BY_ESCAPE = 4000;
+
+export type CharacterOutfit = {
+	shirt: number;
+	pants: number;
+};
+
+export type CharacterOptions = {
+	skinColor: Color3;
+	face: number;
+	hair: number[];
+	outfit: CharacterOutfit;
+	armor: string | undefined;
+};
+
+export type CharacterOptionsSerialized = Omit<CharacterOptions, "skinColor"> & {
+	skinColor: string;
+};

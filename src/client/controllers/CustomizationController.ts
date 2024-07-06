@@ -1,10 +1,12 @@
 import { Controller, OnStart } from "@flamework/core";
+import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { ControlSet } from "client/components/controls";
+import { Functions } from "client/network";
 import { clientStore } from "client/store";
-import { selectCustomizationIsOpen, selectCustomizationPage } from "client/store/customization";
+import { selectCharacterOptions, selectCustomizationIsOpen, selectCustomizationPage } from "client/store/customization";
 import { selectMenuOpen } from "client/store/menu";
 import { CharacterCustomizationController } from "./CharacterCustomizationController";
 import { WeaponCustomizationController } from "./WeaponCustomizationController";
@@ -37,6 +39,21 @@ export class CustomizationController implements OnStart {
 			},
 
 			controls: [Enum.KeyCode.X, Enum.KeyCode.DPadUp],
+		});
+
+		clientStore.subscribe(selectCustomizationIsOpen, (open) => {
+			if (!open) {
+				const characterOptions = clientStore.getState(selectCharacterOptions);
+				const [success, character] = Functions.SetCharacterCustomization(characterOptions).await();
+
+				if (!success) {
+					Log.Warn("Failed to set character customization: Unsuccessful server response");
+					return;
+				}
+
+				Log.Warn("Changed character: {@Changed}", character);
+				camera.CameraSubject = character.Humanoid;
+			}
 		});
 	}
 

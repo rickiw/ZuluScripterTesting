@@ -3,6 +3,11 @@ hash = "55aff16f6d9bf9c81f07c571d2e3256fe4aca7b73e328ee97540fef5baf233ec"
 id = 17150930576
 packable = false
 
+[inputs."assets/images/ui/glyphs/ADselected.png"]
+hash = "9b21e618d64177ffad297cb43df1f38324b06152289db0397931fc7c6b0f14fd"
+id = 17873993651
+packable = false
+
 [inputs."assets/images/ui/glyphs/CD.png"]
 hash = "3f9aa94f20fa20a5262a1e9997c9dab793e31435383dd30af387e0da8157855a"
 id = 17150930719
@@ -14,8 +19,8 @@ id = 17153336526
 packable = false
 
 [inputs."assets/images/ui/glyphs/CDselected.png"]
-hash = "ec52ffb0adc9cd4914e04356ea0c44feb1a0667c98f8c65bf241fe87ce4401c2"
-id = 17153336637
+hash = "589a5684abe7f730422fc144c55d29e1e17486fc00f7aaf19aba282df66821a4"
+id = 17873993891
 packable = false
 
 [inputs."assets/images/ui/glyphs/CI.png"]
@@ -23,9 +28,19 @@ hash = "c2dda80029542c63493d4a7e0b5f6d6005383880529a4ecb392927dcfd66204e"
 id = 17150930892
 packable = false
 
+[inputs."assets/images/ui/glyphs/CIselected.png"]
+hash = "9663e35b14ea602857acdfdd4cfb73bc3f9a92e908dcb53ae85221de1fd9d3cd"
+id = 17873994136
+packable = false
+
 [inputs."assets/images/ui/glyphs/DEA.png"]
 hash = "12a97398461234feb3d71a970035739b4f116620c918a5090ddc768941902b39"
 id = 17150931024
+packable = false
+
+[inputs."assets/images/ui/glyphs/DEAselected.png"]
+hash = "093e5ad35c1c95872a449a142848e7d6c881c20359a881606cb8820170a44955"
+id = 17873994304
 packable = false
 
 [inputs."assets/images/ui/glyphs/E&T.png"]
@@ -39,8 +54,8 @@ id = 17153336754
 packable = false
 
 [inputs."assets/images/ui/glyphs/E&Tselected.png"]
-hash = "c292cc9111d495c8b11148e2919024f9faff6241925bdf95ca5bdb8d475ce2a4"
-id = 17153336850
+hash = "8e488a34e10118019e6bb21d9ec37675e4f1b7910817cb16eed319dd298709d7"
+id = 17873994555
 packable = false
 
 [inputs."assets/images/ui/glyphs/EC.png"]
@@ -59,8 +74,8 @@ id = 17153337034
 packable = false
 
 [inputs."assets/images/ui/glyphs/FPselected.png"]
-hash = "e3985f04f4f58dccd11a91495a75c28e66a5c8e38530cb794bb4b8a7391cb676"
-id = 17153337264
+hash = "2ce083065a589f8bc07eab07cc92abf97fb79b461204f391ba839d0ad6876d18"
+id = 17873994838
 packable = false
 
 [inputs."assets/images/ui/glyphs/LD.png"]
@@ -74,8 +89,8 @@ id = 17153337483
 packable = false
 
 [inputs."assets/images/ui/glyphs/LDselected.png"]
-hash = "23529bdb64a45764ddcba807ac2de37df5fb3d68f67fee572464334f7c0aba08"
-id = 17153337614
+hash = "b74ae2a5971e4cea18a264f4ac270479922eb225039c4a4dd5315ef16494323e"
+id = 17873994989
 packable = false
 
 [inputs."assets/images/ui/glyphs/MAND.png"]
@@ -94,8 +109,8 @@ id = 17153337743
 packable = false
 
 [inputs."assets/images/ui/glyphs/MDselected.png"]
-hash = "3f7daa783faae0800525afba192338b53391c59603b13f0ed3207a6d44d474b4"
-id = 17153337843
+hash = "0dc688e64e65abe60c85903448c1397fcdff53ce83ffa57439cb13700dbde9fc"
+id = 17873995192
 packable = false
 
 [inputs."assets/images/ui/glyphs/MTF.png"]
@@ -114,8 +129,8 @@ id = 17153337924
 packable = false
 
 [inputs."assets/images/ui/glyphs/SCDselected.png"]
-hash = "e65591d5fca05f552ee73c10c1090b97b83d5f35bed6f4495f9f22723285ef1c"
-id = 17153338058
+hash = "599964d33418ad0a43ec3c3476f1edd6e2650eb25ad3f91a33de85a0de34542c"
+id = 17873995391
 packable = false
 
 [inputs."assets/images/ui/glyphs/SD.png"]
@@ -129,8 +144,8 @@ id = 17153338192
 packable = false
 
 [inputs."assets/images/ui/glyphs/SDselected.png"]
-hash = "eb24f3726f91f1f6827902df3c6f83bffa2bae84792297347c6c3e500a246db7"
-id = 17153338314
+hash = "2b688b1f63fa3505da6224abd834aa7ee1bb6df11c0ec04879eb59b05d350aca"
+id = 17873995598
 packable = false
 
 [inputs."assets/images/ui/icons/arrowright.png"]

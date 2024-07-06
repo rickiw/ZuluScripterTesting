@@ -1,7 +1,7 @@
 import { useSelector } from "@rbxts/react-reflex";
 import Roact, { useEffect } from "@rbxts/roact";
 import { clientStore } from "client/store";
-import { Outfit, selectCharacterOutfit } from "client/store/customization";
+import { Armor, selectCharacterArmor } from "client/store/customization";
 import { useMotion, useRem } from "client/ui/hooks";
 import { Button } from "client/ui/library/button/button";
 import { Frame } from "client/ui/library/frame";
@@ -12,22 +12,22 @@ import { fonts } from "shared/constants/fonts";
 import { palette } from "shared/constants/palette";
 import { springs } from "shared/constants/springs";
 
-export interface UniformSelectorProps {
-	uniform: Outfit;
+export interface ArmorSelectorProps {
+	armor: Armor;
 	previewImage: keyof typeof images.ui.icons;
 }
 
-export function UniformSelector({ uniform, previewImage }: UniformSelectorProps) {
+export function AromrSelector({ armor, previewImage }: ArmorSelectorProps) {
 	const rem = useRem();
 
-	const selectedUniform = useSelector(selectCharacterOutfit);
+	const selectedArmor = useSelector(selectCharacterArmor);
 
 	const [effectTransparency, effectTransparencyMotion] = useMotion(1);
 	const [selectEffect, selectEffectMotion] = useMotion(1);
 	const [selectNegEffect, selectNegEffectMotion] = useMotion(0);
 
 	useEffect(() => {
-		if (selectedUniform === uniform) {
+		if (selectedArmor === armor.armorName) {
 			effectTransparencyMotion.spring(0.4, springs.responsive);
 			selectEffectMotion.spring(0, springs.responsive);
 			selectNegEffectMotion.spring(1, springs.responsive);
@@ -36,7 +36,7 @@ export function UniformSelector({ uniform, previewImage }: UniformSelectorProps)
 			selectEffectMotion.spring(1, springs.responsive);
 			selectNegEffectMotion.spring(0, springs.responsive);
 		}
-	}, [selectedUniform]);
+	}, [selectedArmor]);
 
 	return (
 		<>
@@ -44,15 +44,15 @@ export function UniformSelector({ uniform, previewImage }: UniformSelectorProps)
 				backgroundTransparency={1}
 				event={{
 					MouseButton1Click: () => {
-						clientStore.setCharacterOutfit(uniform);
+						clientStore.setCharacterArmor(armor.armorName);
 					},
 					MouseEnter: () => {
-						if (selectedUniform.shirt !== uniform.shirt && selectedUniform.pants !== uniform.pants) {
+						if (selectedArmor !== armor.armorName) {
 							effectTransparencyMotion.spring(0.5, springs.responsive);
 						}
 					},
 					MouseLeave: () => {
-						if (selectedUniform.shirt !== uniform.shirt && selectedUniform.pants !== uniform.pants) {
+						if (selectedArmor !== armor.armorName) {
 							effectTransparencyMotion.spring(1, springs.responsive);
 						}
 					},
@@ -75,7 +75,7 @@ export function UniformSelector({ uniform, previewImage }: UniformSelectorProps)
 					<Image
 						size={UDim2.fromScale(1, 1)}
 						scaleType="Fit"
-						image={`rbxthumb://type=Asset&id=${uniform.shirt}&w=150&h=150`}
+						image={`rbxthumb://type=Asset&id=&w=150&h=150`}
 					/>
 				</Frame>
 
@@ -105,7 +105,7 @@ export function UniformSelector({ uniform, previewImage }: UniformSelectorProps)
 						position={UDim2.fromOffset(rem(6), rem(0.5))}
 						textXAlignment="Left"
 						textAutoResize="XY"
-						text={uniform.uniformType.upper()}
+						text={armor.armorType.upper()}
 						textColor={Color3.fromRGB(124, 128, 131)}
 						textSize={rem(0.75)}
 						font={fonts.arimo.regular}
@@ -114,7 +114,7 @@ export function UniformSelector({ uniform, previewImage }: UniformSelectorProps)
 						position={UDim2.fromOffset(rem(6), rem(1))}
 						textXAlignment="Left"
 						textAutoResize="XY"
-						text={uniform.uniformName.upper()}
+						text={armor.armorName.upper()}
 						textColor={Color3.fromRGB(124, 128, 131)}
 						textSize={rem(1.5)}
 						font={fonts.arimo.regular}

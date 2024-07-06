@@ -55,12 +55,17 @@ export function WeaponCustomizationFooter() {
 			} as const
 		)[weaponPage];
 
+		if (weaponPage === "mods" && selectedWeapon && selectedModificationMount) {
+			clientStore.setSelectedModificationMount(undefined);
+			return;
+		}
+
 		if (page === "character") {
 			clientStore.setCustomizationPage("character");
 		} else {
 			clientStore.setWeaponCustomizationPage(page);
 		}
-	}, [customizationPage, weaponPage]);
+	}, [customizationPage, weaponPage, selectedWeapon, selectedModificationMount]);
 
 	useEventListener(UserInputService.InputBegan, (input) => {
 		if (input.KeyCode === Enum.KeyCode.LeftShift) {
@@ -158,7 +163,7 @@ export function WeaponCustomizationFooter() {
 						</textlabel>
 						<Text
 							layoutOrder={1}
-							text={"CONTINUE"}
+							text={weaponPage === "mods" ? "FINISH" : "CONTINUE"}
 							textColor={palette.white}
 							font={fonts.arimo.regular}
 							textSize={rem(1.25)}

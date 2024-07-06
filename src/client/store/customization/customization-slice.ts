@@ -1,5 +1,7 @@
 import { createProducer } from "@rbxts/reflex";
+import { CharacterOptions, CharacterOutfit } from "shared/constants/character";
 import { IModification, WeaponBase } from "shared/constants/weapons";
+import { TeamAbbreviation } from "shared/store/teams";
 
 export type RobloxAsset = {
 	name: string;
@@ -35,18 +37,6 @@ export const HairOptions: RobloxAsset[] = [
 	{ name: "Circle Gray Framed Glasses", assetID: 5063562714 },
 ];
 
-export type CharacterOutfit = {
-	shirt: number;
-	pants: number;
-};
-
-export type CharacterOptions = {
-	skinColor: Color3;
-	face: number;
-	hair: number[];
-	outfit: CharacterOutfit;
-};
-
 export interface CustomizationState {
 	isOpen: boolean;
 	customizationPage: "character" | "weapon";
@@ -64,16 +54,160 @@ export interface CustomizationState {
 	characterPages: CustomizationState["characterSelectedPage"][];
 }
 
+export type Armor = {
+	team: TeamAbbreviation;
+	armorName: string;
+	armorType: string;
+};
+
+export const Armors = {
+	SD: [
+		{
+			team: "SD",
+			armorName: "Cadet",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Guard",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Specialist",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Corporal",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Sergeant",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Lietenant",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Captain",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "Major",
+			armorType: "Type",
+		},
+		{
+			team: "SD",
+			armorName: "SIU",
+			armorType: "Type",
+		},
+	],
+} satisfies {
+	[rank: string]: Armor[];
+};
+
+export type Outfit = {
+	team: TeamAbbreviation;
+	uniformName: string;
+	uniformType: string;
+	shirt: number;
+	pants: number;
+};
+
 export const Outfits = {
-	"CLASS-D": { uniformName: "CLASS-D", uniformType: "Type", shirt: 13958124520, pants: 13958120032 },
-	"LEVEL-0": { uniformName: "LEVEL-0", uniformType: "Type", shirt: 14035981578, pants: 14035990968 },
-} as const;
+	"CLASS-D": [
+		{ team: "CLASS-D", uniformName: "CLASS-D", uniformType: "Type", shirt: 13958124520, pants: 13958120032 },
+	],
+	"LEVEL-0": [{ team: "FP", uniformName: "LEVEL-0", uniformType: "Type", shirt: 14035981578, pants: 14035990968 }],
+	"LEVEL-1": [{ team: "FP", uniformName: "LEVEL-1", uniformType: "Type", shirt: 14149505242, pants: 14148566810 }],
+	"LEVEL-2": [{ team: "FP", uniformName: "LEVEL-2", uniformType: "Type", shirt: 14149499217, pants: 14148566810 }],
+	"LEVEL-3": [{ team: "FP", uniformName: "LEVEL-3", uniformType: "Type", shirt: 14149499217, pants: 14148566810 }],
+	"LEVEL-4": [{ team: "FP", uniformName: "LEVEL-4", uniformType: "Type", shirt: 1314469210, pants: 1314471341 }],
+	SD: [
+		{
+			team: "SD",
+			uniformName: "SECURITY DEPARTMENT",
+			uniformType: "Type",
+			shirt: 17057280811,
+			pants: 14148584524,
+		},
+	],
+	SCD: [
+		{
+			team: "SCD",
+			uniformName: "JUNIOR RESEARCHER",
+			uniformType: "Type",
+			shirt: 14149517854,
+			pants: 14149570399,
+		},
+		{
+			team: "SCD",
+			uniformName: "SENIOR RESEARCHER",
+			uniformType: "Type",
+			shirt: 14149566482,
+			pants: 14149572935,
+		},
+	],
+	MD: [
+		{
+			team: "MD",
+			uniformName: "MEDICAL DEPARTMENT",
+			uniformType: "Type",
+			shirt: 6293707206,
+			pants: 6293708641,
+		},
+	],
+	ETHICS: [
+		{
+			team: "E&T",
+			uniformName: "ETHICS COMMITTEE",
+			uniformType: "Type",
+			shirt: 10921345151,
+			pants: 10921346256,
+		},
+	],
+	DEA: [
+		{
+			team: "DEA",
+			uniformName: "DEA",
+			uniformType: "Type",
+			shirt: 13249616862,
+			pants: 13249633946,
+		},
+	],
+	AD: [
+		{
+			team: "AD",
+			uniformName: "ADMIN",
+			uniformType: "Type",
+			shirt: 13249616862,
+			pants: 13249633946,
+		},
+	],
+	CHAOS: [
+		{
+			team: "CHAOS",
+			uniformName: "CHAOS INSURGENCY",
+			uniformType: "Type",
+			shirt: 14148686271,
+			pants: 17057302926,
+		},
+	],
+} satisfies {
+	[rank: string]: Outfit[];
+};
 
 const initialState: CustomizationState = {
 	isOpen: false,
 	customizationPage: "character",
 	characterSelectedPage: "teams",
-	weaponSelectedPage: "primary",
+	weaponSelectedPage: "mods",
 	weapon: {
 		selectedWeapon: undefined,
 		selectedModificationMount: undefined,
@@ -83,7 +217,8 @@ const initialState: CustomizationState = {
 		skinColor: Color3.fromHex("#C69C6D"),
 		face: 144080495,
 		hair: [4212534746],
-		outfit: Outfits["CLASS-D"],
+		outfit: Outfits["CLASS-D"][0],
+		armor: undefined,
 	},
 	weaponPageSubtitles: {
 		primary: "Firearm",
@@ -114,6 +249,10 @@ export const customizationSlice = createProducer(initialState, {
 			selectedWeapon,
 		},
 	}),
+	setCharacterOptions: (state, character: CharacterOptions) => ({
+		...state,
+		character,
+	}),
 	setCharacterSkinColor: (state, skinColor: Color3) => ({
 		...state,
 		character: {
@@ -140,6 +279,13 @@ export const customizationSlice = createProducer(initialState, {
 		character: {
 			...state.character,
 			outfit,
+		},
+	}),
+	setCharacterArmor: (state, armor: string | undefined) => ({
+		...state,
+		character: {
+			...state.character,
+			armor,
 		},
 	}),
 	setCharacterCustomizationPage: (state, characterSelectedPage: CustomizationState["characterSelectedPage"]) => ({

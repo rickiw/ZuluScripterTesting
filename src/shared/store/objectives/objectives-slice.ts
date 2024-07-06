@@ -19,6 +19,9 @@ type ObjectiveNamesByCategory = {
 		| "Kill X Mobile Task Forces";
 	MD: "Conduct Research (MD)" | "Report Checkup Documents";
 	LOGISTICS: "Deliver crates" | "Restock supplies";
+	AD: "";
+	DEA: "";
+	CHAOS: "";
 };
 
 export type ObjectiveName = ObjectiveNamesByCategory[TeamAbbreviation];

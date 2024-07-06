@@ -6,7 +6,10 @@ import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Players, UserInputService, Workspace } from "@rbxts/services";
 import { Events, Functions } from "client/network";
 import { clientStore } from "client/store";
-import { CharacterOptions, selectCharacterOptions, selectCustomizationPage } from "client/store/customization";
+import { selectCharacterOptions, selectCustomizationPage } from "client/store/customization";
+import { selectPlayerSave } from "client/store/menu";
+import { CharacterOptions } from "shared/constants/character";
+import { setCharacterProperties } from "shared/utils";
 
 const player = Players.LocalPlayer;
 const mouse = player.GetMouse();
@@ -20,38 +23,20 @@ export class CharacterCustomizationController implements OnStart, OnRender {
 	moved = Vector2.zero;
 	dragging = false;
 
-	onStart() {}
+	onStart() {
+		clientStore.subscribe(selectPlayerSave, (playerData, oldPlayerData) => {
+			if (!playerData || oldPlayerData !== undefined) {
+				return;
+			}
+			clientStore.setCharacterOptions({
+				...playerData.characterOptions,
+				skinColor: Color3.fromHex(playerData.characterOptions.skinColor),
+			});
+		});
+	}
 
 	private setCharacterProperties(character: CharacterRigR15, options: CharacterOptions) {
-		character["Body Colors"].HeadColor3 = options.skinColor;
-		character["Body Colors"].TorsoColor3 = options.skinColor;
-		character["Body Colors"].LeftArmColor3 = options.skinColor;
-		character["Body Colors"].LeftLegColor3 = options.skinColor;
-		character["Body Colors"].RightArmColor3 = options.skinColor;
-		character["Body Colors"].RightLegColor3 = options.skinColor;
-
-		character.GetDescendants().forEach((instance) => {
-			if (instance.IsA("Shirt") || instance.IsA("Pants")) {
-				instance.Destroy();
-			}
-		});
-
-		New("Shirt")({
-			Parent: character,
-			Name: "Shirt",
-			ShirtTemplate: `rbxassetid://${tostring(options.outfit.shirt)}`,
-		});
-		New("Pants")({
-			Parent: character,
-			Name: "Pants",
-			PantsTemplate: `rbxassetid://${tostring(options.outfit.pants)}`,
-		});
-
-		const face = character.Head.FindFirstChildOfClass("Decal");
-		if (face) {
-			face.Texture = `http://www.roblox.com/asset/?id=${options.face}`;
-		}
-
+		setCharacterProperties(character, options);
 		Events.SetAccessories(character, options.hair);
 	}
 
